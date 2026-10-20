@@ -2,7 +2,7 @@
 
 Checks inbound requests from a web form and a mailbox, rates them with an AI, saves them in Airtable and answers them. Built for sole proprietors and small businesses.
 
-![Workflow overview](images/workflow-overview.png)
+![Workflow description](images/workflow-description.png)
 
 ## What problem it solves
 
@@ -29,7 +29,9 @@ Why it matters:
 
 ## The six boxes
 
-The sticky notes in the workflow are numbered like this.
+The sticky notes in the workflow are numbered like this. The whole canvas looks like this:
+
+![Whole canvas](images/workflow-overview.png)
 
 **1. Intake & checks**
 
