@@ -31,6 +31,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - An AI reads the PDF, foreign currencies are converted with the ECB rate of the invoice date
 - One row per invoice in Google Sheets, a key prevents double rows, the PDF goes to Google Drive
 - Retries, error workflow with Telegram alert, heartbeat ping
+- Tested with test PDFs: invoices in euro and other currencies, offers, terms, duplicates
 
 [Read the full description](invoice-capture/README.md)
 
