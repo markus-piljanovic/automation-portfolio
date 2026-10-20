@@ -6,8 +6,8 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 | Workflow | What problem it solves | Folder |
 |---|---|---|
-| **Lead Qualification** | Requests from a form and a mailbox pile up, get answered late, and hot leads get lost in the inbox. The workflow reads, checks and rates every request with an AI and drafts the reply. You only confirm the important ones with one click. | [lead-qualification](lead-qualification/) |
-| **E-Mail Rechnungserfassung** (invoice capture) | Invoices arrive by mail and someone has to type them into a sheet by hand, in different currencies and with duplicates. The workflow does this every night. | [email-rechnungserfassung](email-rechnungserfassung/) |
+| **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](lead-qualification/) |
+| **E-Mail Rechnungserfassung** (invoice capture) | Invoices arrive by mail and are typed into a sheet by hand, in different currencies and sometimes twice. It is slow, boring and error-prone. | [email-rechnungserfassung](email-rechnungserfassung/) |
 
 ### Lead Qualification
 
