@@ -1,37 +1,38 @@
 # n8n Workflows
 
-Beispiel-Workflows aus meiner Automatisierungspraxis (n8n, self-hosted auf einem VPS). Jeder Workflow hat einen eigenen Ordner mit Erklärung, Screenshots und den exportierten JSON-Dateien.
+Example workflows from my automation work (n8n, self-hosted on a VPS). Every workflow has its own folder with an explanation, screenshots and the exported JSON files.
 
 ## Workflows
 
-| Workflow | Was er macht | Ordner |
+| Workflow | What it does | Folder |
 |---|---|---|
-| **Lead Qualifizierung** | Prüft Kundenanfragen aus Formular und Postfach, bewertet sie mit einer KI, speichert sie in Airtable und meldet sich per Telegram. Hot-Leads brauchen vor der Antwort eine Freigabe per Klick. | [lead-qualifizierung](lead-qualifizierung/) |
-| **E-Mail Rechnungserfassung** | Liest nachts Rechnungs-Mails, extrahiert die Daten per KI, rechnet Währungen um und schreibt alles in ein Google Sheet. | [email-rechnungserfassung](email-rechnungserfassung/) |
+| **Lead Qualification** | Checks customer requests from a form and a mailbox, rates them with an AI, saves them in Airtable and notifies you by Telegram. Hot leads need a one-click approval before the reply goes out. | [lead-qualification](lead-qualification/) |
+| **E-Mail Rechnungserfassung** (invoice capture) | Reads invoice mails at night, extracts the data with an AI, converts currencies and writes everything to a Google Sheet. | [email-rechnungserfassung](email-rechnungserfassung/) |
 
-### Lead Qualifizierung
+### Lead Qualification
 
-![Lead Qualifizierung](lead-qualifizierung/images/workflow-gesamt.png)
+![Lead Qualification](lead-qualification/images/workflow-overview.png)
 
-- Zwei Eingänge (Formular, E-Mail), Duplikat-Check, KI-Agent mit Impressum-Recherche
-- Kategorien hot, warm, kalt, spam und rückfrage, mit Score und Antwort-Entwurf
-- Freigabe für Hot-Leads per Telegram in einem eigenen Workflow
-- Retry, KI-Fallback, Error-Workflow, Ping, feste Grenzen für die KI
-- Live mit über 20 Testfällen geprüft
+- **Problem:** small businesses lose customers and hot requests in a full inbox. Sorting and answering takes time.
+- Two entry points (form, mail), duplicate check, AI agent with imprint research
+- Categories hot, warm, cold, spam and clarification, with score and reply draft
+- Hot-lead replies are approved with two Telegram buttons, without any run waiting
+- Retries, AI fallback, error workflow, heartbeat ping, fixed limits for the AI
+- Tested live with more than 20 cases
 
-[Zur ausführlichen Beschreibung](lead-qualifizierung/README.md)
+[Read the full description](lead-qualification/README.md)
 
-### E-Mail Rechnungserfassung
+### E-Mail Rechnungserfassung (invoice capture)
 
 ![E-Mail Rechnungserfassung](email-rechnungserfassung/images/workflow-gesamt.png)
 
-- Läuft jede Nacht, verarbeitet bis zu 10 Mails pro Lauf
-- KI-Extraktion, Währungsumrechnung, Schlüssel gegen doppelte Einträge
-- Retry, Error-Workflow mit Telegram-Alarm
+- Runs every night, handles up to 10 mails per run
+- AI extraction, currency conversion, a key that prevents duplicate rows
+- Retries, error workflow with Telegram alert
 
-[Zur ausführlichen Beschreibung](email-rechnungserfassung/README.md)
+[Full description](email-rechnungserfassung/README.md) (currently in German)
 
-## Hinweise
+## Notes
 
-- Credentials, IDs, Tabellen- und Ordner-Referenzen sind durch Platzhalter (`YOUR_..._ID`) ersetzt. Die Workflows lassen sich importieren, müssen aber mit eigenen Zugängen verknüpft werden.
-- Die Sticky Notes in den Workflows erklären jeden Schritt.
+- Credentials, IDs, table and folder references are replaced by placeholders (`YOUR_..._ID`). The workflows can be imported, but need your own credentials.
+- The sticky notes in the workflows explain every step.

@@ -1,7 +1,8 @@
 {
-  "name": "Error Workflow (Lead Qualifizierung)",
+  "name": "Error Workflow (Lead Qualification)",
   "nodes": [
     {
+      "parameters": {},
       "id": "e2b00001-0000-4000-8000-000000000001",
       "name": "Error Trigger",
       "type": "n8n-nodes-base.errorTrigger",
@@ -9,10 +10,16 @@
       "position": [
         0,
         0
-      ],
-      "parameters": {}
+      ]
     },
     {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🚨 Workflow-Fehler\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.lastNodeExecuted }}\nFehler: {{ $json.execution.error.message }}\nAusführung: {{ $json.execution.url }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
       "id": "e2b00001-0000-4000-8000-000000000002",
       "name": "Telegram Alert",
       "webhookId": "efb7342c-82b6-4551-b7b1-7a4a146c1748",
@@ -22,13 +29,6 @@
         240,
         0
       ],
-      "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "=🚨 Workflow-Fehler\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.lastNodeExecuted }}\nFehler: {{ $json.execution.error.message }}\nAusführung: {{ $json.execution.url }}",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
       "credentials": {
         "telegramApi": {
           "id": "YOUR_TELEGRAM_CREDENTIAL_ID",

@@ -1,5 +1,5 @@
 {
-  "name": "Lead Qualifizierung",
+  "name": "Lead Qualification",
   "nodes": [
     {
       "parameters": {
@@ -12,15 +12,15 @@
         }
       },
       "id": "66558850-a1b4-47c1-a20c-37efa5b04045",
-      "name": "AI Agent",
+      "name": "ai_agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "retryOnFail": true,
       "maxTries": 2,
       "waitBetweenTries": 5000,
       "position": [
-        2592,
-        400
+        2528,
+        944
       ],
       "onError": "continueErrorOutput"
     },
@@ -58,7 +58,8 @@
             "datum": "={{ $json.datum }}",
             "quelle": "={{ $json.quelle }}",
             "thema": "={{ $json.thema || null }}",
-            "zeitrahmen": "={{ $json.zeitrahmen || null }}"
+            "zeitrahmen": "={{ $json.zeitrahmen || null }}",
+            "antwort-entwurf": "={{ $json.antwortEntwurf || null }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -211,6 +212,16 @@
               "display": true,
               "type": "string",
               "removed": false
+            },
+            {
+              "id": "antwort-entwurf",
+              "displayName": "antwort-entwurf",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -221,15 +232,15 @@
         }
       },
       "id": "f5ee8c10-aba5-4ef4-9deb-ef0e7f7e86f9",
-      "name": "Create a record",
+      "name": "create_lead_record",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        3520,
-        448
+        3456,
+        992
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -323,13 +334,13 @@
         "options": {}
       },
       "id": "084c5645-611f-4374-ab59-e6345da4e6f8",
-      "name": "Formulareingabe",
+      "name": "form_trigger",
       "webhookId": "bbc96a85-904f-44ab-a1cc-5e8404682459",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.6,
       "position": [
-        592,
-        48
+        512,
+        -144
       ]
     },
     {
@@ -353,7 +364,7 @@
         "options": {}
       },
       "id": "38a7da54-033b-4de6-9522-4cc5b667cd3c",
-      "name": "Datenbank durchsuchen",
+      "name": "search_lead",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "alwaysOutputData": true,
@@ -361,8 +372,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        1392,
-        -144
+        1344,
+        -368
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -398,12 +409,12 @@
         "options": {}
       },
       "id": "81bdb02a-aba3-4051-aad7-0bda1b3cf92c",
-      "name": "Ist Duplikat?",
+      "name": "is_duplicate",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2064,
-        -16
+        1872,
+        -256
       ]
     },
     {
@@ -413,26 +424,26 @@
         "responseText": "Wir haben Ihre Anfrage bereits erhalten und werden uns bald bei Ihnen melden!"
       },
       "id": "0de4917a-34ce-4d88-bce6-de007e971e59",
-      "name": "Formularnachricht (Anfrage bereits erhalten)",
+      "name": "form_duplicate_notice",
       "webhookId": "62ca59ce-3f96-41bc-a88e-14a466e8d351",
       "type": "n8n-nodes-base.form",
       "typeVersion": 2.5,
       "position": [
-        2720,
-        -464
+        2640,
+        -400
       ]
     },
     {
       "parameters": {
-        "jsCode": "// ===== Abschnitt 1: Konstanten =====\n// Jede Kategorie legt Score-Bereich, Airtable-Priorität und Airtable-Status fest\nconst KATEGORIEN = {\n  hot:  { min: 70, max: 100, prioritaet: 'Hoch',    status: 'Qualifiziert' },\n  warm: { min: 40, max: 69,  prioritaet: 'Mittel',  status: 'Qualifiziert' },\n  kalt: { min: 1,  max: 39,  prioritaet: 'Niedrig', status: 'Unqualifiziert' },\n  spam: { min: 0,  max: 0,   prioritaet: 'Niedrig', status: 'Unqualifiziert' },\n  // Zu knapp für eine Bewertung: der Lead bekommt eine Rückfrage-Mail\n  rueckfrage: { min: 10, max: 39, prioritaet: 'Mittel', status: 'Rückfrage' },\n};\n// Unklare KI-Antwort wird vorsichtig als warm behandelt, damit kein Lead verloren geht\nconst FALLBACK_KATEGORIE = 'warm';\n\n// ===== Abschnitt 2: KI-Ergebnis prüfen und für Airtable aufbereiten =====\nreturn $input.all().map((item, index) => {\n  const ki = item.json.output || {};\n  // Lead-Daten holen: erst über die Zuordnung, sonst über denselben Index (1 Anfrage = 1 Lauf)\n  let lead;\n  try {\n    lead = $('Lead prüfen').itemMatching(index).json;\n  } catch (e) {\n    lead = $('Lead prüfen').all()[index].json;\n  }\n\n  const kategorie = KATEGORIEN[ki.kategorie] ? ki.kategorie : FALLBACK_KATEGORIE;\n  const regel = KATEGORIEN[kategorie];\n  const rohScore = Math.round(Number(ki.score));\n  // Score immer in den Bereich der Kategorie zwingen, damit beide zusammenpassen\n  const score = Number.isFinite(rohScore) ? Math.min(regel.max, Math.max(regel.min, rohScore)) : regel.min;\n\n  return {\n    json: {\n      // E-Mail-Absendernamen sind oft ungenau, dort nimmt die KI den Namen aus dem Text\n      name: (lead.quelle === 'E-Mail' && ki.name) ? ki.name : lead.name,\n      email: lead.email,\n      telefon: lead.telefon || ki.telefon || '',\n      unternehmen: lead.firma || ki.firma || '',\n      datenschutz: lead.datenschutz === true,\n      nachricht: lead.nachricht,\n      datum: lead.datum,\n      quelle: lead.quelle,\n      // Auswahlfelder aus dem Formular (bei Mail-Leads leer)\n      thema: lead.thema || '',\n      zeitrahmen: lead.zeitrahmen || '',\n      kategorie,\n      score,\n      prioritaet: regel.prioritaet,\n      status: regel.status,\n      kiReasoning: ki.begruendung || '',\n      kiRecherche: ki.recherche || '',\n      antwortEntwurf: ki.antwortEntwurf || '',\n    },\n    pairedItem: { item: index },\n  };\n});"
+        "jsCode": "// ===== Abschnitt 1: Konstanten =====\n// Jede Kategorie legt Score-Bereich, Airtable-Priorität und Airtable-Status fest\nconst KATEGORIEN = {\n  hot:  { min: 70, max: 100, prioritaet: 'Hoch',    status: 'Qualifiziert' },\n  warm: { min: 40, max: 69,  prioritaet: 'Mittel',  status: 'Qualifiziert' },\n  kalt: { min: 1,  max: 39,  prioritaet: 'Niedrig', status: 'Unqualifiziert' },\n  spam: { min: 0,  max: 0,   prioritaet: 'Niedrig', status: 'Unqualifiziert' },\n  // Zu knapp für eine Bewertung: der Lead bekommt eine Rückfrage-Mail\n  rueckfrage: { min: 10, max: 39, prioritaet: 'Mittel', status: 'Rückfrage' },\n};\n// Unklare KI-Antwort wird vorsichtig als warm behandelt, damit kein Lead verloren geht\nconst FALLBACK_KATEGORIE = 'warm';\n\n// ===== Abschnitt 2: KI-Ergebnis prüfen und für Airtable aufbereiten =====\nreturn $input.all().map((item, index) => {\n  const ki = item.json.output || {};\n  // Lead-Daten holen: erst über die Zuordnung, sonst über denselben Index (1 Anfrage = 1 Lauf)\n  let lead;\n  try {\n    lead = $('check_lead').itemMatching(index).json;\n  } catch (e) {\n    lead = $('check_lead').all()[index].json;\n  }\n\n  const kategorie = KATEGORIEN[ki.kategorie] ? ki.kategorie : FALLBACK_KATEGORIE;\n  const regel = KATEGORIEN[kategorie];\n  const rohScore = Math.round(Number(ki.score));\n  // Score immer in den Bereich der Kategorie zwingen, damit beide zusammenpassen\n  const score = Number.isFinite(rohScore) ? Math.min(regel.max, Math.max(regel.min, rohScore)) : regel.min;\n\n  return {\n    json: {\n      // E-Mail-Absendernamen sind oft ungenau, dort nimmt die KI den Namen aus dem Text\n      name: (lead.quelle === 'E-Mail' && ki.name) ? ki.name : lead.name,\n      email: lead.email,\n      telefon: lead.telefon || ki.telefon || '',\n      unternehmen: lead.firma || ki.firma || '',\n      datenschutz: lead.datenschutz === true,\n      nachricht: lead.nachricht,\n      datum: lead.datum,\n      quelle: lead.quelle,\n      // Auswahlfelder aus dem Formular (bei Mail-Leads leer)\n      thema: lead.thema || '',\n      zeitrahmen: lead.zeitrahmen || '',\n      kategorie,\n      score,\n      prioritaet: regel.prioritaet,\n      status: regel.status,\n      kiReasoning: ki.begruendung || '',\n      kiRecherche: ki.recherche || '',\n      antwortEntwurf: ki.antwortEntwurf || '',\n    },\n    pairedItem: { item: index },\n  };\n});"
       },
       "id": "091dcc6a-e3b3-4db2-a86d-79a5e40c434b",
-      "name": "KI Output verarbeiten",
+      "name": "process_ai_output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3312,
-        448
+        3248,
+        992
       ]
     },
     {
@@ -442,13 +453,13 @@
         "responseText": "Vielen Dank! Wir haben Ihre Anfrage erhalten und melden uns so schnell wie möglich bei Ihnen."
       },
       "id": "e37a4181-e845-4a06-8991-be75536cbf86",
-      "name": "Formular Erfolgsmeldung",
+      "name": "form_success",
       "webhookId": "d6c70a07-db1c-431f-9530-99488bef5205",
       "type": "n8n-nodes-base.form",
       "typeVersion": 2.5,
       "position": [
-        4336,
-        880
+        5216,
+        816
       ]
     },
     {
@@ -473,13 +484,13 @@
         }
       },
       "id": "84b965dc-32d4-4744-b001-1587df073711",
-      "name": "Impressum lesen",
+      "name": "read_imprint",
       "notesInFlow": false,
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.5,
       "position": [
-        2656,
-        608
+        2592,
+        1152
       ],
       "onError": "continueRegularOutput"
     },
@@ -550,12 +561,12 @@
         "options": {}
       },
       "id": "c5385dfa-fd1b-4554-aef1-412a99f0d745",
-      "name": "Switch",
+      "name": "route_duplicate_by_source",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        2368,
-        -400
+        2240,
+        -272
       ]
     },
     {
@@ -607,7 +618,7 @@
                   },
                   {
                     "id": "rf1",
-                    "leftValue": "={{ $('KI Output verarbeiten').item.json.kategorie }}",
+                    "leftValue": "={{ $('process_ai_output').item.json.kategorie }}",
                     "rightValue": "rueckfrage",
                     "operator": {
                       "type": "string",
@@ -625,75 +636,12 @@
         "options": {}
       },
       "id": "07dfb477-2e01-479d-80ed-c67a8234b23e",
-      "name": "Switch1",
+      "name": "route_reply_by_source",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4016,
-        1120
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 📥 1. Eingang\n\n**Nodes:** Email Trigger (IMAP), Formular-Eingabe\n\n**Ablauf:**\n- Eine Anfrage kommt auf einem von zwei Wegen an:\n  - **Formulareingabe** (mit zwei Auswahlfeldern 'Worum geht es?' und 'Wann soll es starten?' und Pflicht-Haken für den Datenschutz)\n  - **Email Trigger (IMAP)** (nur Mails mit dem Label 'Leads')\n- Jede Anfrage startet einen eigenen Lauf\n\n**Weiter:** zu 2",
-        "height": 800,
-        "width": 352,
-        "color": "#F5D924"
-      },
-      "id": "c1be7194-5122-451d-adc6-f61a9c237117",
-      "name": "Notiz: Eingang",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        464,
-        -480
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🧹 2. Daten vorbereiten\n\n**Nodes:** Formulardaten vorbereiten, Email Daten vorbereiten, Lead prüfen\n\n**Ablauf:**\n1. Je Weg ein Set-Node: **Formulardaten vorbereiten** bzw. **Email Daten vorbereiten** bringen beide in **dasselbe Format**\n2. **Lead prüfen** (beide Wege laufen hier zusammen): E-Mail klein schreiben, Freemail erkennen, Spam-Verdacht setzen (ungültige Adresse, Nachricht unter 3 Zeichen, mehr als 3 Links, no-reply-Absender)\n\n**Weiter:** zu 3 und 4",
-        "height": 800,
-        "width": 432,
-        "color": 6
-      },
-      "id": "64ba9b7c-210c-4a7b-9ae7-5c528e820018",
-      "name": "Notiz: Daten vorbereiten",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        832,
-        -480
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🔎 3. Datenbank durchsuchen\n\n**Node:** Datenbank durchsuchen\n\n**Ablauf:**\n- Sucht in Airtable nach der **E-Mail-Adresse** (Groß-/Kleinschreibung egal)\n- Treffer: der bestehende Eintrag kommt zurück\n- Kein Treffer: ein leerer Eintrag\n- Bei Fehler bis zu **3-mal** (je 5 Sekunden Pause)\n\n**Weiter:** zu 4",
-        "height": 800,
-        "width": 320
-      },
-      "id": "0b39f6c1-9fa0-4fbf-a5a3-ed3dda3683e6",
-      "name": "Notiz: Datenbank durchsuchen",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1280,
-        -480
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## ♻️ 5. Duplikate-Check\n\n**Node:** Ist Duplikat?\n\n**Ablauf:**\n- Gibt es in Airtable schon einen Eintrag mit dieser E-Mail?\n- **Ja** (oben): Duplikat, weiter zu 6 und 7 (laufen parallel)\n- **Nein** (unten): neuer Lead, weiter zu 8",
-        "height": 800,
-        "width": 304,
-        "color": 6
-      },
-      "id": "bfa732ef-0415-42e3-b446-51dc4801b5b2",
-      "name": "Notiz: Duplikate-Check",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1952,
-        -480
+        4896,
+        832
       ]
     },
     {
@@ -714,12 +662,12 @@
         }
       },
       "id": "6e797768-b96a-4e6e-9e12-95e161089bcd",
-      "name": "Merge",
+      "name": "merge_search_result",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1744,
-        -16
+        1600,
+        -256
       ]
     },
     {
@@ -773,12 +721,12 @@
         "options": {}
       },
       "id": "803893f0-f0cf-4ed0-a86a-2bc4cf8f1bd1",
-      "name": "Email Daten vorbereiten",
+      "name": "prepare_email_data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        912,
-        -176
+        784,
+        -368
       ]
     },
     {
@@ -850,44 +798,12 @@
         "options": {}
       },
       "id": "0df06e97-8d6d-4b4a-910c-91ee559c84a8",
-      "name": "Formulardaten vorbereiten",
+      "name": "prepare_form_data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        912,
-        48
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🔗 4. Daten zusammenführen\n\n**Node:** Merge\n\n**Ablauf:**\n- Die Suche liefert nur die Treffer aus Airtable, die Lead-Daten kommen aus **Lead prüfen**\n- **Merge** (Combine by Matching Fields, Enrich Input 2) ordnet jedem Lead **über seine E-Mail-Adresse** den richtigen Treffer zu. So bleibt jeder Lead einzeln, auch wenn mehrere Anfragen in einem Lauf ankommen\n- Lead ohne Treffer bleibt unverändert erhalten\n\n**Weiter:** zu 5",
-        "height": 800,
-        "width": 320,
-        "color": 5
-      },
-      "id": "64e93018-6fb0-431e-bb60-1a36f8d77703",
-      "name": "Notiz: Daten zusammenführen",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1616,
-        -480
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 💬 6. Duplikat: Antwort an den Absender\n\n**Nodes:** Switch, Formularnachricht (Anfrage bereits erhalten), Email Nachricht (Anfrage bereits erhalten)\n\n**Ablauf:**\n1. **Switch** (liegt bewusst unter 'Folgeanfrage anhängen', damit zuerst gespeichert wird) prüft die Quelle\n2. Formular: **Formularnachricht (Anfrage bereits erhalten)** zeigt den Hinweis direkt im Formular\n3. E-Mail: **Email Nachricht (Anfrage bereits erhalten)** schickt eine Mail (3 Versuche). Automatische Absender (no-reply) bekommen keine Mail",
-        "height": 608,
-        "width": 640,
-        "color": 3
-      },
-      "id": "519f0314-82b0-4a74-82a2-0d92725b2ad0",
-      "name": "Notiz: Bei Duplikat",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2288,
-        -736
+        784,
+        -144
       ]
     },
     {
@@ -896,12 +812,12 @@
         "options": {}
       },
       "id": "65a900a0-ffd5-4591-97ec-90a8e5147ffb",
-      "name": "Email Trigger (IMAP)",
+      "name": "email_trigger_imap",
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.2,
       "position": [
-        592,
-        -176
+        512,
+        -368
       ],
       "credentials": {
         "imap": {
@@ -926,12 +842,12 @@
         }
       },
       "id": "65d6ad5b-682a-4ec2-ad80-6530a5110475",
-      "name": "OpenAI Chat Model",
+      "name": "chat_model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2480,
-        608
+        2416,
+        1152
       ],
       "credentials": {
         "openAiApi": {
@@ -945,12 +861,12 @@
         "jsCode": "// ===== Abschnitt 1: Konstanten =====\n// Freemail-Anbieter: Absender ist eher eine Privatperson als eine Firma\nconst FREEMAIL_DOMAINS = ['gmail.com', 'googlemail.com', 'web.de', 'gmx.de', 'gmx.net', 't-online.de', 'outlook.com', 'outlook.de', 'hotmail.com', 'hotmail.de', 'yahoo.com', 'yahoo.de', 'icloud.com', 'freenet.de'];\n// Nur fast leere Nachrichten gelten als Spam-Verdacht (kurze echte Anfragen wie \"Brauche Hilfe\" gehen zur KI)\nconst MIN_NACHRICHT_LAENGE = 3;\n// Mehr Links in der Nachricht gelten als Spam-Verdacht\nconst MAX_LINKS = 3;\n// Automatische Absender bekommen keine Antwort-Mail (verhindert Mail-Schleifen)\nconst AUTOMATISCHE_ABSENDER = /(no-?reply|do-?not-?reply|mailer-daemon|postmaster|newsletter)/i;\n\n// ===== Abschnitt 2: Lead normalisieren und auf Spam-Verdacht prüfen =====\nreturn $input.all().map((item, index) => {\n  const lead = item.json;\n  const email = String(lead.email || '').toLowerCase().trim();\n  const domain = email.split('@')[1] || '';\n  const nachricht = String(lead.nachricht || '').trim();\n  const anzahlLinks = (nachricht.match(/https?:\\/\\//gi) || []).length;\n\n  const gruende = [];\n  if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)) gruende.push('ungültige E-Mail-Adresse');\n  if (AUTOMATISCHE_ABSENDER.test(email)) gruende.push('automatischer Absender');\n  if (nachricht.length < MIN_NACHRICHT_LAENGE) gruende.push('Nachricht zu kurz');\n  if (anzahlLinks > MAX_LINKS) gruende.push('zu viele Links');\n\n  return {\n    json: {\n      ...lead,\n      email,\n      domain,\n      istFreemail: FREEMAIL_DOMAINS.includes(domain),\n      spamVerdacht: gruende.length > 0,\n      spamGrund: gruende.length > 0 ? 'Vorfilter: ' + gruende.join(', ') : '',\n    },\n    pairedItem: { item: index },\n  };\n});"
       },
       "id": "222f3f71-e969-48fe-bf4c-df2c64d994c8",
-      "name": "Lead prüfen",
+      "name": "check_lead",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        -64
+        1056,
+        -240
       ]
     },
     {
@@ -979,12 +895,12 @@
         "options": {}
       },
       "id": "42e9963a-51d4-473c-af87-6f15852ac397",
-      "name": "Spam-Vorfilter",
+      "name": "spam_prefilter",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2368,
-        320
+        2224,
+        880
       ]
     },
     {
@@ -1003,12 +919,12 @@
         "options": {}
       },
       "id": "f5fab644-b836-4cbb-95d5-533a2642266c",
-      "name": "Spam-Ergebnis",
+      "name": "spam_result",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        3104,
-        320
+        3040,
+        864
       ]
     },
     {
@@ -1027,12 +943,12 @@
         "options": {}
       },
       "id": "47e0477b-ebd5-4b8f-8874-fcb4e966d35b",
-      "name": "KI-Fallback",
+      "name": "ai_fallback",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        3104,
-        576
+        3040,
+        1120
       ]
     },
     {
@@ -1041,12 +957,12 @@
         "inputSchema": "{\"type\":\"object\",\"properties\":{\"kategorie\":{\"type\":\"string\",\"enum\":[\"hot\",\"warm\",\"kalt\",\"spam\",\"rueckfrage\"]},\"score\":{\"type\":\"number\"},\"begruendung\":{\"type\":\"string\"},\"recherche\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"firma\":{\"type\":\"string\"},\"telefon\":{\"type\":\"string\"},\"antwortEntwurf\":{\"type\":\"string\"}},\"required\":[\"kategorie\",\"score\",\"begruendung\"]}"
       },
       "id": "9ed67b42-cf8b-4057-baff-e1e9d49c8750",
-      "name": "Strukturierte Ausgabe",
+      "name": "structured_output",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2816,
-        608
+        2752,
+        1152
       ]
     },
     {
@@ -1104,15 +1020,15 @@
         "options": {}
       },
       "id": "90ff145c-1e2a-43d8-97b2-4d041343f5ee",
-      "name": "Folgeanfrage anhängen",
+      "name": "append_followup",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        3104,
-        -464
+        2240,
+        -576
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -1124,13 +1040,13 @@
     {
       "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "={{ '🔁 Folgeanfrage von ' + $('Ist Duplikat?').item.json.name + ' (' + $('Ist Duplikat?').item.json.email + ')\\nDie neue Nachricht wurde an den bestehenden Eintrag angehängt.\\n\\n' + $('Ist Duplikat?').item.json.nachricht }}",
+        "text": "={{ '🔁 Folgeanfrage von ' + $('is_duplicate').item.json.name + ' (' + $('is_duplicate').item.json.email + ')\\nDie neue Nachricht wurde an den bestehenden Eintrag angehängt.\\n\\n' + $('is_duplicate').item.json.nachricht }}",
         "additionalFields": {
           "appendAttribution": false
         }
       },
       "id": "74acac7f-2d0a-4fb9-8b90-8b53eeeba721",
-      "name": "Telegram Folgeanfrage",
+      "name": "telegram_followup",
       "webhookId": "8f4b9d08-f24d-4e0e-8dbe-8deff5518d83",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -1138,8 +1054,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        3360,
-        -592
+        3024,
+        -576
       ],
       "credentials": {
         "telegramApi": {
@@ -1160,7 +1076,7 @@
           "conditions": [
             {
               "id": "ks1",
-              "leftValue": "={{ $('KI Output verarbeiten').item.json.kategorie }}",
+              "leftValue": "={{ $('process_ai_output').item.json.kategorie }}",
               "rightValue": "spam",
               "operator": {
                 "type": "string",
@@ -1173,12 +1089,12 @@
         "options": {}
       },
       "id": "2d75ff57-ca81-4752-8ad7-d9dc63ea0727",
-      "name": "Kein Spam?",
+      "name": "not_spam",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        3792,
-        496
+        4272,
+        848
       ]
     },
     {
@@ -1196,7 +1112,7 @@
                 "conditions": [
                   {
                     "id": "nk1",
-                    "leftValue": "={{ $('KI Output verarbeiten').item.json.kategorie }}",
+                    "leftValue": "={{ $('process_ai_output').item.json.kategorie }}",
                     "rightValue": "hot",
                     "operator": {
                       "type": "string",
@@ -1220,7 +1136,7 @@
                 "conditions": [
                   {
                     "id": "nk2",
-                    "leftValue": "={{ $('KI Output verarbeiten').item.json.kategorie }}",
+                    "leftValue": "={{ $('process_ai_output').item.json.kategorie }}",
                     "rightValue": "warm",
                     "operator": {
                       "type": "string",
@@ -1244,7 +1160,7 @@
                 "conditions": [
                   {
                     "id": "nk3",
-                    "leftValue": "={{ $('KI Output verarbeiten').item.json.kategorie }}",
+                    "leftValue": "={{ $('process_ai_output').item.json.kategorie }}",
                     "rightValue": "rueckfrage",
                     "operator": {
                       "type": "string",
@@ -1262,24 +1178,24 @@
         "options": {}
       },
       "id": "b2b45932-0022-4ad2-a87d-013b51a72021",
-      "name": "Nach Kategorie",
+      "name": "route_by_category",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4336,
-        640
+        4896,
+        384
       ]
     },
     {
       "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "={{ '📥 Neuer Lead (warm)\\n\\nName: ' + $('KI Output verarbeiten').item.json.name + '\\nFirma: ' + ($('KI Output verarbeiten').item.json.unternehmen || '-') + '\\nE-Mail: ' + $('KI Output verarbeiten').item.json.email + '\\nTelefon: ' + ($('KI Output verarbeiten').item.json.telefon || '-') + '\\nScore: ' + $('KI Output verarbeiten').item.json.score + '\\nGrund: ' + $('KI Output verarbeiten').item.json.kiReasoning }}",
+        "text": "={{ '📥 Neuer Lead (warm)\\n\\nName: ' + $('process_ai_output').item.json.name + '\\nFirma: ' + ($('process_ai_output').item.json.unternehmen || '-') + '\\nE-Mail: ' + $('process_ai_output').item.json.email + '\\nTelefon: ' + ($('process_ai_output').item.json.telefon || '-') + '\\nScore: ' + $('process_ai_output').item.json.score + '\\nGrund: ' + $('process_ai_output').item.json.kiReasoning }}",
         "additionalFields": {
           "appendAttribution": false
         }
       },
       "id": "8aadd052-a076-468b-88a6-44bdfff8ff6c",
-      "name": "Telegram Neuer Lead",
+      "name": "telegram_new_lead",
       "webhookId": "c79ffae5-b014-4f33-9aa3-6cfaeaf9bb51",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -1287,8 +1203,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        4624,
-        608
+        5216,
+        256
       ],
       "credentials": {
         "telegramApi": {
@@ -1299,118 +1215,23 @@
     },
     {
       "parameters": {
-        "content": "## 🤖 8. KI-Bewertung (neuer Lead)\n\n**Nodes:** Spam-Vorfilter, AI Agent, OpenAI Chat Model, Strukturierte Ausgabe, Impressum lesen\n\n**Ablauf:**\n1. **Spam-Vorfilter** prüft den Spam-Verdacht aus 2. Ja: ohne KI weiter zu 9 (Spam-Ergebnis, spart Kosten). Nein: weiter zum Agent\n2. **AI Agent** bewertet hot / warm / kalt / spam / rückfrage mit Score und Begründung (2 Versuche). Er sieht auch die Auswahlfelder Thema und Zeitrahmen. **Rückfrage** vergibt er nur, wenn die Nachricht keinen Bedarf zeigt und beide Felder leer sind. Er nutzt das **OpenAI Chat Model** und gibt feste Felder über **Strukturierte Ausgabe** zurück\n3. **Impressum lesen:** der Agent darf es **1-mal** lesen (Timeout 15 s)\n4. Fällt der Agent aus, geht es über den Fehlerausgang zu 9 (KI-Fallback)\n\n**Grenzen:** max. 4 Schritte, max. 900 Token, 60 s Timeout",
-        "height": 720,
-        "width": 700
-      },
-      "id": "22ae36b9-dfe5-44e2-953e-75d65dbe6a83",
-      "name": "Notiz: KI-Bewertung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2288,
-        32
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 💾 9. Ergebnis speichern\n\n**Nodes:** Spam-Ergebnis, KI-Fallback, KI Output verarbeiten, Create a record\n\n**Ablauf:**\n1. Drei Wege führen zu **KI Output verarbeiten**:\n   - AI Agent hat bewertet\n   - **Spam-Ergebnis** (Vorfilter, Kategorie spam, Score 0)\n   - **KI-Fallback** (Agent ausgefallen: warm, Hinweis 'manuell prüfen')\n2. **KI Output verarbeiten** zwingt den Score in den Bereich der Kategorie, setzt Priorität und Status\n3. **Create a record** speichert alles in Airtable (3 Versuche)\n\n**Weiter:** zu 10 und 11 (parallel)",
-        "height": 720,
-        "width": 700,
-        "color": 4
-      },
-      "id": "27b5078c-92d6-45ee-9c73-710648589a5c",
-      "name": "Notiz: Speichern",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3008,
-        32
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 📲 10. Antworten und Telegram\n\n**Nodes:** Kein Spam?, Spam aus Formular?, Switch1, Formular Erfolgsmeldung, Rückmeldung an Lead, Nach Kategorie, Freigabe-Daten vorbereiten, Freigabe starten, Telegram Neuer Lead, Telegram Rückfrage, Rückfrage an Lead\n\n**Schritt 1: Spam aussortieren**\n- **Kein Spam?** prüft die Kategorie. Spam geht nur zu **Spam aus Formular?**\n- **Spam aus Formular?** zeigt Spam aus dem Formular die normale Dankeseite. Bei Mail-Spam endet der Lauf still (keine Mail, kein Telegram)\n\n**Schritt 2: Eingangsbestätigung (kein Spam, läuft zuletzt)**\n- **Switch1** prüft die Quelle. Formular: **Formular Erfolgsmeldung**. Mail: **Rückmeldung an Lead** (nicht bei Rückfrage, dort kommt stattdessen die Rückfrage-Mail)\n\n**Schritt 3: Telegram nach Kategorie (parallel zu Schritt 2)**\n- **Nach Kategorie** verteilt:\n  - **Hot:** **Freigabe-Daten vorbereiten** und **Freigabe starten** übergeben den Lead an den Workflow **Freigabe Hot-Lead**. Dort kommt die Freigabe per Telegram, die Mail geht erst nach 'Senden' raus. Der Hauptlauf wartet nicht darauf\n  - **Warm:** **Telegram Neuer Lead** (nur Info)\n  - **Rückfrage:** **Telegram Rückfrage** informiert dich, **Rückfrage an Lead** schickt dem Lead eine Mail mit drei Fragen. Seine Antwort geht an die Leads-Adresse und kommt so wieder in den Workflow\n  - **Kalt:** nur gespeichert",
-        "height": 1256,
-        "width": 1292,
-        "color": 5
-      },
-      "id": "e74a9dd8-2c8d-44af-81db-cfb68992c0aa",
-      "name": "Notiz: Telegram",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3728,
-        32
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🚨 12. Fehlerbehandlung\n\n**Retry (bei Fehler wiederholen, je 5 Sekunden Pause):**\n- **Datenbank durchsuchen, Create a record, Folgeanfrage anhängen**, die vier Mail-Nodes und die vier Telegram-Nodes: bis zu **3-mal**\n- **AI Agent** und **Healthcheck-Ping:** bis zu **2-mal**\n\n**Fallback (Lauf geht trotzdem weiter):**\n- **AI Agent** fällt aus: **KI-Fallback** speichert den Lead als warm ('manuell prüfen')\n- **Impressum lesen** nicht lesbar: der Agent bewertet ohne Recherche\n- **Healthcheck-Ping** schlägt fehl: kein Abbruch\n- **Besucher schließt das Formular sofort:** Speichern, Telegram und Mails laufen vor der Dankeseite ab (die Form-Nodes liegen bewusst ganz unten, n8n arbeitet Zweige von oben nach unten ab). Der Lauf geht auch dann zu Ende\n- **Telegram Antwort freigeben** (Workflow Freigabe Hot-Lead) ohne Antwort nach **24 Stunden**: **Freigegeben?** verwirft die Antwort, es geht keine Mail raus\n\n**Eingabeprüfung:**\n- **Lead prüfen** filtert ungültige E-Mail, fast leere Nachricht, zu viele Links und no-reply-Absender\n- Das Formular hat Pflichtfelder und den Datenschutz-Haken\n\n**Batch-Limit:**\n- **Formular:** 1 Anfrage = 1 Lauf\n- **E-Mail:** mehrere gleichzeitige Mails können in **einem Lauf** ankommen. Jede Anfrage wird einzeln verarbeitet (Zuordnung über die E-Mail-Adresse im **Merge**-Node), eine feste Batch-Größe ist nicht nötig\n\n**Grenzen und Kosten:**\n- **AI Agent:** max. 4 Schritte, max. 900 Token, 60 s, Impressum 1-mal (15 s)\n- Gesamt-Timeout des Workflows: **300 Sekunden**\n\n**Wenn nichts hilft:**\n- Der **Error-Workflow** schickt eine **Telegram-Nachricht** (Workflow, Node, Fehlertext, Link)",
-        "height": 628,
-        "width": 824,
-        "color": 2
-      },
-      "id": "66c3ebfd-80c4-40d9-962c-a37b2579fb52",
-      "name": "Notiz: Fehlerbehandlung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        4080,
-        -640
-      ]
-    },
-    {
-      "parameters": {
         "url": "https://hc-ping.com/YOUR_HEALTHCHECK_UUID",
         "options": {
           "timeout": 10000
         }
       },
       "id": "008c7fc1-46d5-4e46-98ab-34c4018bc491",
-      "name": "Healthcheck-Ping",
+      "name": "healthcheck_ping",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "retryOnFail": true,
       "maxTries": 2,
       "waitBetweenTries": 5000,
       "position": [
-        3728,
-        -160
+        3696,
+        -240
       ],
       "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "content": "## 📎 7. Duplikat: Folgeanfrage speichern\n\n**Nodes:** Folgeanfrage anhängen, Telegram Folgeanfrage, Healthcheck-Ping\n\n**Ablauf (parallel zu 6):**\n1. **Folgeanfrage anhängen** hängt die neue Nachricht an den bestehenden Airtable-Eintrag (3 Versuche)\n2. Danach gleichzeitig: **Telegram Folgeanfrage** (Hinweis an dich mit dem Text) und **Healthcheck-Ping** (siehe 11)",
-        "height": 474,
-        "width": 496,
-        "color": 5
-      },
-      "id": "986d5dd6-0ff2-447d-b7af-28a4829d3bc3",
-      "name": "Notiz: Folgeanfrage",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3008,
-        -784
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 💓 11. Lebenszeichen \"Lead verarbeitet\"\n\n**Node:** Healthcheck-Ping\n\n**Ablauf:**\n- Wird von zwei Stellen ausgelöst: nach **Create a record** (neuer Lead) und nach **Folgeanfrage anhängen** (Duplikat)\n- Ping an Healthchecks.io: bleibt er aus, schlägt dort Alarm\n- 2 Versuche, ein Fehler stoppt den Lauf nicht",
-        "height": 470,
-        "width": 384,
-        "color": 6
-      },
-      "id": "451f3ae8-bb4a-4704-9791-bba9d515b172",
-      "name": "Notiz: Ping",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3584,
-        -464
-      ]
     },
     {
       "parameters": {
@@ -1437,17 +1258,17 @@
         "options": {}
       },
       "id": "8291974a-22a7-4070-8352-4a5797095d8b",
-      "name": "Spam aus Formular?",
+      "name": "spam_from_form",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4016,
-        880
+        4896,
+        1120
       ]
     },
     {
       "parameters": {
-        "fromEmail": "absender@example.com",
+        "fromEmail": "sender@example.com",
         "toEmail": "={{ $json.fields.email }}",
         "subject": "Ihre Anfrage ist bei uns eingegangen",
         "emailFormat": "text",
@@ -1457,7 +1278,7 @@
         }
       },
       "id": "c1113b38-5b12-4a8f-b2a5-6f876e9f78ec",
-      "name": "Rückmeldung an Lead",
+      "name": "send_confirmation",
       "webhookId": "44ec5a11-232e-4816-8f37-16931fa6c460",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -1465,7 +1286,7 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        4336,
+        5216,
         1120
       ],
       "credentials": {
@@ -1477,7 +1298,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "absender@example.com",
+        "fromEmail": "sender@example.com",
         "toEmail": "={{ $json.email }}",
         "subject": "Ihre Anfrage ist bereits bei uns eingegangen",
         "emailFormat": "text",
@@ -1487,7 +1308,7 @@
         }
       },
       "id": "fdcb7a75-a3c3-4c00-8c58-7b8646819b9d",
-      "name": "Email Nachricht (Anfrage bereits erhalten)",
+      "name": "email_duplicate_notice",
       "webhookId": "c4c172b2-788e-46f5-8f16-ab567594a5db",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -1495,8 +1316,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        2720,
-        -288
+        2640,
+        -208
       ],
       "credentials": {
         "smtp": {
@@ -1507,30 +1328,14 @@
     },
     {
       "parameters": {
-        "content": "## 📋 Zusammenfassung: Lead Qualifizierung\n\n**Zweck:** Anfragen per Formular oder E-Mail automatisch prüfen, mit KI bewerten, speichern und beantworten. Für Einzelunternehmer und KMU.\n\n**Ablauf:**\n1. **Eingang:** Formulareingabe oder Email Trigger (IMAP)\n2. **Vorprüfung:** Lead prüfen (Format, Spam-Verdacht), Datenbank durchsuchen, Ist Duplikat?\n3. **KI-Bewertung:** AI Agent vergibt hot / warm / kalt / spam / rückfrage mit Score und Antwort-Entwurf\n4. **Speichern:** Create a record (Airtable)\n5. **Rückmeldung:** Bestätigung an den Lead, Telegram an dich\n\n**Entscheidungen:**\n- **Duplikat:** Nachricht wird angehängt, du wirst per Telegram informiert\n- **Hot:** du gibst den Antwort-Entwurf in Telegram frei (eigener Workflow Freigabe Hot-Lead), erst dann geht die Mail raus\n- **Warm:** nur Telegram-Info\n- **Rückfrage:** Anfrage zu knapp, der Lead bekommt automatisch drei Fragen per Mail, du eine Telegram-Info\n- **Kalt und Spam:** nur gespeichert\n\n**Technik:** Form Trigger, IMAP, Airtable, AI Agent mit Tool (Impressum lesen), Telegram (mit Freigabe), SMTP, Healthchecks.io\n\n**Absicherung:** Retry, KI-Fallback, Error-Workflow mit Telegram, Ping, feste Grenzen für die KI",
-        "height": 396,
-        "width": 1016,
-        "color": "#1FD6B8"
-      },
-      "id": "192cb806-10c3-46b8-a1ee-7a85477b6a24",
-      "name": "Notiz: Zusammenfassung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -672,
-        -480
-      ]
-    },
-    {
-      "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "={{ '❓ Rückfrage nötig (zu wenig Infos)\\n\\nName: ' + $('KI Output verarbeiten').item.json.name + '\\nE-Mail: ' + $('KI Output verarbeiten').item.json.email + '\\nNachricht: ' + $('KI Output verarbeiten').item.json.nachricht + '\\n\\nDie Rückfrage-Mail wurde automatisch an den Lead geschickt.' }}",
+        "text": "={{ '❓ Rückfrage nötig (zu wenig Infos)\\n\\nName: ' + $('process_ai_output').item.json.name + '\\nE-Mail: ' + $('process_ai_output').item.json.email + '\\nNachricht: ' + $('process_ai_output').item.json.nachricht + '\\n\\nDie Rückfrage-Mail wurde automatisch an den Lead geschickt.' }}",
         "additionalFields": {
           "appendAttribution": false
         }
       },
       "id": "e35e088f-b057-4555-80fc-0676e460de33",
-      "name": "Telegram Rückfrage",
+      "name": "telegram_clarification",
       "webhookId": "b6dcec8f-3367-43ec-9809-8aa91ec6d9ab",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -1538,8 +1343,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        4624,
-        784
+        5216,
+        432
       ],
       "credentials": {
         "telegramApi": {
@@ -1550,18 +1355,18 @@
     },
     {
       "parameters": {
-        "fromEmail": "absender@example.com",
-        "toEmail": "={{ $('KI Output verarbeiten').item.json.email }}",
+        "fromEmail": "sender@example.com",
+        "toEmail": "={{ $('process_ai_output').item.json.email }}",
         "subject": "Ihre Anfrage: kurze Rückfrage",
         "emailFormat": "text",
-        "text": "={{ 'Guten Tag ' + $('KI Output verarbeiten').item.json.name + ',\\n\\nvielen Dank für Ihre Nachricht. Damit wir Ihnen gezielt helfen können, beantworten Sie uns bitte kurz diese drei Fragen (einfach auf diese Mail antworten):\\n\\n1. Welchen Ablauf möchten Sie automatisieren?\\n2. Wie oft kommt das vor (z. B. pro Woche)?\\n3. Bis wann soll es laufen?\\n\\nMit freundlichen Grüßen\\nMarkus Piljanovic' }}",
+        "text": "={{ 'Guten Tag ' + $('process_ai_output').item.json.name + ',\\n\\nvielen Dank für Ihre Nachricht. Damit wir Ihnen gezielt helfen können, beantworten Sie uns bitte kurz diese drei Fragen (einfach auf diese Mail antworten):\\n\\n1. Welchen Ablauf möchten Sie automatisieren?\\n2. Wie oft kommt das vor (z. B. pro Woche)?\\n3. Bis wann soll es laufen?\\n\\nMit freundlichen Grüßen\\nMarkus Piljanovic' }}",
         "options": {
           "appendAttribution": false,
           "replyTo": "leads@example.com"
         }
       },
       "id": "8821b694-60d4-4505-b1d4-4cf201bb752e",
-      "name": "Rückfrage an Lead",
+      "name": "email_clarification",
       "webhookId": "45ff44cf-583b-4786-bda8-93130b858f75",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -1569,8 +1374,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        4624,
-        976
+        5216,
+        624
       ],
       "credentials": {
         "smtp": {
@@ -1581,435 +1386,1040 @@
     },
     {
       "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ '🔥 Hot Lead – Antwort freigeben?\\n\\nName: ' + $('process_ai_output').item.json.name + '\\nFirma: ' + ($('process_ai_output').item.json.unternehmen || '-') + '\\nE-Mail: ' + $('process_ai_output').item.json.email + '\\nTelefon: ' + ($('process_ai_output').item.json.telefon || '-') + '\\nScore: ' + $('process_ai_output').item.json.score + '\\nGrund: ' + $('process_ai_output').item.json.kiReasoning + '\\nRecherche: ' + $('process_ai_output').item.json.kiRecherche + '\\n\\nAntwort-Entwurf:\\n' + $('process_ai_output').item.json.antwortEntwurf }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Senden",
+                    "additionalFields": {
+                      "callback_data": "={{ 'send:' + $json.id }}"
+                    }
+                  },
+                  {
+                    "text": "❌ Verwerfen",
+                    "additionalFields": {
+                      "callback_data": "={{ 'discard:' + $json.id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8f625912-dcea-4a78-bb0a-781097648ae1",
+      "name": "telegram_approval_request",
+      "webhookId": "60b4f74c-43ee-48c7-9fda-bb80e0f026b1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        5216,
+        64
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {
+          "chatIds": "YOUR_TELEGRAM_CHAT_ID"
+        }
+      },
+      "id": "dc913987-6fc8-450f-983f-02be66000630",
+      "name": "telegram_approval_trigger",
+      "webhookId": "fe0982f4-00f1-496d-8a33-d06ad84d74d7",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        5616,
+        976
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "fd1",
-              "name": "name",
-              "value": "={{ $('KI Output verarbeiten').item.json.name }}",
+              "id": "fa1",
+              "name": "aktion",
+              "value": "={{ $json.callback_query.data.split(':')[0] }}",
               "type": "string"
             },
             {
-              "id": "fd2",
-              "name": "unternehmen",
-              "value": "={{ $('KI Output verarbeiten').item.json.unternehmen }}",
+              "id": "fa2",
+              "name": "recordId",
+              "value": "={{ $json.callback_query.data.split(':')[1] }}",
               "type": "string"
             },
             {
-              "id": "fd3",
-              "name": "email",
-              "value": "={{ $('KI Output verarbeiten').item.json.email }}",
+              "id": "fa3",
+              "name": "queryId",
+              "value": "={{ $json.callback_query.id }}",
               "type": "string"
             },
             {
-              "id": "fd4",
-              "name": "telefon",
-              "value": "={{ $('KI Output verarbeiten').item.json.telefon }}",
+              "id": "fa4",
+              "name": "chatId",
+              "value": "={{ $json.callback_query.message.chat.id }}",
               "type": "string"
             },
             {
-              "id": "fd5",
-              "name": "score",
-              "value": "={{ $('KI Output verarbeiten').item.json.score }}",
-              "type": "number"
-            },
-            {
-              "id": "fd6",
-              "name": "kiReasoning",
-              "value": "={{ $('KI Output verarbeiten').item.json.kiReasoning }}",
-              "type": "string"
-            },
-            {
-              "id": "fd7",
-              "name": "kiRecherche",
-              "value": "={{ $('KI Output verarbeiten').item.json.kiRecherche }}",
-              "type": "string"
-            },
-            {
-              "id": "fd8",
-              "name": "antwortEntwurf",
-              "value": "={{ $('KI Output verarbeiten').item.json.antwortEntwurf }}",
+              "id": "fa5",
+              "name": "messageId",
+              "value": "={{ $json.callback_query.message.message_id }}",
               "type": "string"
             }
           ]
         },
         "options": {}
       },
-      "id": "2110ada7-d9e0-4e6a-9141-78e5ae9ca2fa",
-      "name": "Freigabe-Daten vorbereiten",
+      "id": "ee22eddb-7892-41b7-a0b9-3ec83f7c7d5a",
+      "name": "parse_approval_click",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        4624,
-        416
+        5872,
+        976
       ]
     },
     {
       "parameters": {
-        "workflowId": {
+        "base": {
           "__rl": true,
-          "value": "YOUR_FREIGABE_WORKFLOW_ID",
-          "mode": "id"
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
         },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "id": "={{ $json.recordId }}",
+        "options": {}
+      },
+      "id": "3feec248-b574-45c1-a9a0-a5a8d302d7ae",
+      "name": "load_lead",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        6128,
+        976
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "no1",
+              "leftValue": "={{ $json.fields['antwort-status'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "979195ca-7c0f-432e-8204-9568092539db",
+      "name": "still_open",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6384,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "se1",
+              "leftValue": "={{ $('parse_approval_click').item.json.aktion }}",
+              "rightValue": "send",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6af7ee3e-eaf4-4076-b9ae-c7704cfbc40b",
+      "name": "is_send",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6640,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sender@example.com",
+        "toEmail": "={{ $('load_lead').item.json.fields.email }}",
+        "subject": "Ihre Anfrage",
+        "emailFormat": "text",
+        "text": "={{ $('load_lead').item.json.fields['antwort-entwurf'] + '\\n\\nMarkus Piljanovic' }}",
         "options": {
-          "waitForSubWorkflow": false
+          "appendAttribution": false
         }
       },
-      "id": "44d7f8b6-0352-4f8b-83fb-e93ff06e637b",
-      "name": "Freigabe starten",
-      "type": "n8n-nodes-base.executeWorkflow",
+      "id": "b87b2521-215f-4615-ba4e-08e231eea621",
+      "name": "send_reply_mail",
+      "webhookId": "99995e0d-254f-4327-8dc3-6a3694784cc4",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        6896,
+        816
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('load_lead').item.json.id }}",
+            "antwort-status": "gesendet"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "antwort-status",
+              "displayName": "antwort-status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "4eda9b8c-0311-4465-86f6-a3682a8a06a8",
+      "name": "mark_sent",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        7152,
+        816
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('load_lead').item.json.id }}",
+            "antwort-status": "verworfen"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "antwort-status",
+              "displayName": "antwort-status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "29191aca-6bb3-4f6f-9d6a-e9b65bea5f19",
+      "name": "mark_discarded",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        6896,
+        976
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('parse_approval_click').item.json.chatId }}",
+        "messageId": "={{ $('parse_approval_click').item.json.messageId }}",
+        "text": "={{ ($('parse_approval_click').item.json.aktion === 'send' ? '✅ Antwort gesendet an ' : '❌ Verworfen: ') + $('load_lead').item.json.fields.name }}",
+        "additionalFields": {}
+      },
+      "id": "c3bbea6b-3854-40cc-aceb-526a20528d72",
+      "name": "telegram_result",
+      "webhookId": "30a049f9-0324-45d8-b11a-598b4590a7df",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        7408,
+        896
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('parse_approval_click').item.json.queryId }}",
+        "additionalFields": {
+          "text": "Erledigt"
+        }
+      },
+      "id": "883417ab-5dd3-4d76-a440-e886ed918c4c",
+      "name": "telegram_ack_click",
+      "webhookId": "593bc616-2100-4f72-ad9a-008f135b65af",
+      "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4816,
-        416
+        7664,
+        896
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('parse_approval_click').item.json.queryId }}",
+        "additionalFields": {
+          "show_alert": true,
+          "text": "Schon bearbeitet"
+        }
+      },
+      "id": "c2878b4c-c2d4-4236-8940-2f8db6723edf",
+      "name": "telegram_already_handled",
+      "webhookId": "9a881f74-d0a5-40e0-8e57-dd27c9536a88",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6640,
+        1120
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 📋 Lead Qualification\n\n# What problem it solves\n## Small businesses get requests by form and by mail. Someone has to read each one, check if the sender is already known, decide if it is worth a call and answer.\n## That takes time. A slow first answer often means the customer asks someone else, and hot requests get lost in a full inbox.\n## This workflow reads, checks, rates and answers. You only confirm the important replies with one click.\n\n# The 6 boxes\n## 1. Intake & checks\n## 2. Duplicates\n## 3. AI scoring & saving\n## 4. Replies & approval\n## 5. Hot-lead approval\n## 6. Reliability & monitoring\n\n# What happens to a lead\n## - Hot: you approve the reply with a button (box 5)\n## - Warm: you get a Telegram info\n## - Clarification: the lead gets three questions\n## - Cold and spam: saved only\n## - Known sender: the new message is added to the old record (box 2)\n\n# Tools\n### Form, mailbox (IMAP), Airtable, AI agent, Telegram buttons, mail (SMTP), Healthchecks.io\n\n# Language\n### Node names and notes are English. Texts for customers (form, mails, Telegram, AI prompt) are German on purpose. The target group is German small businesses.",
+        "height": 896,
+        "width": 1640,
+        "color": "#31A2BF"
+      },
+      "id": "62e21b9b-2782-4f9e-a148-fd1d2ee3959d",
+      "name": "note_summary",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -2112
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 📥 1. Intake & checks\n\n**Nodes:** form_trigger, email_trigger_imap, prepare_form_data, prepare_email_data, check_lead, search_lead, merge_search_result, is_duplicate\n\n# What happens\n## A new request arrives. We check it and see if we already know the sender.\n\n# Steps\n## 1. A request arrives by form or by mail\n## 2. Both are turned into the same format\n## 3. check_lead looks for spam signs\n## 4. search_lead looks up the email in Airtable\n## 5. merge_search_result attaches the hit to the request\n## 6. is_duplicate decides: known sender goes to box 2, new sender goes to box 3\n\n# Two entry points\n### Form: the visitor picks a topic and a start date and ticks the consent box.\n### Mail: only mails with the Gmail label \"Leads\" are read. A Gmail filter adds that label.\n\n# What counts as spam?\n### An invalid email address, a message shorter than 3 characters, more than 3 links, or a no-reply sender.\n\n# Good to know\n### Several mails can arrive in one run. Each one is handled alone, matched by its email address.",
+        "height": 2496,
+        "width": 1632,
+        "color": 6
+      },
+      "id": "c56ab4b5-4575-4035-beb3-0b77d21535dd",
+      "name": "note_1_intake",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -1168
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# ♻️ 2. Duplicates\n\n**Nodes:** append_followup, telegram_followup, route_duplicate_by_source, form_duplicate_notice, email_duplicate_notice\n\n# What happens\n## The sender is already in Airtable. We save the new message and tell the sender \"we got it\".\n\n# Steps\n## 1. append_followup adds the new message to the existing record\n## 2. telegram_followup tells you about it\n## 3. route_duplicate_by_source answers the sender:\n## - Form: shows an \"already received\" page\n## - Mail: sends a mail (no-reply senders get none)\n\n# Why in this order?\n### Saving comes first, answering second. The form page waits for the visitor's browser. If the visitor closes the tab, the run would stop there. n8n works from top to bottom, so route_duplicate_by_source sits lower on the canvas.",
+        "height": 1128,
+        "width": 1104,
+        "color": "#D27F7F"
+      },
+      "id": "9a0caddb-c481-4e77-b31f-a23187a37b3d",
+      "name": "note_2_duplicates",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        -1168
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 🤖 3. AI scoring & saving\n\n**Nodes:** spam_prefilter, ai_agent, chat_model, structured_output, read_imprint, spam_result, ai_fallback, process_ai_output, create_lead_record\n\n# What happens\n## A new lead is rated by an AI and saved in Airtable.\n\n# Steps\n## 1. spam_prefilter sends obvious spam past the AI (saves cost)\n## 2. ai_agent rates the lead: hot, warm, cold, spam or clarification\n## 3. read_imprint lets the agent read the company imprint once\n## 4. process_ai_output keeps the score inside its category\n## 5. create_lead_record saves everything in Airtable\n\n# What the AI delivers\n### A category, a score, a short reason and a reply draft. It also sees the topic and start date from the form.\n\n# Data protection\n### The AI receives the request text and the contact data.\n### For real customers: use an AI provider with a data processing agreement (EU hosting) and mention it in the privacy notice.\n\n# If the AI fails\n### ai_fallback saves the lead as warm with the hint \"check manually\". No lead is lost.\n\n# Limits for the AI\n### 4 steps, 900 tokens, 60 seconds, temperature 0",
+        "height": 1328,
+        "width": 1596,
+        "color": "#689B55"
+      },
+      "id": "0715f0e2-3f86-4acf-820e-31aad481df71",
+      "name": "note_3_ai_scoring",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 📲 4. Replies & approval\n\n**Nodes:** not_spam, spam_from_form, route_by_category, telegram_approval_request, telegram_new_lead, telegram_clarification, email_clarification, route_reply_by_source, form_success, send_confirmation\n\n# What happens\n## The lead gets an answer. You get a Telegram message. Hot leads wait for your OK.\n\n# Steps\n## 1. not_spam checks if the lead is spam\n### - No spam: goes on with step 2\n### - Spam: only spam_from_form runs. A form visitor still sees the thank-you page (no error, no hint that it was spam). No mail, no Telegram. Spam by mail: the run just ends.\n## 2. route_by_category decides by category:\n### - Hot: you get the reply draft with two buttons, Send and Discard (see box 5)\n### - Warm: you get an info message\n### - Clarification: the lead gets three questions by mail, you get an info\n### - Cold: nothing, stored only\n## 3. route_reply_by_source sends the confirmation (form page or mail)\n\n# Why is the confirmation last?\n### The form page waits for the browser. If the visitor closes the tab, the run would stop there. So everything important runs first.",
+        "height": 1324,
+        "width": 1676,
+        "color": 5
+      },
+      "id": "7f6425e9-3c48-4511-84a9-1bc88d49f09c",
+      "name": "note_4_replies",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 🚨 6. Reliability & monitoring\n\n**Node:** healthcheck_ping\n\n# What happens\n## The workflow checks itself and tells you when something is wrong.\n\n# If something fails\n## 1. Retry: Airtable, mail and Telegram 3 times, AI and ping 2 times (5 seconds pause)\n## 2. AI fails: the lead is saved as warm\n## 3. Imprint unreadable: the AI rates without it\n## 4. Still failing: you get a Telegram alert with workflow, node, error and link\n\n# Checks and limits\n### The form has required fields and a consent box. check_lead checks every request.\n### Form: 1 request = 1 run. Mail: several mails can come in one run, each is handled alone.\n### AI: 4 steps, 900 tokens, 60 seconds. Whole run: 300 seconds.\n\n# Heartbeat\n### healthcheck_ping calls Healthchecks.io after every handled lead. If the calls stop, you get an alarm.",
+        "height": 888,
+        "width": 960,
+        "color": "#A659CF"
+      },
+      "id": "384fefbe-4706-4a50-9d97-467181ef580a",
+      "name": "note_6_reliability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        -928
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# ✅ 5. Hot-lead approval\n\n**Nodes:** telegram_approval_trigger, parse_approval_click, load_lead, still_open, is_send, send_reply_mail, mark_sent, mark_discarded, telegram_result, telegram_ack_click, telegram_already_handled\n\n# What happens\n## This row waits for your click in Telegram. \n## - When you click Send, the reply goes to the lead. \n## - When you click Discard, nothing is sent.\n\n# Steps\n## 1. telegram_approval_trigger starts when you click (only your chat counts)\n## 2. parse_approval_click reads which button you pressed and which lead it is\n## 3. load_lead gets the lead and its reply draft from Airtable\n## 4. still_open checks if the lead was already handled\n## - Yes: telegram_already_handled says \"already done\"\n## - No: it goes on\n## 5. is_send checks your choice\n## - Send: send_reply_mail sends the draft, mark_sent writes \"sent\" in Airtable\n## - Discard: mark_discarded writes \"discarded\" in Airtable\n## 6. telegram_result changes your message to \"✅ sent\" or \"❌ discarded\"\n## 7. telegram_ack_click closes the click\n\n# Why a separate row?\n### Nothing waits for your click. The main run ends right after sending the buttons. Your click starts a new run, even hours later.\n\n# Good to know\n### A second click on the same message does nothing: the lead is already handled.",
+        "height": 1324,
+        "width": 2380,
+        "color": "#6E8ADD"
+      },
+      "id": "5e6556d6-af23-41c0-95d7-6376c9b30aa4",
+      "name": "note_5_approval",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5504,
+        0
       ]
     }
   ],
   "connections": {
-    "AI Agent": {
+    "ai_agent": {
       "main": [
         [
           {
-            "node": "KI Output verarbeiten",
+            "node": "process_ai_output",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "KI-Fallback",
+            "node": "ai_fallback",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Formulareingabe": {
+    "create_lead_record": {
       "main": [
         [
           {
-            "node": "Formulardaten vorbereiten",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Datenbank durchsuchen": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ist Duplikat?": {
-      "main": [
-        [
-          {
-            "node": "Switch",
+            "node": "not_spam",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Folgeanfrage anhängen",
+            "node": "healthcheck_ping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "form_trigger": {
+      "main": [
+        [
+          {
+            "node": "prepare_form_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_lead": {
+      "main": [
+        [
+          {
+            "node": "merge_search_result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is_duplicate": {
+      "main": [
+        [
+          {
+            "node": "route_duplicate_by_source",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "append_followup",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Spam-Vorfilter",
+            "node": "spam_prefilter",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "KI Output verarbeiten": {
+    "process_ai_output": {
       "main": [
         [
           {
-            "node": "Create a record",
+            "node": "create_lead_record",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Impressum lesen": {
+    "read_imprint": {
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "ai_agent",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Switch": {
+    "route_duplicate_by_source": {
       "main": [
         [
           {
-            "node": "Formularnachricht (Anfrage bereits erhalten)",
+            "node": "form_duplicate_notice",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Email Nachricht (Anfrage bereits erhalten)",
+            "node": "email_duplicate_notice",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Switch1": {
+    "route_reply_by_source": {
       "main": [
         [
           {
-            "node": "Formular Erfolgsmeldung",
+            "node": "form_success",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Rückmeldung an Lead",
+            "node": "send_confirmation",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Merge": {
+    "merge_search_result": {
       "main": [
         [
           {
-            "node": "Ist Duplikat?",
+            "node": "is_duplicate",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Email Trigger (IMAP)": {
+    "prepare_email_data": {
       "main": [
         [
           {
-            "node": "Email Daten vorbereiten",
+            "node": "check_lead",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Chat Model": {
+    "prepare_form_data": {
+      "main": [
+        [
+          {
+            "node": "check_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email_trigger_imap": {
+      "main": [
+        [
+          {
+            "node": "prepare_email_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat_model": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "ai_agent",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Formulardaten vorbereiten": {
+    "check_lead": {
       "main": [
         [
           {
-            "node": "Lead prüfen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Email Daten vorbereiten": {
-      "main": [
-        [
-          {
-            "node": "Lead prüfen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Lead prüfen": {
-      "main": [
-        [
-          {
-            "node": "Datenbank durchsuchen",
+            "node": "search_lead",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Merge",
+            "node": "merge_search_result",
             "type": "main",
             "index": 1
           }
         ]
       ]
     },
-    "Spam-Vorfilter": {
+    "spam_prefilter": {
       "main": [
         [
           {
-            "node": "Spam-Ergebnis",
+            "node": "spam_result",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "AI Agent",
+            "node": "ai_agent",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Spam-Ergebnis": {
+    "spam_result": {
       "main": [
         [
           {
-            "node": "KI Output verarbeiten",
+            "node": "process_ai_output",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "KI-Fallback": {
+    "ai_fallback": {
       "main": [
         [
           {
-            "node": "KI Output verarbeiten",
+            "node": "process_ai_output",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Strukturierte Ausgabe": {
+    "structured_output": {
       "ai_outputParser": [
         [
           {
-            "node": "AI Agent",
+            "node": "ai_agent",
             "type": "ai_outputParser",
             "index": 0
           }
         ]
       ]
     },
-    "Folgeanfrage anhängen": {
+    "append_followup": {
       "main": [
         [
           {
-            "node": "Telegram Folgeanfrage",
+            "node": "telegram_followup",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Healthcheck-Ping",
+            "node": "healthcheck_ping",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create a record": {
+    "not_spam": {
       "main": [
         [
           {
-            "node": "Kein Spam?",
+            "node": "route_reply_by_source",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Healthcheck-Ping",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Kein Spam?": {
-      "main": [
-        [
-          {
-            "node": "Switch1",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Nach Kategorie",
+            "node": "route_by_category",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Spam aus Formular?",
+            "node": "spam_from_form",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Nach Kategorie": {
+    "route_by_category": {
       "main": [
         [
           {
-            "node": "Freigabe-Daten vorbereiten",
+            "node": "telegram_approval_request",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Telegram Neuer Lead",
+            "node": "telegram_new_lead",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Telegram Rückfrage",
+            "node": "telegram_clarification",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Rückfrage an Lead",
+            "node": "email_clarification",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Spam aus Formular?": {
+    "spam_from_form": {
       "main": [
         [
           {
-            "node": "Formular Erfolgsmeldung",
+            "node": "form_success",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Freigabe-Daten vorbereiten": {
+    "telegram_approval_trigger": {
       "main": [
         [
           {
-            "node": "Freigabe starten",
+            "node": "parse_approval_click",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_approval_click": {
+      "main": [
+        [
+          {
+            "node": "load_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "load_lead": {
+      "main": [
+        [
+          {
+            "node": "still_open",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "still_open": {
+      "main": [
+        [
+          {
+            "node": "is_send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "telegram_already_handled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is_send": {
+      "main": [
+        [
+          {
+            "node": "send_reply_mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "mark_discarded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_reply_mail": {
+      "main": [
+        [
+          {
+            "node": "mark_sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_sent": {
+      "main": [
+        [
+          {
+            "node": "telegram_result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_discarded": {
+      "main": [
+        [
+          {
+            "node": "telegram_result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "telegram_result": {
+      "main": [
+        [
+          {
+            "node": "telegram_ack_click",
             "type": "main",
             "index": 0
           }
