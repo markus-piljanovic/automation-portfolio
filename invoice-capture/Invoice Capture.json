@@ -1,5 +1,5 @@
 {
-  "name": "E-Mail Rechnungserfassung",
+  "name": "Invoice Capture: Gmail to Google Sheets",
   "nodes": [
     {
       "parameters": {
@@ -14,8 +14,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -48,
-        448
+        -880,
+        512
       ]
     },
     {
@@ -42,8 +42,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        128,
-        448
+        -240,
+        400
       ],
       "credentials": {
         "gmailOAuth2": {
@@ -55,15 +55,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// ===== Find Invoice PDFs =====\n// Zweck: Pro Mail das beste PDF aus den Anhängen auswählen.\n// Ergebnis: json.hatPDF (true/false), json.dateiname, binary.attachment_0 (nur das gewählte PDF)\n\n// --- Konstanten ---\n// Dateinamen-Wörter, die auf KEINE Rechnung hindeuten (Fallback-Ausschluss)\nconst muell = /(widerruf|agb|storno|retoure|return|terms|datenschutz|hinweis|newsletter)/i;\n// Dateinamen-Wörter, die auf eine Rechnung hindeuten (haben Vorrang)\nconst gut = /(rechnung|invoice|beleg|quittung|bill|receipt)/i;\n\n// --- 1. Alle PDF-Anhänge der Mail sammeln ---\n// PDF = MIME-Typ application/pdf ODER Dateiendung .pdf\nconst binary = $input.item.binary || {};\nconst pdfKeys = Object.keys(binary).filter(k => {\n  const a = binary[k];\n  return a.mimeType === 'application/pdf' || (a.fileName || '').toLowerCase().endsWith('.pdf');\n});\n\n// --- 2. Bestes PDF wählen ---\n// Erst: Dateiname enthält ein \"Rechnungs\"-Wort. Sonst: erstes PDF ohne \"Müll\"-Wort.\nconst key = pdfKeys.find(k => gut.test(binary[k].fileName || ''))\n         || pdfKeys.find(k => !muell.test(binary[k].fileName || ''));\n\n// --- 3a. Kein brauchbares PDF: Flags auf \"nein\" setzen, Binary leeren ---\nif (!key) {\n  $input.item.binary = {};\n  $input.item.json.hatPDF = false;\n  $input.item.json.dateiname = '';\n  return $input.item;\n}\n\n// --- 3b. PDF gefunden: als attachment_0 durchreichen, Flags setzen ---\nconst fileName = binary[key].fileName || '';\n$input.item.binary = { attachment_0: binary[key] };\n$input.item.json.hatPDF = true;\n$input.item.json.dateiname = fileName;\nreturn $input.item;"
+        "jsCode": "// ===== Find Invoice PDFs =====\n// Purpose: pick the best PDF from each mail's attachments.\n// Result: json.hatPDF (true/false), json.dateiname, binary.attachment_0 (only the chosen PDF)\n\n// --- Constants ---\n// Filename words that suggest \"not an invoice\" (fallback exclusion)\nconst skipWords = /(widerruf|agb|storno|retoure|return|terms|datenschutz|hinweis|newsletter)/i;\n// Filename words that suggest an invoice (take priority)\nconst invoiceWords = /(rechnung|invoice|beleg|quittung|bill|receipt)/i;\n\n// --- 1. Collect all PDF attachments of the mail ---\n// PDF = MIME type application/pdf OR file name ending in .pdf\nconst binary = $input.item.binary || {};\nconst pdfKeys = Object.keys(binary).filter(k => {\n  const a = binary[k];\n  return a.mimeType === 'application/pdf' || (a.fileName || '').toLowerCase().endsWith('.pdf');\n});\n\n// --- 2. Pick the best PDF ---\n// First choice: file name contains an invoice word. Otherwise: first PDF without a skip word.\nconst key = pdfKeys.find(k => invoiceWords.test(binary[k].fileName || ''))\n         || pdfKeys.find(k => !skipWords.test(binary[k].fileName || ''));\n\n// --- 3a. No usable PDF: set the flags to \"no\" and clear the binary ---\nif (!key) {\n  $input.item.binary = {};\n  $input.item.json.hatPDF = false;\n  $input.item.json.dateiname = '';\n  return $input.item;\n}\n\n// --- 3b. PDF found: pass it on as attachment_0 and set the flags ---\nconst fileName = binary[key].fileName || '';\n$input.item.binary = { attachment_0: binary[key] };\n$input.item.json.hatPDF = true;\n$input.item.json.dateiname = fileName;\nreturn $input.item;"
       },
       "id": "cc5afdba-e7d4-467e-a4e8-05a1e6114ba9",
       "name": "Find Invoice PDFs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        336,
-        448
+        144,
+        592
       ]
     },
     {
@@ -80,8 +80,8 @@
       "typeVersion": 1.1,
       "alwaysOutputData": true,
       "position": [
-        480,
-        448
+        416,
+        592
       ],
       "onError": "continueRegularOutput"
     },
@@ -105,8 +105,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        608,
-        448
+        688,
+        592
       ]
     },
     {
@@ -153,8 +153,8 @@
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1.2,
       "position": [
-        800,
-        544
+        1040,
+        688
       ]
     },
     {
@@ -177,8 +177,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        848,
-        720
+        1040,
+        864
       ],
       "credentials": {
         "openAiApi": {
@@ -198,8 +198,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1072,
-        384
+        1424,
+        464
       ]
     },
     {
@@ -240,8 +240,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1280,
-        384
+        1872,
+        592
       ]
     },
     {
@@ -264,8 +264,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        2288,
-        256
+        3792,
+        464
       ]
     },
     {
@@ -279,8 +279,8 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        2464,
-        256
+        4032,
+        464
       ]
     },
     {
@@ -389,15 +389,15 @@
         "options": {}
       },
       "id": "1efa9657-91cb-497e-a895-0482e5d3e745",
-      "name": "Rechnung ins Sheet",
+      "name": "Save to Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        2640,
-        256
+        4272,
+        464
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -426,8 +426,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        2992,
-        320
+        4784,
+        368
       ]
     },
     {
@@ -460,7 +460,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2832,
+        4512,
         464
       ]
     },
@@ -488,8 +488,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        3184,
-        416
+        5008,
+        368
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -507,7 +507,7 @@
         ]
       },
       "id": "bc014b49-ee6c-4b1c-9112-ea7d40d17af0",
-      "name": "Als geprüft markieren",
+      "name": "Mark as Checked",
       "webhookId": "4e760b1b-838b-43ef-a1ab-0809ac4b6483",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
@@ -515,8 +515,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        3488,
-        640
+        5184,
+        880
       ],
       "credentials": {
         "gmailOAuth2": {
@@ -548,8 +548,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1824,
-        640
+        3104,
+        656
       ],
       "onError": "continueRegularOutput"
     },
@@ -579,8 +579,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        2064,
-        256
+        3104,
+        464
       ]
     },
     {
@@ -621,8 +621,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        2064,
-        640
+        3472,
+        544
       ]
     },
     {
@@ -634,7 +634,7 @@
         ]
       },
       "id": "e48b7e52-82d7-4bd9-9e02-80cac88c746e",
-      "name": "Rechnung labeln",
+      "name": "Label as Invoice",
       "webhookId": "6eed1d5e-199f-4654-a753-4d1ebbd89588",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
@@ -642,8 +642,8 @@
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "position": [
-        1440,
-        640
+        2304,
+        432
       ],
       "credentials": {
         "gmailOAuth2": {
@@ -654,81 +654,82 @@
     },
     {
       "parameters": {
-        "content": "## 📧 1. Mails holen & Ping\n\nJede Nacht um Mitternacht schaut der Workflow im Postfach nach:\n- Mail hat einen **PDF-Anhang**\n- Mail hat **noch nicht** das Label \"Geprüft\"\n- Es werden die **10 neuesten** Mails geholt (der Rest kommt in den nächsten Nächten dran)\n\nBei einem Verbindungsfehler versucht der Workflow es bis zu **3-mal** (je 5 Sekunden Pause).\n\nDer Ping meldet: \"Workflow wurde gestartet\", auch für Durchläufe ohne neue Mails.",
-        "height": 796,
-        "width": 376,
-        "color": 4
+        "content": "# 📥 1. Fetch mails & ping\n\n**Nodes:** Schedule Trigger, Get Invoice Mails, Healthcheck Ping\n\n# What happens\n## Every night the workflow looks for new mails with a PDF.\n\n# Steps\n## 1. Schedule Trigger starts the run at midnight\n## 2. Get Invoice Mails takes the 10 newest mails that have a PDF and no label \"Geprüft\"\n## 3. Healthcheck Ping tells healthchecks.io that the run has started\n\n# Good to know\n### The ping is sent even when there are no new mails. If it is missing, healthchecks.io sends an alert.\n### If Gmail fails, the node tries 3 times with 5 seconds in between.\n### More than 10 new mails? The rest follows the next night.",
+        "height": 844,
+        "width": 984,
+        "color": "#12594D"
       },
       "id": "d64e8102-1750-4c6b-bafe-141fdca7464d",
-      "name": "Notiz: Mails holen",
+      "name": "note_1_fetch_and_ping",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -80,
-        48
+        -960,
+        -96
       ]
     },
     {
       "parameters": {
-        "content": "## 🔍 2. PDF finden & Text lesen\n\n- Wählt das beste PDF aus (falls mehrere Anhänge da sind)\n- Liest den Text aus dem PDF heraus\n- Baut daraus einen Text-Block für die KI: Betreff, **Mail-Absender** (nicht der Rechnungsaussteller) und PDF-Text\n- Kein Text im PDF (z. B. ein Scan)? Dann steht dort \"(kein PDF-Text extrahiert)\"",
-        "height": 796,
-        "width": 440
+        "content": "# 🤖 2. Read the PDF & AI\n\n**Nodes:** Find Invoice PDFs, Extract from File, Build Prompt Text, Parse Invoice Data, OpenAI Chat Model, Combine PDF and Extraction\n\n# What happens\n## We pick the right PDF, read its text and let AI pull out the invoice data.\n\n# Steps\n## 1. Find Invoice PDFs picks the best PDF of each mail\n## 2. Extract from File reads the text of the PDF\n## 3. Build Prompt Text puts subject, mail sender and PDF text into one block\n## 4. Parse Invoice Data asks the AI (OpenAI Chat Model, gpt-5-mini) for seller, number, date, amount, currency and \"is it an invoice?\"\n## 5. Combine PDF and Extraction joins the PDF and the answer again\n\n# Why the mail sender is marked\n### The mail sender is not always the seller. Build Prompt Text says so, so the AI takes the seller from the PDF.\n\n# Good to know\n### A PDF without text (a scan) gives the AI only subject and sender. The result is then usually \"not an invoice\".\n### Find Invoice PDFs prefers file names with words like \"Rechnung\" or \"invoice\" and skips words like \"AGB\".",
+        "height": 1100,
+        "width": 1576,
+        "color": "#A17517"
       },
       "id": "05d8155c-cf74-4e7d-868b-86bca07b1d8f",
-      "name": "Notiz: PDF finden",
+      "name": "note_2_read_and_ai",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        304,
-        48
+        64,
+        -96
       ]
     },
     {
       "parameters": {
-        "content": "## ❓ 4. Ist es eine Rechnung?\n\nPrüft: **istBeleg = true** UND **Betrag > 0**\n\n- ✅ Ja -> Mail bekommt zusätzlich das Label \"Rechnung\" und geht weiter\n- ❌ Nein -> Mail wird nur als \"Geprüft\" markiert (Schritt 8), nichts landet im Sheet",
-        "height": 800,
-        "width": 424,
+        "content": "# ❓ 3. Is it an invoice?\n\n**Nodes:** Is Invoice?, Label as Invoice\n\n# What happens\n## We only keep real invoices. Offers, ads and terms are ignored.\n\n# Steps\n## 1. Is Invoice? checks two things: the AI says \"invoice\" and the amount is above 0\n## 2. Yes: Label as Invoice adds the Gmail label \"Rechnung\", and the run goes on to box 4\n## 3. No: nothing is saved. The mail only gets \"Geprüft\" in box 6\n\n# Good to know\n### Words like \"Rechnung\" or \"Invoice Number\" are a clear sign for the AI. Offers, price lists and terms are not invoices, even when they show an amount.",
+        "height": 848,
+        "width": 936,
         "color": 3
       },
       "id": "bd0f459d-95af-4ea2-aeef-491728a3489f",
-      "name": "Notiz: Echte Rechnung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1248,
-        48
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 💱 5. Währung umrechnen\n\n- Schon in EUR? -> nichts zu tun\n- Andere Währung (USD, THB, ...)? -> Der Kurs vom **Rechnungsdatum** wird bei der EZB (frankfurter.dev) abgefragt\n\nWährung dort unbekannt (z. B. AED)? Der Originalbetrag wird übernommen, die Spalte \"Währung\" zeigt die Originalwährung. Der Workflow bricht nicht ab.",
-        "height": 800,
-        "width": 536,
-        "color": 4
-      },
-      "id": "729d572f-94d9-4487-8b23-b2ed55f1faf7",
-      "name": "Notiz: Währung",
+      "name": "note_3_is_invoice",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         1680,
-        48
+        -96
       ]
     },
     {
       "parameters": {
-        "content": "## 📝 6. Ins Sheet schreiben\n\n- **Schlüssel** = erstes Wort des Händlers + Rechnungsnummer (z. B. `contabo-2885640001`). Fehlt die Nummer, wird die Mail-ID genommen.\n- Gleicher Schlüssel = **keine doppelte Zeile** (Duplikate im Lauf werden herausgefiltert)\n- Datum fehlt auf der Rechnung? Dann wird das Mail-Datum genommen\n- Die Zeile wird neu angelegt oder aktualisiert",
-        "height": 800,
-        "width": 552,
-        "color": 5
+        "content": "# 💱 4. Convert the currency\n\n**Nodes:** Is EUR?, Mark as EUR, Get Exchange Rate, Apply FX Conversion\n\n# What happens\n## Every amount ends up in euro.\n\n# Steps\n## 1. Is EUR? checks the currency\n## 2. EUR: Mark as EUR keeps the amount\n## 3. Other currency: Get Exchange Rate asks the ECB rate for the invoice date (frankfurter.dev)\n## 4. Apply FX Conversion calculates the euro amount\n\n# Good to know\n### The rate comes from the invoice date, not from today.\n### Some currencies have no rate (for example AED). Then the original amount and currency stay, and the run does not stop.",
+        "height": 896,
+        "width": 984,
+        "color": 6
       },
-      "id": "7165e15f-fd2c-414e-9c5e-f5ee73d943c1",
-      "name": "Notiz: Ins Sheet schreiben",
+      "id": "729d572f-94d9-4487-8b23-b2ed55f1faf7",
+      "name": "note_4_currency",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2224,
-        48
+        2672,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 📝 5. Save the row & the PDF\n\n**Nodes:** Set Key, Remove Duplicates, Save to Sheet, Has PDF?, Reattach PDF Binary, Upload to Drive\n\n# What happens\n## One row goes into the sheet and the PDF goes into Google Drive.\n\n# Steps\n## 1. Set Key builds a key: first word of the seller + invoice number (e.g. \"example-RE-2001\"). No number: the mail ID is used\n## 2. Remove Duplicates drops items with the same key inside one run\n## 3. Save to Sheet writes the row. The same key updates the old row, so there are no double rows\n## 4. Has PDF? checks if there is a file to store\n## 5. Reattach PDF Binary puts the original PDF back\n## 6. Upload to Drive saves the PDF in the invoice folder\n\n# Why Reattach PDF Binary?\n### Save to Sheet returns only the row, the file is gone after it. Reattach PDF Binary takes the PDF again from Find Invoice PDFs.\n\n# Good to know\n### No date on the invoice: the mail date is used.\n### Save to Sheet and Upload to Drive try 3 times if they fail.",
+        "height": 1120,
+        "width": 1512,
+        "color": 5
+      },
+      "id": "7165e15f-fd2c-414e-9c5e-f5ee73d943c1",
+      "name": "note_5_save",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        -320
       ]
     },
     {
@@ -760,72 +761,24 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1712,
-        256
+        2720,
+        560
       ]
     },
     {
       "parameters": {
-        "content": "## 📎 7. PDF im Drive ablegen\n\n**Has PDF?**\n- War ein PDF dabei? -> weiter zum Upload\n- Kein PDF (reine Text-Erfassung)? -> wird übersprungen\n\n**Reattach PDF Binary** (PDF wieder anhängen)\n- Jedes Item hat 2 Teile: *Daten* (Text/Zahlen) und die *Datei* (das PDF)\n- Auf dem Weg bis hierher geht die Datei verloren (z. B. gibt der Sheet-Node nur die Zeile zurück)\n- Dieser Schritt holt das Original-PDF aus \"Find Invoice PDFs\" und hängt es wieder an\n\n**Upload to Drive**\n- Braucht die Datei im Feld `attachment_0`, sonst gibt es nichts hochzuladen\n- Lädt das PDF in den Rechnungsordner in Google Drive hoch\n- Bei einem Fehler: bis zu 3 Versuche",
-        "height": 960,
-        "width": 536,
+        "content": "# ✅ 6. Mark & reliability\n\n**Nodes:** Mark as Checked\n\n# What happens\n## Every processed mail gets a stamp, so it is not read again.\n\n# Steps\n## 1. Mark as Checked adds the label \"Geprüft\" to the mail (invoice or not)\n## 2. If the label fails 3 times, the run stops\n## 3. The error workflow sends a Telegram alert: workflow, node, error text and a link\n\n# Reliability\n### Retries: Gmail, Sheets and Drive 3 times, OpenAI 2 times.\n### Healthchecks.io checks that the run starts every night (box 1).\n### No alert on purpose: an unknown currency and a PDF without text.\n\n# Good to know\n### After a stop, mails without \"Geprüft\" are tried again the next night. The key (box 5) prevents double rows.",
+        "height": 624,
+        "width": 952,
         "color": 4
       },
       "id": "b6459c3f-ea57-4f92-9238-60b579ebf5a4",
-      "name": "Notiz: PDF ablegen",
+      "name": "note_6_mark_and_reliability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2784,
-        -112
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## ✅ 8. Mail als \"erledigt\" markieren\n\nJede verarbeitete Mail bekommt das Label **\"Geprüft\"** - egal ob Rechnung oder nicht.\n\nDas ist der \"wurde schon angeschaut\"-Stempel: Die Mail wird in der nächsten Nacht nicht noch einmal gescannt.\n\n**Fehler?** Klappt das Label auch nach 3 Versuchen nicht, stoppt der Workflow und schickt einen **Telegram-Alarm** (Workflow, Node, Fehlertext).",
-        "height": 608,
-        "width": 444,
-        "color": 6
-      },
-      "id": "5235282c-9ffc-46c6-b632-0c375fbddf98",
-      "name": "Notiz: Als geprüft markieren",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3328,
-        240
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🤖 3. KI liest die Rechnung\n\nDie KI (gpt-5-mini) bekommt den Text-Block und soll herausfinden:\n- Absender (der **Händler**, nicht die Zahlungsfirma), Rechnungsnummer, Datum (TT-MM-JJJJ), Betrag, Währung\n- **istBeleg**: Ist das überhaupt eine echte Rechnung? (nicht: Angebot, Werbung, AGB)\n\nDanach werden PDF-Daten und KI-Ergebnis wieder zusammengeführt.",
-        "height": 796,
-        "width": 488,
-        "color": 5
-      },
-      "id": "2a6e696d-aa66-4680-bef5-3bc8a830ae0f",
-      "name": "Notiz: KI liest Rechnung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        752,
-        48
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 🚨 Fehlerbehandlung\n\n**Wenn etwas schiefgeht:**\n- Gmail, Sheets und Drive werden bis zu **3-mal** versucht (je 5 Sekunden Pause)\n- OpenAI wird bis zu **2-mal** wiederholt (Timeout 60 Sekunden)\n- Hilft das nicht, bricht der Lauf ab und der **Error-Workflow** schickt eine **Telegram-Nachricht** (Workflow, Node, Fehlertext, Link zur Ausführung)\n\n**Bewusst ohne Alarm** (der Lauf geht weiter):\n- **Währung unbekannt** (z. B. AED): Der Originalbetrag wird übernommen\n- **PDF ohne Text** (z. B. ein Scan): Die KI sieht nur Betreff und Absender, meist ergibt das \"keine Rechnung\"\n\n**Nach einem Abbruch:**\n- Mails ohne Label \"Geprüft\" werden in der nächsten Nacht erneut versucht\n- Doppelte Zeilen verhindert der Schlüssel (Schritt 6)",
-        "height": 600,
-        "width": 432,
-        "color": 2
-      },
-      "id": "5f0c1e2a-7a3b-4c1d-9e8f-0a1b2c3d4e5f",
-      "name": "Notiz: Fehlerbehandlung",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3776,
-        240
+        4400,
+        832
       ]
     },
     {
@@ -833,15 +786,31 @@
         "url": "https://hc-ping.com/YOUR_HEALTHCHECK_UUID",
         "options": {}
       },
+      "id": "5e0e7d0d-417a-4ed7-a20a-d5cb33ee9ace",
+      "name": "Healthcheck Ping",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "executeOnce": true,
       "position": [
-        128,
-        672
-      ],
-      "id": "5e0e7d0d-417a-4ed7-a20a-d5cb33ee9ace",
-      "name": "Healthcheck-Ping",
-      "executeOnce": true
+        -240,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 📋 Invoice Capture: Gmail to Google Sheets\n\n# What problem it solves\n## Invoices arrive by mail as PDFs, often in other currencies. Someone has to open each one, type the data into a sheet and save the file.\n## That is slow and boring, and it is easy to make mistakes or to type the same invoice twice. Missed invoices mean late fees and messy books.\n## This workflow does it every night. It reads the PDFs, converts the money into euro, writes one row per invoice and stores the PDF.\n\n# The 6 boxes\n## 1. Fetch mails & ping\n## 2. Read the PDF & AI\n## 3. Is it an invoice?\n## 4. Convert the currency\n## 5. Save the row & the PDF\n## 6. Mark & reliability\n\n# What happens to a mail\n## - Invoice: one row in the sheet, the PDF in Drive, labels \"Rechnung\" and \"Geprüft\"\n## - Other currency: converted to euro with the ECB rate of the invoice date\n## - Known invoice: the old row is updated, no double row (box 5)\n## - Not an invoice (offer, ad, terms): only \"Geprüft\"\n## - No PDF text (scan): usually seen as \"not an invoice\"\n\n# Tools\n### Gmail, OpenAI (gpt-5-mini), Frankfurter API (ECB rates), Google Sheets, Google Drive, Telegram, Healthchecks.io\n\n# Language\n### Node names and notes are English. The sheet columns, the Gmail labels and the AI prompt are German on purpose, because the invoices and the accounts are German.",
+        "height": 1008,
+        "width": 1616,
+        "color": "#EA9AE7"
+      },
+      "id": "97af3451-eb29-47ac-928c-0f9c29918dcf",
+      "name": "note_summary",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -1184
+      ]
     }
   ],
   "connections": {
@@ -854,7 +823,7 @@
             "index": 0
           },
           {
-            "node": "Healthcheck-Ping",
+            "node": "Healthcheck Ping",
             "type": "main",
             "index": 0
           }
@@ -936,7 +905,7 @@
       "main": [
         [
           {
-            "node": "Rechnung labeln",
+            "node": "Label as Invoice",
             "type": "main",
             "index": 0
           },
@@ -948,7 +917,7 @@
         ],
         [
           {
-            "node": "Als geprüft markieren",
+            "node": "Mark as Checked",
             "type": "main",
             "index": 0
           }
@@ -970,7 +939,7 @@
       "main": [
         [
           {
-            "node": "Rechnung ins Sheet",
+            "node": "Save to Sheet",
             "type": "main",
             "index": 0
           }
@@ -988,7 +957,7 @@
         ],
         [
           {
-            "node": "Als geprüft markieren",
+            "node": "Mark as Checked",
             "type": "main",
             "index": 0
           }
@@ -999,7 +968,7 @@
       "main": [
         [
           {
-            "node": "Als geprüft markieren",
+            "node": "Mark as Checked",
             "type": "main",
             "index": 0
           }
@@ -1039,7 +1008,7 @@
         ]
       ]
     },
-    "Rechnung ins Sheet": {
+    "Save to Sheet": {
       "main": [
         [
           {
@@ -1090,7 +1059,7 @@
         ]
       ]
     },
-    "Als geprüft markieren": {
+    "Mark as Checked": {
       "main": [
         []
       ]

@@ -1,7 +1,8 @@
 {
-  "name": "Error Workflow (Rechnungserfassung)",
+  "name": "Error Workflow (Invoice Capture)",
   "nodes": [
     {
+      "parameters": {},
       "id": "e1a00001-0000-4000-8000-000000000001",
       "name": "Error Trigger",
       "type": "n8n-nodes-base.errorTrigger",
@@ -9,19 +10,9 @@
       "position": [
         0,
         0
-      ],
-      "parameters": {}
+      ]
     },
     {
-      "id": "e1a00001-0000-4000-8000-000000000002",
-      "name": "Telegram Alert",
-      "webhookId": "3030c2c3-3f6f-41ec-8689-28fb97de380b",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        240,
-        0
-      ],
       "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
         "text": "=🚨 Workflow-Fehler\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.lastNodeExecuted }}\nFehler: {{ $json.execution.error.message }}\nAusführung: {{ $json.execution.url }}",
@@ -29,6 +20,15 @@
           "appendAttribution": false
         }
       },
+      "id": "e1a00001-0000-4000-8000-000000000002",
+      "name": "Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        0
+      ],
+      "webhookId": "3030c2c3-3f6f-41ec-8689-28fb97de380b",
       "credentials": {
         "telegramApi": {
           "id": "YOUR_TELEGRAM_CREDENTIAL_ID",

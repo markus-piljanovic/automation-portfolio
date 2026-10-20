@@ -7,7 +7,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 | Workflow | What problem it solves | Folder |
 |---|---|---|
 | **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](lead-qualification/) |
-| **E-Mail Rechnungserfassung** (invoice capture) | Invoices arrive by mail and are typed into a sheet by hand, in different currencies and sometimes twice. It is slow, boring and error-prone. | [email-rechnungserfassung](email-rechnungserfassung/) |
+| **Invoice Capture** | Invoices arrive by mail as PDFs, often in other currencies, and are typed into a sheet by hand. That is slow, and missed or double invoices mean late fees and messy books. | [invoice-capture](invoice-capture/) |
 
 ### Lead Qualification
 
@@ -22,15 +22,17 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 [Read the full description](lead-qualification/README.md)
 
-### E-Mail Rechnungserfassung (invoice capture)
+### Invoice Capture
 
-![E-Mail Rechnungserfassung](email-rechnungserfassung/images/workflow-gesamt.png)
+![Invoice Capture](invoice-capture/images/workflow-overview.png)
 
-- Runs every night, handles up to 10 mails per run
-- AI extraction, currency conversion, a key that prevents duplicate rows
-- Retries, error workflow with Telegram alert
+- **Problem:** invoices arrive by mail as PDFs, often in other currencies. Typing them into a sheet is slow and easy to get wrong. Missed or double invoices cost money.
+- Runs every night, up to 10 mails per run
+- An AI reads the PDF, foreign currencies are converted with the ECB rate of the invoice date
+- One row per invoice in Google Sheets, a key prevents double rows, the PDF goes to Google Drive
+- Retries, error workflow with Telegram alert, heartbeat ping
 
-[Full description](email-rechnungserfassung/README.md) (currently in German)
+[Read the full description](invoice-capture/README.md)
 
 ## Notes
 
