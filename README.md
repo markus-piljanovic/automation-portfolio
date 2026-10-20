@@ -4,10 +4,10 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 ## Workflows
 
-| Workflow | What it does | Folder |
+| Workflow | What problem it solves | Folder |
 |---|---|---|
-| **Lead Qualification** | Checks customer requests from a form and a mailbox, rates them with an AI, saves them in Airtable and notifies you by Telegram. Hot leads need a one-click approval before the reply goes out. | [lead-qualification](lead-qualification/) |
-| **E-Mail Rechnungserfassung** (invoice capture) | Reads invoice mails at night, extracts the data with an AI, converts currencies and writes everything to a Google Sheet. | [email-rechnungserfassung](email-rechnungserfassung/) |
+| **Lead Qualification** | Requests from a form and a mailbox pile up, get answered late, and hot leads get lost in the inbox. The workflow reads, checks and rates every request with an AI and drafts the reply. You only confirm the important ones with one click. | [lead-qualification](lead-qualification/) |
+| **E-Mail Rechnungserfassung** (invoice capture) | Invoices arrive by mail and someone has to type them into a sheet by hand, in different currencies and with duplicates. The workflow does this every night. | [email-rechnungserfassung](email-rechnungserfassung/) |
 
 ### Lead Qualification
 
