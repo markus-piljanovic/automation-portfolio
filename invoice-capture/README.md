@@ -57,6 +57,10 @@ The sticky notes in the workflow are numbered like this. The whole canvas looks 
 
 ![Mark and reliability](images/6-mark-and-reliability.png)
 
+**Error workflow** (second workflow, sends a Telegram alert)
+
+![Error workflow](images/error-workflow.jpg)
+
 ## Reliability
 
 - **Retries:** Gmail, Google Sheets and Google Drive nodes try up to 3 times with a 5 second pause. The AI tries 2 times (timeout 60 seconds).
