@@ -6,12 +6,12 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 | Workflow | What problem it solves | Folder |
 |---|---|---|
-| **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](lead-qualification/) |
-| **Invoice Capture** | Invoices arrive by mail as PDFs, often in other currencies, and are typed into a sheet by hand. That is slow, and missed or double invoices mean late fees and messy books. | [invoice-capture](invoice-capture/) |
+| **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](workflows/lead-qualification/) |
+| **Invoice Capture** | Invoices arrive by mail as PDFs, often in other currencies, and are typed into a sheet by hand. That is slow, and missed or double invoices mean late fees and messy books. | [invoice-capture](workflows/invoice-capture/) |
 
 ### Lead Qualification
 
-![Lead Qualification](lead-qualification/images/workflow-overview.png)
+![Lead Qualification](workflows/lead-qualification/images/workflow-overview.png)
 
 - **Problem:** small businesses lose customers and hot requests in a full inbox. Sorting and answering takes time.
 - Two entry points (form, mail), duplicate check, AI agent with imprint research
@@ -20,11 +20,11 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - Retries, AI fallback, error workflow, heartbeat ping, fixed limits for the AI
 - Tested live with more than 20 cases
 
-[Read the full description](lead-qualification/README.md)
+[Read the full description](workflows/lead-qualification/README.md)
 
 ### Invoice Capture
 
-![Invoice Capture](invoice-capture/images/workflow-overview.png)
+![Invoice Capture](workflows/invoice-capture/images/workflow-overview.png)
 
 - **Problem:** invoices arrive by mail as PDFs, often in other currencies. Typing them into a sheet is slow and easy to get wrong. Missed or double invoices cost money.
 - Runs every night, up to 10 mails per run
@@ -33,7 +33,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - Retries, error workflow with Telegram alert, heartbeat ping
 - Tested with test PDFs: invoices in euro and other currencies, offers, terms, duplicates
 
-[Read the full description](invoice-capture/README.md)
+[Read the full description](workflows/invoice-capture/README.md)
 
 ## Notes
 
