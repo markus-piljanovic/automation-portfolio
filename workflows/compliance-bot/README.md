@@ -42,16 +42,23 @@ A chatbot for questions about the **GDPR (DSGVO)** and the **EU AI Act**. It act
 
 ## Architecture
 
-1. **Prepare the legal texts:** `data/chunking.py` splits the EUR-Lex HTML into 297 entries (`chunks.json`, GDPR 118, AI Act 179), each with text, citation and a topic label (`thema`, 14 labels, e.g. `betroffenenrechte`, `drittland`, `hochrisiko`, `verbote`, `geltungsbeginn`, taken from the chapters of the laws). Long articles are split at paragraph boundaries (cards up to about 4,000 characters, a single paragraph stays whole up to 9,000 characters), so that lists like the prohibition list in AI Act Art. 5 stay together (Art. 5 paragraph 1 has about 8,000 characters). The script is source-neutral: each law has its own configuration (file, retrieval date, version, source URL), article numbers with letters (4a, 75b) and paragraph numbers with letters (14a, 1b) are supported and the change markers of the consolidated version are removed. A new law is added by one more configuration block. Art. 111 and 113 (start dates) have their own label, because Art. 113 sat on a large shelf and was not found for date questions.
-2. **Ingest workflow (n8n):** reads `chunks.json` (all laws), creates embeddings (`text-embedding-3-small`, 1536 dimensions) and stores them in Supabase. Every run loads everything (297 cards cost well under one cent); the table is emptied before, so the database always matches the file and no node has to be changed between runs.
-3. **Database:** Supabase (PostgreSQL with pgvector), region Frankfurt. Table `documents` (content, metadata, embedding), search function `match_documents`.
-4. **Chat workflow (n8n):** chat trigger, AI agent with conversation memory (last 3 exchanges, reduced from 6 to save tokens) and **eleven search tools**: `gesetze_suche` (all 297 entries, 8 hits) and ten topic tools that each search only one label of the data (`betroffenenrechte`, `grundsaetze`, `pflichten`, `drittland`, `sanktionen_dsgvo`, `hochrisiko`, `sanktionen_ai_act`, `grundlagen`, `verbote`, `geltungsbeginn`, 2 to 13 hits). A **label** is the shelf sign on an entry in the database, a **tool** is a librarian that searches one shelf. All tools share one embedding node, the comparison runs inside the database (function `match_documents`). The agent picks the tools by their description and by rules in the prompt, up to 4 searches per question. Short answer in a casual tone with assessment, suggestion and citation, and a counter-question when the case is open. Statements about the law come only from the hits. Model: gpt-4o, temperature 0.2, max. 900 tokens, system prompt version 6.7. For questions of the form "is this allowed, forbidden or mandatory?" the prompt prescribes a fixed answer form of about 150 words: never "Yes" or "No" first, then (1) role (provider or deployer), (2) rule with citation, (3) start date, (4) what is open, (5) exactly one counter-question. For prohibitions and high-risk the tool `geltungsbeginn` is always called, because the field `stand` in the metadata is only the retrieval date and must never be given as a start date.
-5. **Telegram as a second entry point (n8n):** The same questions can be asked via Telegram. The bot answers there and only accepts the owner's own chat ID (protection against foreign costs). The agent and its memory are the same as in the web chat, with a separate memory per Telegram chat.
-6. **Cost per question (n8n):** After every Telegram answer a sub-workflow (`compliance-bot-cost-per-question`) sends a second message with the cost of that question and the daily total. Above the daily limit (1.00 EUR) a warning is added. The same row is written to `usage_log`. In addition, a gate in front of the agent reads today's cost and stops further Telegram questions once the daily limit is reached (no model call, no cost). `/neu` in Telegram starts a fresh conversation (new session id). A **length limit** (1,000 characters) stops oversized questions before the agent runs (no model call, no cost).
-7. **Source check (n8n, no model call):** a code node after the agent checks the answer against the retrieved hits. A sentence with a number and unit (e.g. "six months", "20 employees") must appear in the text of the articles the answer cites, otherwise the sentence is removed and a note is added. A cited article that is not among the hits gets a note. A sentence with a date (e.g. "2. Dezember 2027") must contain a date that appears in the hits, otherwise it is removed (measured: the model once made up the retrieval date as a start date).
-7b. **Fixed AI notice (n8n, no model call):** the code node `Add AI Notice` appends "Hinweis: Ich bin ein KI-Assistent und gebe keine Rechtsberatung." to every answer (English line for English answers). The workflow adds it, not the model, so it cannot be forgotten. If asked, the bot also says honestly that it is an AI assistant.
-8. **Answer self-check (n8n, small model, log mode):** after the agent a second step (gpt-4o-mini) checks each sentence with a citation against the cited article. It currently only writes its findings into the execution data and does not change answers: in tests it flagged correct sentences and overlooked a wrong citation. Next: quote-based check (the model must quote the supporting text, a code node verifies the quote) and a comparison with gpt-4o.
-9. **Usage logger (n8n, switched off since 2026-10-22 because it grew the n8n database to 9 GB):** every 15 minutes it wrote tokens and cost (EUR) of the chat questions that are still missing (web chat, failed runs) into the table `usage_log`, without the question in plain text (length only). Tokens are n8n estimates, the price has a source and a date.
+```
+Question (Telegram or n8n chat)
+  → gates: length limit, /neu, daily cost limit
+  → AI agent (gpt-4o) picks up to 4 of 11 search tools
+  → Supabase returns the matching law cards
+  → code checks: numbers, articles, dates
+  → fixed AI notice
+  → answer, then cost message
+```
+
+1. **Law texts become cards.** `data/chunking.py` cuts GDPR and AI Act into 297 cards, mostly one article each. Every card carries its citation and a topic label such as "rights of data subjects", "prohibitions" or "start dates".
+2. **Ingest workflow.** It loads all cards into Supabase (PostgreSQL with pgvector, Frankfurt) and creates an embedding for each. A run always loads everything, so the database always matches the file.
+3. **Search tools.** There is one general search and ten topic searches. A label is the shelf sign on a card, a tool is a librarian who searches only one shelf. All tools share one embedding node, the comparison runs inside the database.
+4. **Chat workflow.** An AI agent (gpt-4o) with a memory of the last 3 exchanges decides which tool to call. Answers are short, in a casual tone, with citation. For "is this allowed?" the prompt prescribes a fixed form: role, rule with citation, start date, what is open, one counter-question.
+5. **Checks in code, no model.** Numbers, articles and dates in the answer must appear in the retrieved text, otherwise the sentence is removed. A fixed line "I am an AI assistant, no legal advice" is added to every answer.
+6. **Telegram and guards.** Only the owner's chat ID is accepted. A length limit, a daily limit of 1 EUR and `/neu` for a fresh conversation work without any model call. After each answer a second message shows the cost.
+7. **Built but not active.** The self-check with a small model only logs, the usage logger is switched off.
 
 ## Target architecture (planned)
 
@@ -232,7 +239,30 @@ The weak points are shown on purpose: the answers are correct and grounded in th
 
 ## Test questions
 
-All runs, per-question tables and measurements: [testing/Testläufe.md](testing/Testläufe.md). Test run 9 (2026-10-18, 12 practice questions, eight tools): 8 OK, 4 partial, 0 errors. Test run 8 (2026-10-14, 16 questions, prompt v6.4): 9 OK, 6 partial, 1 error. Progress across the runs: run 1 10 OK and 4 errors (16 questions), run 2 14 OK and 0 errors (16 questions), run 3 16 OK, 5 partial, 2 errors (23 questions, new sparring questions), run 4 19 OK, 6 partial, 0 errors (25 questions, gpt-4o), run 5 12 OK, 6 partial, 4 errors (22 new questions, prompt v5), run 6 16 OK, 4 partial, 2 errors (same 22 questions, prompt v6), run 7 14 OK, 8 partial, 0 errors (22 new questions, prompt v6.1), run 8 9 OK, 6 partial, 1 error (16 questions, prompt v6.4, source check), run 9 8 OK, 4 partial, 0 errors (12 practice questions from the pool, eight tools). The question sets differ between runs, so the numbers are not directly comparable. Cost per question with gpt-4o: about 0.03 EUR in tests (new session per question), up to 0.14 EUR in a long Telegram chat with memory. Selected examples with answer and citation will follow here, plus "I don't know" cases.
+All runs with per-question tables and measurements: [testing/Testläufe.md](testing/Testläufe.md) (in German). The question sets differ between the runs, so the numbers are not directly comparable. Each answer is checked against the law text, not by a lawyer.
+
+| Run | Date | What changed | Questions | OK | Partial | Error | Main finding |
+|---|---|---|---|---|---|---|---|
+| 1 | 10-07 | prompt v1, gpt-4o-mini | 16 | 10 | 2 | 4 | baseline, fines and limits weak |
+| 2 | 10-07 | prompt rules for amounts, limits, refusals | 16 | 14 | 2 | 0 | 8 hits per search and prompt rules fix the errors |
+| 3 | 10-13 | sparring-partner prompt, paragraph-aware cards | 23 | 16 | 5 | 2 | splitting by paragraph solves Art. 5 |
+| 4 | 10-13 | prompt v5, gpt-4o | 25 | 19 | 6 | 0 | gpt-4o handles roles and scope better |
+| 5 | 10-14 | prompt v5, new questions | 22 | 12 | 6 | 4 | invented facts, language, counter-questions |
+| 6 | 10-14 | prompt v6, same questions as 5 | 22 | 16 | 4 | 2 | rules work, risk of overfitting |
+| 7 | 10-14 | prompt v6.1, new questions | 22 | 14 | 8 | 0 | no errors, spread as large as the effect |
+| 8 | 10-14 | prompt v6.4, topic tool, source check | 16 | 9 | 6 | 1 | invented "six months" removed by the source check |
+| 9 | 10-18 | eight search tools | 12 | 8 | 4 | 0 | tool choice 5 of 5 on clear topics, practice questions weaker |
+| 10 | 10-24 | new data (AI Act consolidated, 297 cards) | 5 | 0 | 3 | 2 | start dates not found, Art. 113 sat on a big shelf |
+| 11 | 10-24 | tool `grundlagen` | 7 | 1 | 5 | 0 | AI literacy (Art. 4) no longer tied to high-risk |
+| 12 | 10-24 | tools `verbote`, `geltungsbeginn` | 9 | 3 | 6 | 0 | start date 2 Dec 2027 and Art. 5(1)(f) found |
+| 13 | 10-25 | answer form, fixed AI notice, date check | 8 | 3 | 3 | 1 (fixed) | form works, invented date caught by the date check |
+| 14 | 10-25 | published version via Telegram | 3 | 1 | 2 | 0 | correct but general, see the examples above |
+
+**Cost per question (gpt-4o)**
+
+- About 0.03 EUR in the early tests (one new session per question).
+- 0.05 to 0.09 EUR per question today (eleven tools, longer answers).
+- Up to 0.14 EUR in a long Telegram chat with memory (before the memory was cut to 3 exchanges).
 
 ## Privacy and security
 
