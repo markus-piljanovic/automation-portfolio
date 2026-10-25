@@ -8,6 +8,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 |---|---|---|
 | **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](workflows/lead-qualification/) |
 | **Invoice Capture** | Invoices arrive by mail as PDFs, often in other currencies, and are typed into a sheet by hand. That is slow, and missed or double invoices mean late fees and messy books. | [invoice-capture](workflows/invoice-capture/) |
+| **Compliance Bot** | Questions about GDPR and the EU AI Act need the right article, not a guess. A chatbot that makes things up is worse than none. | [compliance-bot](workflows/compliance-bot/) |
 
 ### Lead Qualification
 
@@ -34,6 +35,19 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - Tested with test PDFs: invoices in euro and other currencies, offers, terms, duplicates
 
 [Read the full description](workflows/invoice-capture/README.md)
+
+### Compliance Bot
+
+![Compliance Bot](workflows/compliance-bot/images/chat_01_overview.png)
+
+- **Problem:** questions about the GDPR and the EU AI Act are answered from memory, with invented articles and wrong dates. Advice that cannot be checked is risky.
+- RAG on the full legal texts (297 cards in Supabase, topic labels), AI agent with eleven search tools, one per topic
+- Answers only from the retrieved text, with citation, a counter-question when the case is open and a fixed AI notice
+- Code checks after the model: numbers, articles and dates must appear in the retrieved text, otherwise the sentence is removed
+- Telegram bot with daily cost limit, length limit, cost message per question, error workflow and heartbeat ping
+- Tested with realistic user questions, expectations written from the law first. Weak points are documented
+
+[Read the full description](workflows/compliance-bot/README.md)
 
 ## Notes
 

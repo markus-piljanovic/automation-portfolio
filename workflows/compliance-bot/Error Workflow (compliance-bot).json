@@ -1,0 +1,77 @@
+{
+  "name": "Error Workflow (compliance-bot)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "2a2787b6-9d88-4aaf-962b-4de5fe564e69",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🚨 Workflow-Fehler\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.lastNodeExecuted }}\nFehler: {{ $json.execution.error.message }}\nAusführung: {{ $json.execution.url }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "49449fc7-cd5e-4dba-9ef6-8c1b099cb4b3",
+      "name": "Telegram Alert",
+      "webhookId": "efb7342c-82b6-4551-b7b1-7a4a146c1748",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -16
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🚨 Error workflow: compliance-bot\n\nStarted by n8n when an execution of `compliance-bot-chat` fails. It is linked in the chat workflow under *Settings → Error workflow*. It does not need to be active.\n\n1. **Error Trigger** receives workflow name, last node, error message and execution link.\n2. **Telegram Alert** sends them to the owner's chat.\n\n**Good to know:**\n- Only failed executions count (e.g. gateway 502, database error). Refused questions (too long, daily limit) are normal replies, not errors.\n- Does not replace the Healthchecks.io ping: the alert says *what* failed, the ping says the bot has stopped answering.",
+        "height": 556,
+        "width": 688,
+        "color": 3
+      },
+      "id": "bdafa20f-0a0a-45bb-b564-e2accfb01e5e",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -352
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

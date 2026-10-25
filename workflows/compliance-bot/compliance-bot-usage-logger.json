@@ -1,0 +1,183 @@
+{
+  "name": "compliance-bot-usage-logger",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "319a4222-2eba-412f-8eb2-7f96ecebfbe4",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "usage_log",
+        "returnAll": true
+      },
+      "id": "7859e7ec-c732-4349-a3a1-a1bd8038e8e3",
+      "name": "Get many rows",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "position": [
+        208,
+        -208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "limit": 50,
+        "filters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "YOUR_CHAT_WORKFLOW_ID",
+            "mode": "list",
+            "cachedResultName": "compliance-bot-chat (#YOUR_CHAT_WORKFLOW_ID)"
+          }
+        },
+        "options": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {}
+      },
+      "id": "1c18ad77-a296-44b8-89be-5c9a4cafd3f1",
+      "name": "Get many executions",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "executeOnce": true,
+      "position": [
+        432,
+        -208
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "YOUR_N8N_API_CREDENTIAL_ID",
+          "name": "n8n API account (read only)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Constants ===\n// Prices per 1M tokens in USD (OpenAI list price, checked on PRICE_STAND,\n// source: https://developers.openai.com/api/docs/pricing)\nconst PRICES_USD = {\n  'gpt-4o-mini': { in: 0.15, out: 0.60 },\n  'gpt-4o':      { in: 2.50, out: 10.00 },\n};\nconst PRICE_STAND = '2026-10-07';\n// ECB reference rate 1 EUR = x USD (as of 2026-09-15)\nconst USD_PER_EUR = 1.1539;\n// Fallback if the model cannot be read from the execution\nconst DEFAULT_MODEL = 'gpt-4o-mini';\n// Input node names in the chat workflow (web chat and Telegram)\nconst CHAT_INPUT_NODES = ['When chat message received', 'Telegram Input'];\nconst CHAT_MODEL = 'OpenAI Chat Model';\n// Sessions with these prefixes are test runs (r1-/r2- = test runs 1 and 2)\nconst TEST_SESSION_PREFIXES = ['test-', 'r1-', 'r2-', 'r3-'];\n// Executions that finished less than this many seconds ago are left to the\n// cost workflow (it logs Telegram questions itself), otherwise rows get doubled\nconst MIN_AGE_SECONDS = 180;\n\n// === Executions already logged ===\nconst logged = new Set(\n  $('Get many rows').all().map(i => String(i.json.execution_id ?? '')).filter(Boolean)\n);\n\nconst rows = [];\nfor (const item of $input.all()) {\n  const ex = item.json;\n  // only finished executions that are not logged yet\n  if (!ex.id || !ex.finished && ex.status !== 'error') continue;\n  if (logged.has(String(ex.id))) continue;\n  // skip very recent executions (see MIN_AGE_SECONDS)\n  if (ex.stoppedAt && Date.now() - new Date(ex.stoppedAt).getTime() < MIN_AGE_SECONDS * 1000) continue;\n\n  const runData = ex.data?.resultData?.runData ?? {};\n\n  // === Sum tokens (all model calls of this execution) ===\n  // tokenUsage = real API numbers, tokenUsageEstimate = estimate by n8n\n  let prompt = 0, completion = 0;\n  for (const run of runData[CHAT_MODEL] ?? []) {\n    for (const out of run.data?.ai_languageModel?.[0] ?? []) {\n      const u = out.json?.tokenUsage ?? out.json?.tokenUsageEstimate ?? {};\n      prompt += u.promptTokens ?? 0;\n      completion += u.completionTokens ?? 0;\n    }\n  }\n  if (prompt + completion === 0) continue; // no model call, nothing to log\n\n  // === Question: only length and sessionId, no plain text ===\n  const inputNode = CHAT_INPUT_NODES.find(n => runData[n]);\n  const trig = runData[inputNode]?.[0]?.data?.main?.[0]?.[0]?.json ?? {};\n  const question = trig.chatInput ?? '';\n  const sessionId = String(trig.sessionId ?? '');\n\n  // === Model from the workflow version of the execution ===\n  const modelNode = (ex.workflowData?.nodes ?? []).find(n => n.name === CHAT_MODEL);\n  const m = modelNode?.parameters?.model;\n  const model = (typeof m === 'object' ? m?.value : m) || DEFAULT_MODEL;\n\n  // === Cost ===\n  const p = PRICES_USD[model];\n  const costUsd = p ? (prompt * p.in + completion * p.out) / 1e6 : null;\n\n  rows.push({ json: {\n    created_at: ex.startedAt,\n    workflow: 'compliance-bot-chat',\n    execution_id: String(ex.id),\n    model,\n    prompt_tokens: prompt,\n    completion_tokens: completion,\n    total_tokens: prompt + completion,\n    cost_eur: costUsd === null ? null : Number((costUsd / USD_PER_EUR).toFixed(6)),\n    price_stand: PRICE_STAND,\n    question_chars: question.length,\n    is_test: ex.mode !== 'webhook' || TEST_SESSION_PREFIXES.some(t => sessionId.startsWith(t)),\n  }});\n}\nreturn rows;"
+      },
+      "id": "a1f0c2d4-5b6e-4c7a-9d8e-1f2a3b4c5d6e",
+      "name": "Calculate Tokens and Cost",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "usage_log",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "b2e1d3c5-6f7a-4b8c-9e0d-2a3b4c5d6e7f",
+      "name": "Write Row to usage_log",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Usage Logger\nRuns every 15 minutes. Safety net for all executions that the cost workflow did not log (e.g. web chat).\n\n1. **Get many rows**: which executions are already in `usage_log`?\n2. **Get many executions**: last 50 executions of `compliance-bot-chat` with details (runs only once).\n3. **Code**: filter out new executions, sum the tokens of all model calls, calculate cost in EUR.\n4. **Supabase**: one row per execution.\n\n**Privacy:** no question in plain text, only `question_chars`.\n**Tokens:** the course gateway returns no real numbers, n8n estimates them (`tokenUsageEstimate`). Values are approximations.\n**Prices:** constants in the code. On a price change adjust `PRICES_USD` and `PRICE_STAND`.\n**Side effect:** the query keeps Supabase awake (the free plan otherwise pauses after 1 week).",
+        "height": 496,
+        "width": 1216,
+        "color": "#925D5D"
+      },
+      "id": "c3f2e4d6-7a8b-4c9d-8f1e-3b4c5d6e7f80",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -528
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Get many executions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many executions": {
+      "main": [
+        [
+          {
+            "node": "Calculate Tokens and Cost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Tokens and Cost": {
+      "main": [
+        [
+          {
+            "node": "Write Row to usage_log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
