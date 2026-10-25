@@ -99,7 +99,8 @@ This bot is a showcase for n8n, and building it there showed clear limits. Most 
 - **Hard to test and to version.** No diff for prompts and settings, no automatic tests, every run costs money, and the same question gives different answers. A change needs at least three repeated runs to see an effect. The question pool is a table that has to be run by hand.
 - **Two versions of one workflow.** Telegram uses only the published version, API tests run against the draft. That caused wrong conclusions more than once.
 - **Everything is kept in sync by hand.** Sticky notes, screenshots, exports, README and notes must be updated after every change.
-- **Limited visibility into cost and data.** The gateway only gives token estimates. Saving execution data of a helper workflow grew the n8n database to 9 GB.
+- **Limited visibility into cost and data.** The API access only gives token estimates. Saving execution data of a helper workflow grew the n8n database to 9 GB.
+- **A limited test budget.** Testing was limited by a small monthly budget for the AI model. One question with eleven tools costs 0.05 to 0.09 EUR, so large runs (many questions, each one three times) were not affordable. Tests stayed small and targeted, and some planned measurements, such as a full regression run and recall at top 8 and top 20, had to wait. A full build-out of a bot like this needs a larger test budget: room for repeated full runs and for a stronger model as a second judge.
 
 **What a code version would add**
 
@@ -118,7 +119,7 @@ This bot is a showcase for n8n, and building it there showed clear limits. Most 
 **Build (in this order)**
 
 - [x] Supabase project, table `documents`, search function `match_documents`
-- [x] Embedding access clarified (course gateway, 1536 dimensions tested)
+- [x] Embedding access clarified (1536 dimensions tested)
 - [x] Legal texts fetched and split into entries (now 284, paragraph-aware)
 - [x] `chunks.json` on the server, file access for n8n enabled
 - [x] Ingest workflow: read file, split, embeddings, store in Supabase (284 rows in `documents`)
@@ -263,6 +264,8 @@ All runs with per-question tables and measurements: [testing/Testläufe.md](test
 - About 0.03 EUR in the early tests (one new session per question).
 - 0.05 to 0.09 EUR per question today (eleven tools, longer answers).
 - Up to 0.14 EUR in a long Telegram chat with memory (before the memory was cut to 3 exchanges).
+
+The number of questions per run is small on purpose: the test budget was limited (see "Constraints of building this in n8n").
 
 ## Privacy and security
 

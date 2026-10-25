@@ -100,7 +100,7 @@ Ergebnis in einem Satz: Von 10 OK / 4 Fehler (Lauf 1) auf 0 Fehler in den Läufe
 ## Lauf 5 (14.10.2026): neue Fragen, V5
 
 - Setup: Live-Workflow, gpt-4o, Temp. 0,4, Limit 12, Memory 3, V5. 22 neue Fragen, je eigene Sitzung (Nr. 22 teilt mit 21).
-- Vorläufe: V1 Telegram-Test (5 Fragen, Memory 6): Ablauf und Kostenmeldung funktionieren, Kosten 0,004 bis 0,14 EUR je Frage, Memory auf 3 gesenkt. V2: 14 parallele Fragen gaben 502 am Kurs-Gateway, daher künftig Gruppen zu 4.
+- Vorläufe: V1 Telegram-Test (5 Fragen, Memory 6): Ablauf und Kostenmeldung funktionieren, Kosten 0,004 bis 0,14 EUR je Frage, Memory auf 3 gesenkt. V2: 14 parallele Fragen gaben 502 am API-Zugang, daher künftig Gruppen zu 4.
 - Ergebnis: 12 OK, 6 T, 4 F.
 
 | Nr | Thema | Note | Befund |
@@ -388,7 +388,7 @@ Ergebnis in einem Satz: Von 10 OK / 4 Fehler (Lauf 1) auf 0 Fehler in den Läufe
 
 ## Kosten
 
-- gpt-4o: 2,50 USD Input, 10,00 USD Output je 1 Mio. Tokens (OpenAI, geprüft 07.10.2026), Kurs 1,1539 USD je EUR. Token- und Kostenzahlen sind n8n-Schätzungen, das Kurs-Gateway liefert keine echten Verbrauchszahlen.
+- gpt-4o: 2,50 USD Input, 10,00 USD Output je 1 Mio. Tokens (OpenAI, geprüft 07.10.2026), Kurs 1,1539 USD je EUR. Token- und Kostenzahlen sind n8n-Schätzungen, der API-Zugang liefert keine echten Verbrauchszahlen.
 - Test (neue Sitzung je Frage): etwa 0,03 EUR je Frage (Lauf 5 bis 7: 0,031 / 0,034 / 0,028 EUR).
 - Telegram-Alltag mit Memory 6: bis 0,14 EUR je Frage, mit Memory 3 deutlich weniger.
 
