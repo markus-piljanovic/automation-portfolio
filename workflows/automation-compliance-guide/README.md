@@ -6,7 +6,7 @@ Addition of more laws is planned - BDSG, tax & labour law, court rulings, guidan
 PDF-export for user planned.
 Not legal advice, orientation only.
 
-**Try it first, no setup needed:** open [`page/compliance-guide-demo.html`](page/compliance-guide-demo.html) in a browser (one fixed example, interface in German, mouse wheel or arrow keys move between the screens).
+**Try it first, no setup needed:** [open the demo in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) ([source file](page/compliance-guide-demo.html)) (one fixed example, interface in German, mouse wheel or arrow keys move between the screens).
 
 ## What problem does it solve?
 
@@ -107,7 +107,7 @@ What the Telegram messages look like (top: a run that failed because of a missin
 
 ## Testing
 
-19 cases, expectations written **before** the run from the rule set and the law cards, not from memory. Open [`testing/test-plan.html`](testing/test-plan.html) in a browser (German interface): pick a case and see the clicked answers, the path of the request, the retrieved articles and the comparison of expected and measured values.
+19 cases, expectations written **before** the run from the rule set and the law cards, not from memory. [Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) ([source file](testing/test-plan.html), German interface): pick a case and see the clicked answers, the path of the request, the retrieved articles and the comparison of expected and measured values.
 
 | Group | Cases | Purpose |
 |---|---|---|

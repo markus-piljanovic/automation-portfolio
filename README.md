@@ -17,7 +17,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - A form with about twenty clickable questions, fixed rules in code, exact retrieval of the legal articles (GDPR, EU AI Act), a checklist with citations. An AI only writes three short sentences per topic from the retrieved text, a code check replaces any summary that cites an article it was not given
 - Own community node for Healthchecks pings (TypeScript), error workflow with Telegram alert, daily cost limit of 0.20 EUR
 - 19 test cases with expectations written first, 19 of 19 passed, every law article retrieved by at least one case
-- Clickable demo without any setup (`page/compliance-guide-demo.html`) and a test plan as one interactive page
+- [Clickable demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) without any setup and a [test plan](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) as one interactive page
 
 [Read the full description](workflows/automation-compliance-guide/README.md)
 
