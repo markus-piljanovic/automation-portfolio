@@ -123,8 +123,6 @@ The coverage matrix of the test plan shows which case retrieves which article, s
 
 ![Coverage](images/test-coverage.png)
 
-How to read it: green is a GDPR article the guide retrieved for that case, blue an EU AI Act article. **A dark cell does not mean "no hit".** It marks a case where the answers did not call for that article, so the guide correctly did not fetch it (for example, a case without data transfer abroad does not need GDPR Art. 44 to 46). The last row shows that every article was retrieved by at least one case.
-
 To run the cases yourself: `GUIDE_URL=https://<your-n8n>/webhook/guide-request node testing/run_tests.js` (all cases) or with a file prefix as argument (`... run_tests.js 09`). Inputs and expectations are in `testing/cases/`.
 
 ## The demo page
