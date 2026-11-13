@@ -1,0 +1,153 @@
+{
+ "id": "06_abdeckung_6",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "avv",
+  "betrieb": "kunde",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "besond"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "haltung": [
+   "unklar"
+  ],
+  "umfang": "hoch",
+  "test": "anon",
+  "llm": [
+   "mistral",
+   "aleph",
+   "openai"
+  ],
+  "dienste": [
+   "shsonst"
+  ],
+  "region": "unklar",
+  "avv": "unklar",
+  "anbieter": "zero",
+  "kontakt": [
+   "kein"
+  ],
+  "auto": "voll",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 12,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "umfang|D",
+   "llm|D",
+   "region|D",
+   "avv|D",
+   "auto|D",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "28",
+     "29",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "9",
+     "35"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46",
+     "49"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "auto": {
+    "D": [
+     "22"
+    ],
+    "AI": []
+   }
+  },
+  "karten": 42,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

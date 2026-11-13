@@ -1,0 +1,175 @@
+{
+ "id": "04_abdeckung_4",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "eigen",
+  "betrieb": "cloud",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "keine"
+  ],
+  "betroffen": [
+   "minder",
+   "bewerber",
+   "endkunden"
+  ],
+  "inhalte": [
+   "urheber",
+   "gobd"
+  ],
+  "haltung": [
+   "unklar"
+  ],
+  "umfang": "einzel",
+  "test": "anon",
+  "llm": [
+   "unklar"
+  ],
+  "dienste": [
+   "crm",
+   "shdb",
+   "cloud"
+  ],
+  "region": "std",
+  "avv": "keine",
+  "anbieter": "std",
+  "kontakt": [
+   "kein"
+  ],
+  "auto": "unklar",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "bio",
+   "emotion",
+   "verhalten"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 14,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "betroffen|D",
+   "haltung|D",
+   "llm|D",
+   "dienste|D",
+   "region|D",
+   "avv|D",
+   "anbieter|D",
+   "auto|D",
+   "bewert|D",
+   "bewert|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "24",
+     "26",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "8",
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21",
+     "88"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "anbieter": {
+    "D": [
+     "5",
+     "28"
+    ],
+    "AI": []
+   },
+   "auto": {
+    "D": [
+     "22"
+    ],
+    "AI": []
+   },
+   "bewert": {
+    "D": [
+     "9",
+     "21",
+     "22",
+     "35"
+    ],
+    "AI": [
+     "5",
+     "50",
+     "III"
+    ]
+   }
+  },
+  "karten": 51,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

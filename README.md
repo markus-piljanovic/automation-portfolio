@@ -6,9 +6,20 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 | Workflow | What problem it solves | Folder |
 |---|---|---|
+| **Compliance Guide** | Before an AI project starts, a consultant needs to know which GDPR and EU AI Act articles apply. A form with fixed rules gives the same checklist with citations for the same answers, and it can be tested. | [compliance-guide](workflows/automation-compliance-guide/) |
 | **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](workflows/lead-qualification/) |
-| **Invoice Capture** | Invoices arrive by mail as PDFs, often in other currencies, and are typed into a sheet by hand. That is slow, and missed or double invoices mean late fees and messy books. | [invoice-capture](workflows/invoice-capture/) |
-| **Compliance Bot** | Questions about GDPR and the EU AI Act need the right article, not a guess. A chatbot that makes things up is worse than none. | [compliance-bot](workflows/compliance-bot/) |
+
+### Compliance Guide
+
+![Compliance Guide](workflows/automation-compliance-guide/images/how-it-works.png)
+
+- **Problem:** a chat about the law changes with every run and cannot be tested properly. A consultant needs the same, checkable result for the same answers.
+- A form with about twenty clickable questions, fixed rules in code, exact retrieval of the legal articles (GDPR, EU AI Act), a checklist with citations. An AI only writes three short sentences per topic from the retrieved text, a code check replaces any summary that cites an article it was not given
+- Own community node for Healthchecks pings (TypeScript), error workflow with Telegram alert, daily cost limit of 0.20 EUR
+- 19 test cases with expectations written first, 19 of 19 passed, every law article retrieved by at least one case
+- Clickable demo without any setup (`page/compliance-guide-demo.html`) and a test plan as one interactive page
+
+[Read the full description](workflows/automation-compliance-guide/README.md)
 
 ### Lead Qualification
 
@@ -22,32 +33,6 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 - Tested live with more than 20 cases
 
 [Read the full description](workflows/lead-qualification/README.md)
-
-### Invoice Capture
-
-![Invoice Capture](workflows/invoice-capture/images/workflow-overview.png)
-
-- **Problem:** invoices arrive by mail as PDFs, often in other currencies. Typing them into a sheet is slow and easy to get wrong. Missed or double invoices cost money.
-- Runs every night, up to 10 mails per run
-- An AI reads the PDF, foreign currencies are converted with the ECB rate of the invoice date
-- One row per invoice in Google Sheets, a key prevents double rows, the PDF goes to Google Drive
-- Retries, error workflow with Telegram alert, heartbeat ping
-- Tested with test PDFs: invoices in euro and other currencies, offers, terms, duplicates
-
-[Read the full description](workflows/invoice-capture/README.md)
-
-### Compliance Bot
-
-![Compliance Bot](workflows/compliance-bot/images/chat_01_overview.png)
-
-- **Problem:** questions about the GDPR and the EU AI Act are answered from memory, with invented articles and wrong dates. Advice that cannot be checked is risky.
-- RAG on the full legal texts (297 cards in Supabase, topic labels), AI agent with eleven search tools, one per topic
-- Answers only from the retrieved text, with citation, a counter-question when the case is open and a fixed AI notice
-- Code checks after the model: numbers, articles and dates must appear in the retrieved text, otherwise the sentence is removed
-- Telegram bot with daily cost limit, length limit, cost message per question, error workflow and heartbeat ping
-- Tested with realistic user questions, expectations written from the law first. Weak points are documented
-
-[Read the full description](workflows/compliance-bot/README.md)
 
 ## Notes
 

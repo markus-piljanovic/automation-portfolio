@@ -1,0 +1,154 @@
+{
+ "id": "07_abdeckung_7",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "anbieter",
+  "betrieb": "unklar",
+  "besonder": [
+   "branche"
+  ],
+  "daten": [
+   "unklar"
+  ],
+  "betroffen": [
+   "besch",
+   "minder"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "haltung": [
+   "unklar"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "llm": [
+   "keinllm"
+  ],
+  "dienste": [
+   "keine"
+  ],
+  "region": "unklar",
+  "avv": "keine",
+  "anbieter": "zero",
+  "kontakt": [
+   "kein"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "kredit",
+   "gesund",
+   "behoerde"
+  ],
+  "bewert": [
+   "kateg"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 13,
+  "summaryKeys": [
+   "rolle|D",
+   "rolle|AI",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "umfang|D",
+   "test|D",
+   "bereich|AI",
+   "bewert|D",
+   "bewert|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "24",
+     "30"
+    ],
+    "AI": [
+     "16",
+     "25"
+    ]
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6",
+     "9"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "8",
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21",
+     "88"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "test": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "bereich": {
+    "D": [],
+    "AI": [
+     "6",
+     "III"
+    ]
+   },
+   "bewert": {
+    "D": [
+     "9"
+    ],
+    "AI": [
+     "5"
+    ]
+   }
+  },
+  "karten": 50,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

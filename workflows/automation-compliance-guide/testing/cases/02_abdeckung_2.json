@@ -1,0 +1,173 @@
+{
+ "id": "02_abdeckung_2",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "avv",
+  "betrieb": "cloud",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "komm",
+   "besch"
+  ],
+  "betroffen": [
+   "endkunden",
+   "bewerber",
+   "b2b"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "haltung": [
+   "keine"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "llm": [
+   "lokal",
+   "aleph"
+  ],
+  "dienste": [
+   "shauto"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "zero",
+  "kontakt": [
+   "kein"
+  ],
+  "auto": "voll",
+  "bereich": [
+   "infra",
+   "hr",
+   "behoerde"
+  ],
+  "bewert": [
+   "unklar"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": true,
+  "aufgaben": 15,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "umfang|D",
+   "test|D",
+   "llm|D",
+   "region|D",
+   "avv|D",
+   "auto|D",
+   "bereich|D",
+   "bereich|AI",
+   "bewert|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "28",
+     "29",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6",
+     "88"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21",
+     "88"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "test": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "auto": {
+    "D": [
+     "22"
+    ],
+    "AI": []
+   },
+   "bereich": {
+    "D": [
+     "88"
+    ],
+    "AI": [
+     "6",
+     "III"
+    ]
+   },
+   "bewert": {
+    "D": [],
+    "AI": [
+     "5"
+    ]
+   }
+  },
+  "karten": 46,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

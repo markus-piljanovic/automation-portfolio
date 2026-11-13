@@ -1,0 +1,180 @@
+{
+ "id": "10_alles_unklar",
+ "zweck": "Jedes Feld mit \"Weiß ich nicht\", wo möglich",
+ "input": {
+  "name": "Alles unklar",
+  "llmx": "",
+  "text": "Alle Weiß-ich-nicht-Antworten",
+  "rolle": "unklar",
+  "betrieb": "unklar",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "unklar"
+  ],
+  "betroffen": [
+   "dritte"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "haltung": [
+   "unklar"
+  ],
+  "umfang": "einzel",
+  "test": "echt",
+  "llm": [
+   "unklar"
+  ],
+  "dienste": [
+   "unklar"
+  ],
+  "region": "unklar",
+  "avv": "unklar",
+  "anbieter": "unklar",
+  "kontakt": [
+   "kein"
+  ],
+  "auto": "unklar",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "unklar"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": true,
+  "aufgaben": 16,
+  "summaryKeys": [
+   "rolle|D",
+   "rolle|AI",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "test|D",
+   "llm|D",
+   "dienste|D",
+   "region|D",
+   "avv|D",
+   "anbieter|D",
+   "auto|D",
+   "bewert|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "24",
+     "26",
+     "28",
+     "30"
+    ],
+    "AI": [
+     "25"
+    ]
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6",
+     "9"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "test": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28",
+     "44"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "anbieter": {
+    "D": [
+     "5",
+     "28"
+    ],
+    "AI": []
+   },
+   "auto": {
+    "D": [
+     "22"
+    ],
+    "AI": []
+   },
+   "bewert": {
+    "D": [],
+    "AI": [
+     "5"
+    ]
+   }
+  },
+  "karten": 46,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

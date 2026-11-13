@@ -1,0 +1,139 @@
+{
+ "id": "08_abdeckung_8",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "eigen",
+  "betrieb": "cloud",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "keine"
+  ],
+  "betroffen": [
+   "endkunden",
+   "b2b"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "haltung": [
+   "vektor"
+  ],
+  "umfang": "hoch",
+  "test": "anon",
+  "llm": [
+   "keinllm"
+  ],
+  "dienste": [
+   "unklar"
+  ],
+  "region": "eu",
+  "avv": "alle",
+  "anbieter": "zero",
+  "kontakt": [
+   "direkt",
+   "generiert"
+  ],
+  "auto": "hitl",
+  "bereich": [
+   "hr",
+   "justiz"
+  ],
+  "bewert": [
+   "nichts"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 11,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "betroffen|D",
+   "haltung|D",
+   "umfang|D",
+   "dienste|D",
+   "kontakt|AI",
+   "bereich|D",
+   "bereich|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "24",
+     "26",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28",
+     "44"
+    ],
+    "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
+   },
+   "bereich": {
+    "D": [
+     "88"
+    ],
+    "AI": [
+     "6",
+     "III"
+    ]
+   }
+  },
+  "karten": 42,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

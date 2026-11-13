@@ -1,0 +1,262 @@
+{
+  "name": "compliance_guide_usage_logger",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "executionId"
+            }
+          ]
+        }
+      },
+      "id": "c85b2bd4-d2d5-4c52-b160-c6981ba6d59b",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "9912b8d0-e74f-441a-82eb-b8ad9d2e8519",
+      "name": "Wait for Execution to Finish",
+      "webhookId": "7c1d5b1e-3a22-4f0e-9b1a-5d0c1f2a9e01",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "operation": "get",
+        "executionId": "={{ $('Execute Workflow Trigger').first().json.executionId }}",
+        "options": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {}
+      },
+      "id": "4b993ffd-e7a9-4668-8ea3-20cf45c645a7",
+      "name": "Get Execution",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        880,
+        256
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "YOUR_N8N_API_CREDENTIAL_ID",
+          "name": "n8n API account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// KONTEXT: Kosten-Node des Automation Compliance Guide. Liest aus der fertigen Ausführung des Hauptworkflows die Tokens der KI-Node, rechnet sie in Euro um und baut die Zeile für usage_log. Fragetexte werden nicht gespeichert.\n// BEISPIEL: 5.200 Eingabe- und 700 Ausgabe-Tokens bei gpt-4o-mini ergeben 0,0012 EUR, die Zeile heißt workflow = compliance-guide-main.\n\n// ---------- ABSCHNITT 1: Konstanten ----------\n// „Preise pro 1 Mio. Tokens in USD (Listenpreis von OpenAI, geprüft am PRICE_STAND).“\nconst PRICES_USD = { 'gpt-4o-mini': { in: 0.15, out: 0.60 }, 'gpt-4o': { in: 2.50, out: 10.00 } };\n// „Stand der Preise.“\nconst PRICE_STAND = '2026-10-07';\n// „EZB-Referenzkurs: 1 EUR = x USD (Stand 2026-09-15).“\nconst USD_PER_EUR = 1.1539;\n// „Falls das Modell in der Ausführung nicht lesbar ist.“\nconst DEFAULT_MODEL = 'gpt-4o-mini';\n// „Name der KI-Node im Hauptworkflow, aus der die Tokens kommen.“\nconst MODEL_NODE = 'OpenAI Chat Model';\n// „So heißt der Hauptworkflow in usage_log.“\nconst WORKFLOW = 'compliance-guide-main';\n\n// ---------- ABSCHNITT 2: Ausführung prüfen ----------\n// „Die Ausführung kommt aus der vorigen Node.“\nconst ex = $input.first().json;\n// „Ist sie noch nicht fertig, fehlen Tokens. Dann abbrechen mit einer klaren Meldung.“\nif (!ex.finished && ex.status !== 'error') throw new Error('Ausführung ' + ex.id + ' ist noch nicht fertig (Status: ' + ex.status + ')');\n// „Die Laufdaten aller Nodes.“\nconst runData = ex.data?.resultData?.runData ?? {};\n\n// ---------- ABSCHNITT 3: Tokens zählen ----------\n// „Zähler für Eingabe- und Ausgabe-Tokens.“\nlet prompt = 0, completion = 0;\n// „Alle Aufrufe der KI-Node durchgehen (auch Wiederholungen).“\nfor (const run of runData[MODEL_NODE] ?? []) {\n  for (const out of run.data?.ai_languageModel?.[0] ?? []) {\n    // „Echte Zahlen der API, sonst die Schätzung von n8n (das Kurs-Gateway liefert nur Schätzungen).“\n    const u = out.json?.tokenUsage ?? out.json?.tokenUsageEstimate ?? {};\n    prompt += u.promptTokens ?? 0;\n    completion += u.completionTokens ?? 0;\n  }\n}\n// „Kein KI-Aufruf (z. B. ungültige Eingabe oder Limit erreicht): nichts zu buchen.“\nif (prompt + completion === 0) return [];\n\n// ---------- ABSCHNITT 4: Modell und Kosten ----------\n// „Modell aus der Workflow-Version dieser Ausführung lesen.“\nconst modelNode = (ex.workflowData?.nodes ?? []).find(n => n.name === MODEL_NODE);\n// „Das Feld kann ein Objekt oder ein Text sein.“\nconst m = modelNode?.parameters?.model;\n// „Modellname, sonst der Standard.“\nconst model = (typeof m === 'object' ? m?.value : m) || DEFAULT_MODEL;\n// „Preis des Modells, falls bekannt.“\nconst p = PRICES_USD[model];\n// „Kosten in USD, dann in EUR.“\nconst costUsd = p ? (prompt * p.in + completion * p.out) / 1e6 : null;\n\n// ---------- ABSCHNITT 5: Zeile ----------\n// „Die Zeile für usage_log. Manuelle Tests aus dem Editor zählen als Test, Webhook-Aufrufe als echt.“\nreturn [{ json: { created_at: ex.startedAt, workflow: WORKFLOW, execution_id: String(ex.id), model, prompt_tokens: prompt, completion_tokens: completion, total_tokens: prompt + completion, cost_eur: costUsd === null ? null : Number((costUsd / USD_PER_EUR).toFixed(6)), price_stand: PRICE_STAND, is_test: ex.mode !== 'webhook' } }];\n"
+      },
+      "id": "38c9caea-7102-4f51-9189-6feab023751e",
+      "name": "Calculate Cost",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "usage_log",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "4a2dadbe-4825-4b17-9d01-84c8ba382e20",
+      "name": "Write Row to usage_log",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        256
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Cost per request (usage logger)\n## Started by the main workflow after every answer, without waiting. It reads the finished run, calculates what the AI call cost and books one row in `usage_log`. The main workflow adds up today's rows before every request and stops at 0.20 EUR per day.\n\n### **Privacy:** no answers or free text are stored, only tokens, model and cost.\n### **Tokens:** the AI gateway returns no exact numbers, n8n estimates them. Costs are approximate.\n### **Prices:** constants in the code (`PRICES_USD`, `PRICE_STAND`). Adjust on a price change.\n### **Tests:** runs started from the editor are stored with `is_test = true` and do not count toward the limit.",
+        "height": 344,
+        "width": 2244,
+        "color": 7
+      },
+      "id": "7a68390a-461d-42b3-86c5-0cf868cff11a",
+      "name": "Note Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Book the cost of one request",
+        "height": 150,
+        "width": 2180,
+        "color": 6
+      },
+      "id": "7ad73c23-3897-4a2f-8222-a49b9f4a2a10",
+      "name": "Band Cost",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Execute Workflow Trigger\n### What happens:\n- Starts when the main workflow calls this workflow and receives the `executionId`.\n### Why:\n- Runs separately, so the answer to the user does not wait for the cost booking.\n### Settings:\n- Input field: `executionId`.\n- The workflow must be published, otherwise the main workflow cannot call it.",
+        "height": 470,
+        "width": 420,
+        "color": 6
+      },
+      "id": "14a1a32a-1e04-425d-a722-0d547019753e",
+      "name": "Note Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Wait for Execution to Finish\n### What happens:\n- Waits 10 seconds.\n### Why:\n- The main run must be finished before its data can be read.\n### Settings:\n- Amount: 10 seconds.",
+        "height": 470,
+        "width": 420,
+        "color": 6
+      },
+      "id": "23ba4820-2614-469b-8c20-209840c67ab4",
+      "name": "Note Wait",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Get Execution\n### What happens:\n- Loads the finished main run with all node data through the n8n API.\n### Why:\n- The token numbers of the AI call are in the data of the AI node.\n### Settings:\n- Credential: n8n API with read-only rights.",
+        "height": 470,
+        "width": 420,
+        "color": 6
+      },
+      "id": "c9ce1820-f515-4904-a367-11075c23a5e1",
+      "name": "Note Get Execution",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Calculate Cost\n### What happens:\n- Adds up the tokens of all calls of `OpenAI Chat Model`, converts them to EUR and builds the row.\n- No AI call (invalid input, limit reached) -> returns nothing.\n### Why:\n- The cost per request feeds the daily limit.\n### Output:\n- `created_at` / `workflow` / `execution_id` / `model` / tokens / `cost_eur` / `is_test`",
+        "height": 470,
+        "width": 420,
+        "color": 6
+      },
+      "id": "70f438c0-579b-4ab7-8324-5af13024ff94",
+      "name": "Note Calculate Cost",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Write Row to usage_log\n### What happens:\n- Inserts the row into the table `usage_log`.\n### Why:\n- The main workflow reads these rows to enforce the daily limit.\n### Settings:\n- Data to Send: auto-map input data.",
+        "height": 470,
+        "width": 420,
+        "color": 6
+      },
+      "id": "c7a0c61a-f2cb-419b-94b7-98f87ec196d9",
+      "name": "Note Write Row",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        -48
+      ]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Wait for Execution to Finish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Execution to Finish": {
+      "main": [
+        [
+          {
+            "node": "Get Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Execution": {
+      "main": [
+        [
+          {
+            "node": "Calculate Cost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Cost": {
+      "main": [
+        [
+          {
+            "node": "Write Row to usage_log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

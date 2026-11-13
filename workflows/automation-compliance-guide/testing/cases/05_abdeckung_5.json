@@ -1,0 +1,179 @@
+{
+ "id": "05_abdeckung_5",
+ "zweck": "Abdeckung: kleinste Menge Antworten, die zusammen jede Antwort, jeden Artikel, jedes Thema und jede Bedingung abrufen",
+ "input": {
+  "name": "Test",
+  "llmx": "",
+  "text": "Test",
+  "rolle": "eigen",
+  "betrieb": "unklar",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "gesund",
+   "vertrag",
+   "bio"
+  ],
+  "betroffen": [
+   "dritte",
+   "b2b",
+   "bewerber"
+  ],
+  "inhalte": [
+   "gobd",
+   "urheber"
+  ],
+  "haltung": [
+   "logs",
+   "vektor"
+  ],
+  "umfang": "einzel",
+  "test": "keiner",
+  "llm": [
+   "anthropic"
+  ],
+  "dienste": [
+   "crm",
+   "auto"
+  ],
+  "region": "unklar",
+  "avv": "teil",
+  "anbieter": "unklar",
+  "kontakt": [
+   "direkt",
+   "intern",
+   "generiert"
+  ],
+  "auto": "hitl",
+  "bereich": [
+   "justiz"
+  ],
+  "bewert": [
+   "nichts"
+  ]
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 14,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "llm|D",
+   "dienste|D",
+   "region|D",
+   "avv|D",
+   "anbieter|D",
+   "kontakt|AI",
+   "bereich|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "24",
+     "26",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "28",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6",
+     "9",
+     "35"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21",
+     "88"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46",
+     "49"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "anbieter": {
+    "D": [
+     "5",
+     "28"
+    ],
+    "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
+   },
+   "bereich": {
+    "D": [],
+    "AI": [
+     "6",
+     "III"
+    ]
+   }
+  },
+  "karten": 52,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

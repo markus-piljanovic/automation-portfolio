@@ -1,0 +1,56 @@
+{
+ "id": "14_negativ_feld_fehlt",
+ "zweck": "Pflichtfeld fehlt",
+ "input": {
+  "name": "Mieter-Chatbot",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "vertrag",
+   "komm"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "inhalte": [
+   "nichts"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto",
+   "cloud"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 422,
+  "ok": false,
+  "fehler": [
+   "llm: fehlt"
+  ]
+ }
+}

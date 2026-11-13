@@ -1,0 +1,26 @@
+{
+ "id": "16_negativ_leerer_body",
+ "zweck": "Leerer Body",
+ "input": {},
+ "erwartung": {
+  "status": 422,
+  "ok": false,
+  "fehler": [
+   "rolle: fehlt",
+   "betrieb: fehlt",
+   "besonder: fehlt",
+   "daten: fehlt",
+   "betroffen: fehlt",
+   "inhalte: fehlt",
+   "haltung: fehlt",
+   "umfang: fehlt",
+   "test: fehlt",
+   "llm: fehlt",
+   "dienste: fehlt",
+   "kontakt: fehlt",
+   "auto: fehlt",
+   "bereich: fehlt",
+   "bewert: fehlt"
+  ]
+ }
+}

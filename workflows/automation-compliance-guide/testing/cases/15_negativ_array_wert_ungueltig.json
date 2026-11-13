@@ -1,0 +1,58 @@
+{
+ "id": "15_negativ_array_wert_ungueltig",
+ "zweck": "Mehrfachfeld mit nicht erlaubtem Wert",
+ "input": {
+  "name": "Mieter-Chatbot",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "DROP TABLE"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "openai"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto",
+   "cloud"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 422,
+  "ok": false,
+  "fehler": [
+   "daten: ungültiger Wert"
+  ]
+ }
+}

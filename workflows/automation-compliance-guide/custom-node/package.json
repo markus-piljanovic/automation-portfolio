@@ -1,0 +1,36 @@
+{
+  "name": "n8n-nodes-healthchecks-ping",
+  "version": "0.1.0",
+  "description": "n8n community node that sends start, success, fail and log pings to Healthchecks.io (cloud or self-hosted).",
+  "keywords": [
+    "n8n-community-node-package",
+    "healthchecks",
+    "monitoring",
+    "heartbeat"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/copy-icon.js",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\""
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/HealthchecksApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/HealthchecksPing/HealthchecksPing.node.js"
+    ]
+  },
+  "devDependencies": {
+    "n8n-workflow": "*",
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

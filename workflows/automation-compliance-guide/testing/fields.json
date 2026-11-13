@@ -1,0 +1,204 @@
+{
+ "rolle": {
+  "label": "Deine Rolle",
+  "type": "one",
+  "options": {
+   "avv": "Mein Kunde, ich baue nur in seinem Auftrag",
+   "eigen": "Ich selbst, eigenes Projekt",
+   "anbieter": "Ich verkaufe die KI-Lösung als Produkt an mehrere Kunden",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "betrieb": {
+  "label": "Server",
+  "type": "one",
+  "options": {
+   "selbst": "Ich selbst, Standort EU",
+   "selbstx": "Ich selbst, Standort außerhalb der EU",
+   "kunde": "Mein Kunde bzw. seine IT",
+   "cloud": "Ein Cloud-Dienst",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "besonder": {
+  "label": "Sonderfälle beim Kunden",
+  "type": "multi",
+  "options": {
+   "geheim": "Schweigepflicht",
+   "branche": "Aufsicht einer Behörde",
+   "nichts": "Nichts davon"
+  }
+ },
+ "daten": {
+  "label": "Angaben über Menschen",
+  "type": "multi",
+  "options": {
+   "kontakt": "Name und Kontakt",
+   "vertrag": "Kunden- und Zahlungsdaten",
+   "komm": "Nachrichten, die Menschen selbst schreiben",
+   "besch": "Personalakten",
+   "gesund": "Gesundheit",
+   "besond": "Herkunft, Religion, Politik, Gewerkschaft oder Sexualleben",
+   "bio": "Fotos, Stimme oder Video",
+   "straf": "Straftaten",
+   "keine": "Keine Angaben über Menschen",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "betroffen": {
+  "label": "Betroffene",
+  "type": "multi",
+  "options": {
+   "endkunden": "Privatkunden",
+   "b2b": "Ansprechpartner bei Firmen",
+   "besch": "Mitarbeiter",
+   "bewerber": "Bewerber",
+   "minder": "Kinder oder Jugendliche",
+   "dritte": "Andere Personen"
+  }
+ },
+ "inhalte": {
+  "label": "Besondere Inhalte",
+  "type": "multi",
+  "options": {
+   "gobd": "Rechnungen oder Buchungsbelege",
+   "urheber": "Fremde Inhalte mit Rechten Dritter",
+   "nichts": "Nichts davon"
+  }
+ },
+ "haltung": {
+  "label": "Speicherorte",
+  "type": "multi",
+  "options": {
+   "logs": "Im Verlauf von n8n",
+   "vektor": "In einer Wissensdatenbank für die KI",
+   "memory": "Im Chat-Gedächtnis des Bots",
+   "tabelle": "In einer Tabelle oder Datenbank",
+   "backup": "In Backups",
+   "keine": "Nirgends",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "umfang": {
+  "label": "Anzahl Betroffene",
+  "type": "one",
+  "options": {
+   "einzel": "Wenige, einzeln von Hand",
+   "hoch": "Viele, laufend automatisch"
+  }
+ },
+ "test": {
+  "label": "Tests",
+  "type": "one",
+  "options": {
+   "echt": "Mit echten Daten des Kunden",
+   "anon": "Mit erfundenen oder unkenntlich gemachten Daten",
+   "keiner": "Noch offen"
+  }
+ },
+ "llm": {
+  "label": "KI-Modelle",
+  "type": "multi",
+  "options": {
+   "openai": "OpenAI",
+   "anthropic": "Anthropic",
+   "google": "Google",
+   "azure": "Microsoft Azure OpenAI",
+   "mistral": "Mistral",
+   "aleph": "Aleph Alpha",
+   "lokal": "Lokal gehostetes Modell",
+   "keinllm": "Keine KI im Workflow",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "dienste": {
+  "label": "Weitere Dienste",
+  "type": "multi",
+  "options": {
+   "shauto": "Automatisierung auf meinem Server",
+   "shdb": "Datenbank auf meinem Server",
+   "shsonst": "Sonstiges auf meinem Server",
+   "auto": "Automatisierungs-Plattform in der Cloud",
+   "cloud": "Server- oder Cloud-Anbieter",
+   "crm": "CRM, Ticketsystem oder E-Mail",
+   "voice": "Telefonie oder Sprachbot",
+   "keine": "Keine weiteren Dienste",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "region": {
+  "label": "Standort der Anbieter",
+  "type": "one",
+  "options": {
+   "eu": "In der EU",
+   "std": "Außerhalb der EU oder nicht eingestellt",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "avv": {
+  "label": "Datenschutzvertrag (AVV)",
+  "type": "one",
+  "options": {
+   "alle": "Ja, mit allen",
+   "teil": "Nur mit einigen",
+   "keine": "Mit keinem",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "anbieter": {
+  "label": "Training",
+  "type": "one",
+  "options": {
+   "zero": "Nein, ist abgestellt",
+   "std": "Ja, oder nicht abgestellt",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "kontakt": {
+  "label": "Wer sieht die KI",
+  "type": "multi",
+  "options": {
+   "direkt": "Kunden im Gespräch mit der KI",
+   "generiert": "Kunden oder Öffentlichkeit bekommen KI-Inhalte",
+   "intern": "Nur Mitarbeiter",
+   "kein": "Niemand, die KI arbeitet im Hintergrund"
+  }
+ },
+ "auto": {
+  "label": "Wer entscheidet",
+  "type": "one",
+  "options": {
+   "assist": "Ein Mensch, die KI macht nur Vorschläge",
+   "hitl": "Die KI, ein Mensch gibt vorher frei",
+   "voll": "Die KI allein, mit Folgen für Menschen",
+   "voll0": "Die KI allein, ohne Folgen für Menschen",
+   "unklar": "Weiß ich nicht"
+  }
+ },
+ "bereich": {
+  "label": "Einsatzbereich",
+  "type": "multi",
+  "options": {
+   "hr": "Personal",
+   "kredit": "Kredit oder Versicherung",
+   "bildung": "Bildung",
+   "gesund": "Notfall",
+   "behoerde": "Sozialleistungen",
+   "justiz": "Polizei, Migration, Justiz oder Wahlen",
+   "infra": "Strom, Wasser, Gas oder Verkehr",
+   "keiner": "Keine davon"
+  }
+ },
+ "bewert": {
+  "label": "Bewertung von Menschen",
+  "type": "multi",
+  "options": {
+   "emotion": "Gefühle erkennen",
+   "verhalten": "Verhalten bewerten, Scoring",
+   "bio": "Menschen an Gesicht, Stimme oder Fingerabdruck erkennen",
+   "kateg": "Menschen nach Herkunft, Religion o. Ä. einordnen",
+   "nichts": "Nichts davon",
+   "unklar": "Weiß ich nicht"
+  }
+ }
+}
