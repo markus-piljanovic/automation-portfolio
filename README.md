@@ -7,7 +7,7 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 | Workflow | What problem it solves | Folder |
 |---|---|---|
 | **Compliance Guide** | Before an AI project starts, a consultant needs to know which GDPR and EU AI Act articles apply. A form with fixed rules gives the same checklist with citations for the same answers, and it can be tested. | [compliance-guide](workflows/automation-compliance-guide/) |
-| **Lead Qualification** | Requests from a form and a mailbox get answered late, and the hot ones get lost in a full inbox. Every slow answer can cost a customer. | [lead-qualification](workflows/lead-qualification/) |
+| **Lead Qualification** | Sales requests arrive by mail, spam and hot leads sit in the same inbox. Spam is stopped before any expensive AI step, an AI agent scores each real lead, and you are told on Telegram without personal data. A hot reply goes out only after your click. | [lead-qualification](workflows/lead-qualification/) |
 
 ### Compliance Guide
 
@@ -23,14 +23,14 @@ Example workflows from my automation work (n8n, self-hosted on a VPS). Every wor
 
 ### Lead Qualification
 
-![Lead Qualification](workflows/lead-qualification/images/workflow-overview.png)
+![Lead Qualification](workflows/lead-qualification/images/how-it-works.png)
 
-- **Problem:** small businesses lose customers and hot requests in a full inbox. Sorting and answering takes time.
-- Two entry points (form, mail), duplicate check, AI agent with imprint research
-- Categories hot, warm, cold, spam and clarification, with score and reply draft
-- Hot-lead replies are approved with two Telegram buttons, without any run waiting
-- Retries, AI fallback, error workflow, heartbeat ping, fixed limits for the AI
-- Tested live with more than 20 cases
+- **Problem:** sales requests, spam and hot leads share one inbox. Reading and judging each mail costs time, and an AI reading every spam mail costs money.
+- Spam is stopped first by rules and a small model (about 600 tokens), then an AI agent scores each real lead from 0 to 100 with an imprint check and company size bands
+- Telegram alerts carry only score, size band, reason and a link, no personal data. A hot reply goes out only after one click on Send
+- Own Healthchecks node on a side branch, error workflow with Telegram alert, four workflows in total
+- 23 test cases, 22 passed. The open one, a double click on a used button, cannot be triggered by hand
+- Seven [step pages](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/01-intake.html) show each stage with screenshots, and the [test plan](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) is one page
 
 [Read the full description](workflows/lead-qualification/README.md)
 

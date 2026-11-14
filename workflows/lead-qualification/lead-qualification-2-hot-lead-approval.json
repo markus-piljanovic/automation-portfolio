@@ -1,0 +1,781 @@
+{
+  "name": "Lead Qualification 2 - Hot Lead Approval",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {
+          "chatIds": "YOUR_TELEGRAM_CHAT_ID"
+        }
+      },
+      "id": "ap-trigger",
+      "name": "telegram_approval_trigger",
+      "webhookId": "2b3ae7fc-d628-4438-9516-398aa0e23a2f",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -16,
+        -112
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa1",
+              "name": "aktion",
+              "value": "={{ $json.callback_query.data.split(':')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "fa2",
+              "name": "recordId",
+              "value": "={{ $json.callback_query.data.split(':')[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "fa3",
+              "name": "queryId",
+              "value": "={{ $json.callback_query.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fa4",
+              "name": "chatId",
+              "value": "={{ $json.callback_query.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fa5",
+              "name": "messageId",
+              "value": "={{ $json.callback_query.message.message_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ap-parse",
+      "name": "parse_approval_click",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        400,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "id": "={{ $json.recordId }}",
+        "options": {}
+      },
+      "id": "ap-load",
+      "name": "load_lead",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        816,
+        -112
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "no1",
+              "leftValue": "={{ $json.fields['antwort-status'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ap-open",
+      "name": "still_open",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "se1",
+              "leftValue": "={{ $('parse_approval_click').item.json.aktion }}",
+              "rightValue": "send",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ap-issend",
+      "name": "is_send",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "you@example.com",
+        "toEmail": "={{ $('load_lead').item.json.fields.email }}",
+        "subject": "Ihre Anfrage",
+        "emailFormat": "text",
+        "text": "={{ $('load_lead').item.json.fields['antwort-entwurf'] + '\\n\\nYour name' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ap-mail",
+      "name": "send_reply_mail",
+      "webhookId": "188e5d41-cbeb-40db-9612-9c66d8a62631",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        2016,
+        -112
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('load_lead').item.json.id }}",
+            "antwort-status": "gesendet"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "antwort-status",
+              "displayName": "antwort-status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ap-sent",
+      "name": "mark_sent",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        2416,
+        -112
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "cachedResultName": "Lead Qualifizierung",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('load_lead').item.json.id }}",
+            "antwort-status": "verworfen"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "antwort-status",
+              "displayName": "antwort-status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ap-disc",
+      "name": "mark_discarded",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        2256,
+        368
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('parse_approval_click').item.json.chatId }}",
+        "messageId": "={{ $('parse_approval_click').item.json.messageId }}",
+        "text": "={{ ($('parse_approval_click').item.json.aktion === 'send' ? '✅ Antwort an den Lead gesendet' : '❌ Antwort verworfen') + '\\n\\n<a href=\"https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_AIRTABLE_TABLE_ID/' + $('load_lead').item.json.id + '\">Hier geht’s zum Lead</a>' }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ap-result",
+      "name": "telegram_result",
+      "webhookId": "b6e72bca-82be-490f-85d8-3dda3e84de86",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        2832,
+        -112
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('parse_approval_click').item.json.queryId }}",
+        "additionalFields": {
+          "text": "Erledigt"
+        }
+      },
+      "id": "ap-ack",
+      "name": "telegram_ack_click",
+      "webhookId": "522b15bb-334f-411d-b94c-d8eb7163313e",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3216,
+        -112
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('parse_approval_click').item.json.queryId }}",
+        "additionalFields": {
+          "show_alert": true,
+          "text": "Schon bearbeitet"
+        }
+      },
+      "id": "ap-handled",
+      "name": "telegram_already_handled",
+      "webhookId": "94696ea9-5ef7-408b-a2fa-d76cd31c8266",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        320
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Lead Qualification 2: Hot Lead Approval\n## A hot lead has an AI reply draft. You decide in Telegram if it goes out: one click on Send or Discard.\n## This workflow starts by that click, checks that the lead is still open, sends or drops the draft and updates the Telegram message and Airtable.\n\n### **Flow:** button click → read click → load lead → still open? → Send: mail + mark sent / Discard: mark discarded → update message → close the click.\n\n- **Key decision:** Nothing waits for your click. The main workflow ends after sending the buttons, your click starts a new run, even hours later.\n- **Safeguard:** A second click on the same message does nothing (\"already handled\").\n- **Data protection:** The Telegram message shows no personal data, only a link to the Airtable record.\n\n- **Workflow settings:** Error workflow 3, timezone Europe/Berlin, execution timeout 120 seconds. Only clicks from your own chat count.\n- **Next step:** Edit the draft before sending.",
+        "height": 368,
+        "width": 2000,
+        "color": 7
+      },
+      "id": "4adb82cf-6857-4337-b693-e83aa0510391",
+      "name": "Note Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -992
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 1. Click arrives and is checked",
+        "height": 150,
+        "width": 1580,
+        "color": 4
+      },
+      "id": "f39aa295-0f9d-4ac7-a261-e91fdac73e9d",
+      "name": "Band A",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 2. Send or discard, then close",
+        "height": 150,
+        "width": 2000,
+        "color": 5
+      },
+      "id": "5c417832-ee7e-44c1-8454-f700689e975a",
+      "name": "Band B",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## telegram_approval_trigger\n### What happens:\n- Starts when you press a button in Telegram.\n### Why:\n- Your click is the approval.\n### Settings:\n- Only button clicks, only your own chat.",
+        "height": 470,
+        "width": 380,
+        "color": 4
+      },
+      "id": "90192b4e-be0b-4835-939b-fdfe3698c150",
+      "name": "Note telegram_approval_trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## parse_approval_click\n### What happens:\n- Reads which button you pressed and which lead it belongs to.\n### Why:\n- The button carries `send:<record id>` or `discard:<record id>`.\n### Output:\n- `aktion` / `recordId` / `queryId` / `chatId` / `messageId`",
+        "height": 470,
+        "width": 380,
+        "color": 4
+      },
+      "id": "22eeccf8-fec2-4b88-8cc8-b25c127f0f08",
+      "name": "Note parse_approval_click",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## load_lead\n### What happens:\n- Loads the lead and its reply draft from Airtable.\n### Why:\n- The draft stays in Airtable, not in the button.\n### Settings:\n- Retry On Fail (3 tries, 5000 ms).",
+        "height": 470,
+        "width": 380,
+        "color": 4
+      },
+      "id": "537af640-ce8f-405f-b7fc-18f053683425",
+      "name": "Note load_lead",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## still_open\n### What happens:\n- IF the field `antwort-status` is empty -> go on.\n- IF not -> already handled.\n### Why:\n- Stops double sending when you click twice.",
+        "height": 470,
+        "width": 380,
+        "color": 4
+      },
+      "id": "63e0a7d0-ebed-4cdc-bc44-f993c307b843",
+      "name": "Note still_open",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## telegram_already_handled\n### What happens:\n- Shows the pop-up \"already handled\" and does nothing else.\n### Why:\n- Clear feedback for a second click.",
+        "height": 438,
+        "width": 380,
+        "color": 4
+      },
+      "id": "5f49cfa6-c41e-42ad-8797-047d370452f5",
+      "name": "Note telegram_already_handled",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## is_send\n### What happens:\n- IF `aktion` is send -> mail the draft.\n- IF not -> mark as discarded.",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "d1b4d887-ea7c-4e14-863d-db845cf100c3",
+      "name": "Note is_send",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## send_reply_mail\n### What happens:\n- Sends the approved draft to the lead.\n### Why:\n- A person approved every AI text before it leaves.\n### Settings:\n- Retry On Fail (3 tries, 5000 ms).",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "ffc44a05-64d3-4757-8f5b-aa213d7c47ee",
+      "name": "Note send_reply_mail",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## mark_sent\n### What happens:\n- Writes `gesendet` into `antwort-status`.\n### Why:\n- Marks the lead as handled for the next click.\n### Settings:\n- Retry On Fail (3 tries, 5000 ms).",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "6db984e2-cd8d-462f-a421-1f0fac09a6ca",
+      "name": "Note mark_sent",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## mark_discarded\n### What happens:\n- Writes `verworfen` into `antwort-status`. No mail.\n### Why:\n- Same lock as for sending.\n### Settings:\n- Retry On Fail (3 tries, 5000 ms).",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "32886f3a-7d98-4b28-b696-7d8d679df407",
+      "name": "Note mark_discarded",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## telegram_result\n### What happens:\n- Changes your Telegram message to \"reply sent\" or \"reply discarded\", with the link to the lead.\n### Why:\n- The buttons disappear, no second click.\n### Settings:\n- Parse mode HTML, Retry On Fail (3 tries, 5000 ms).",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "9f0137ea-9797-4f72-9591-9ced1a3ea4f1",
+      "name": "Note telegram_result",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## telegram_ack_click\n### What happens:\n- Closes the click with the short note \"done\".\n### Why:\n- Without it the button keeps spinning in Telegram.",
+        "height": 470,
+        "width": 380,
+        "color": 5
+      },
+      "id": "3b13c49c-3a5b-4bd0-970b-cb9cf3821c5c",
+      "name": "Note telegram_ack_click",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        -400
+      ]
+    }
+  ],
+  "connections": {
+    "telegram_approval_trigger": {
+      "main": [
+        [
+          {
+            "node": "parse_approval_click",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_approval_click": {
+      "main": [
+        [
+          {
+            "node": "load_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "load_lead": {
+      "main": [
+        [
+          {
+            "node": "still_open",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "still_open": {
+      "main": [
+        [
+          {
+            "node": "is_send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "telegram_already_handled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is_send": {
+      "main": [
+        [
+          {
+            "node": "send_reply_mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "mark_discarded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_reply_mail": {
+      "main": [
+        [
+          {
+            "node": "mark_sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_sent": {
+      "main": [
+        [
+          {
+            "node": "telegram_result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_discarded": {
+      "main": [
+        [
+          {
+            "node": "telegram_result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "telegram_result": {
+      "main": [
+        [
+          {
+            "node": "telegram_ack_click",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timezone": "Europe/Berlin"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

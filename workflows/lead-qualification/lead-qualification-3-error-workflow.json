@@ -1,0 +1,172 @@
+{
+  "name": "Lead Qualification 3 - Error Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e2b00001-0000-4000-8000-000000000001",
+      "name": "error_trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ (e => '🚨 <b>Workflow-Fehler</b>\\nWorkflow: ' + e($json.workflow.name) + '\\nNode: ' + e($json.execution.lastNodeExecuted) + '\\nFehler: ' + e(String($json.execution.error.message).slice(0, 200)) + '\\n<a href=\"' + $json.execution.url + '\">Zur Ausführung</a>')(s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')) }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "e2b00001-0000-4000-8000-000000000002",
+      "name": "telegram_alert",
+      "webhookId": "efb7342c-82b6-4551-b7b1-7a4a146c1748",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -112
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "event": "fail",
+        "slug": "lead-qualification",
+        "message": "={{ $json.workflow.name + ' / ' + $json.execution.lastNodeExecuted }}",
+        "options": {
+          "createIfMissing": true
+        }
+      },
+      "id": "a60d2dac-0a68-4f02-86dc-6c6ae6e0e6b5",
+      "name": "ping_fail",
+      "type": "n8n-nodes-healthchecks-ping.healthchecksPing",
+      "typeVersion": 1,
+      "position": [
+        800,
+        -112
+      ],
+      "credentials": {
+        "healthchecksApi": {
+          "id": "YOUR_HEALTHCHECKS_CREDENTIAL_ID",
+          "name": "Healthchecks account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# Lead Qualification 3: Error Workflow\n## When one of the lead workflows fails, you get told at once.\n## n8n starts this workflow by itself. It sends a Telegram alert and a fail ping to Healthchecks.\n\n### **Flow:** error → Telegram alert + fail ping.\n\n- **Key decision:** One shared place for errors, set as the error workflow of workflows 1 and 2.\n- **Data protection:** The alert names workflow, node and a short error text (200 characters), plus a link to the run. No lead data.\n- **Next step:** Mail as a second channel if Telegram is down.",
+        "height": 256,
+        "width": 1176,
+        "color": 7
+      },
+      "id": "12b296c6-f5d6-4530-be1a-9bdc07e9b570",
+      "name": "Note Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -832
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Alarm on failure",
+        "height": 150,
+        "width": 1180,
+        "color": 3
+      },
+      "id": "d874b9ca-5f3f-4c34-b264-f639f8881551",
+      "name": "Band",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -560
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## error_trigger\n### What happens:\n- Starts when a linked workflow fails.\n### Output:\n- `workflow` / `execution` (node, error, link)",
+        "height": 470,
+        "width": 380,
+        "color": 3
+      },
+      "id": "dae31bb1-07cc-4391-b637-cd456a95e339",
+      "name": "Note error_trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## telegram_alert\n### What happens:\n- Sends workflow name, failed node, short error text and a link to the run.\n### Why:\n- The fastest way to see it on your phone.",
+        "height": 470,
+        "width": 380,
+        "color": 3
+      },
+      "id": "215824f3-7bdc-4712-8802-0e4fd493539b",
+      "name": "Note telegram_alert",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ping_fail\n### What happens:\n- Tells Healthchecks the check has failed, with workflow and node as message.\n### Why:\n- Healthchecks keeps the history and can alert on its own channels.\n### Settings:\n- Custom node, On Error: Continue.",
+        "height": 470,
+        "width": 380,
+        "color": "#42003D"
+      },
+      "id": "d19de651-b685-42bf-b24a-e9c809722ef3",
+      "name": "Note ping_fail",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -400
+      ]
+    }
+  ],
+  "connections": {
+    "error_trigger": {
+      "main": [
+        [
+          {
+            "node": "telegram_alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ping_fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
