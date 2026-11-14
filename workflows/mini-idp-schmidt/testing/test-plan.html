@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-IDP Schmidt: test plan</title>
+<style>
+:root{--bg:#121214;--card:#1b1b1f;--line:#2a2a30;--tx:#E7E7EA;--mu:#9A9AA2;--mint:#5FE3C0;--cor:#FF6D5A;--amber:#F2C14E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",system-ui,sans-serif;font-weight:300;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 80px}
+h1{font-weight:600;color:var(--mint);font-size:34px;margin:0 0 4px}
+h2{font-weight:600;color:var(--mint);font-size:20px;margin:48px 0 14px}
+h3{font-weight:600;font-size:16px;margin:0;flex:1}
+.sub{color:var(--mu);max-width:820px}
+.how{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--mint);border-radius:12px;padding:14px 20px;margin:20px 0;font-size:14.5px}
+.how b{font-weight:600}.how ul{margin:6px 0 0;padding-left:20px}.how li{margin:3px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:24px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.kpi b{display:block;font-size:30px;font-weight:600;color:var(--mint)}
+.kpi.cor b{color:var(--cor)}.kpi.amber b{color:var(--amber)}
+.kpi span{color:var(--mu);font-size:13px}
+.flow{display:flex;align-items:stretch;gap:6px;overflow-x:auto;padding-bottom:8px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px;min-width:150px;flex:1;display:flex;flex-direction:column;gap:2px}
+.step .num{color:var(--bg);background:var(--mint);width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:600;display:grid;place-items:center}
+.step b{font-weight:600;font-size:14px;margin-top:4px}
+.step span{color:var(--mu);font-size:12px}
+.arrow{align-self:center;color:var(--mu);font-size:22px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.chip{font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--mint);color:var(--mint);text-decoration:none}
+.chip.error{border-color:var(--cor);color:var(--cor)}
+.chip.manual{border-style:dashed}
+.chip.open{opacity:.55}
+.matrix{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card)}
+th.v a{color:var(--mu);text-decoration:none;font-weight:400}
+.m-hit{color:var(--mint)}.m-open{color:var(--amber)}
+.cov.ok{color:var(--mint);font-weight:600}.cov.miss{color:var(--cor);font-weight:600}
+tfoot td{font-weight:600}
+.legend{color:var(--mu);font-size:12px;margin-top:8px}
+.grp h2{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.grp h2 small{font-weight:400;font-size:14px;color:var(--mu);margin-left:6px}
+.gl{background:var(--mint);color:var(--bg);border-radius:8px;padding:0 10px;font-size:16px}
+.gt{color:var(--mu);margin:0 0 14px;max-width:820px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--mint);border-radius:12px;padding:16px 18px}
+.card.error{border-left-color:var(--cor)}
+.card.manual{border-left-style:dashed}
+.card header{display:flex;gap:10px;align-items:flex-start}
+.id{font-weight:600;color:var(--bg);background:var(--mint);border-radius:6px;padding:0 8px;font-size:13px}
+.card.error .id{background:var(--cor)}
+.badge{font-size:11px;padding:2px 9px;border-radius:99px;white-space:nowrap;border:1px solid}
+.badge.pass{color:var(--mint);border-color:var(--mint)}
+.badge.fixed{color:var(--amber);border-color:var(--amber)}
+.badge.open{color:var(--mu);border-color:var(--mu)}
+.badge.fail{color:var(--cor);border-color:var(--cor)}
+.kind{color:var(--mu);font-size:12px;margin:2px 0 8px}
+dl{margin:0;display:grid;grid-template-columns:104px 1fr;gap:6px 12px;font-size:13.5px}
+dt{color:var(--mu)}dd{margin:0}
+dd small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
+dd.res{color:var(--tx)}
+dd.note{color:var(--amber)}
+@media(max-width:560px){.cards{grid-template-columns:1fr}dl{grid-template-columns:1fr}dt{margin-top:6px}}
+</style></head><body><div class="wrap">
+<h1>Mini-IDP Schmidt: test plan</h1>
+<p class="sub">As of 2026-10-29. Every case sent a real file through the real workflow with curl. Slack answers were given by hand. Runs took place on 28 October 2026 with fictional delivery notes. Durations of human cases include the time until the Slack answer. The notes in the workflow and the Slack texts are German, the language of the course project.</p>
+
+<div class="how"><b>How to read this page</b>
+<ul>
+<li>Every case sends one situation into the real workflow, says what <b>should</b> happen, and shows what <b>did</b> happen.</li>
+<li>The case number is a letter for the topic and a number within it: <b>A1</b> is the first case of group A. The groups are listed below.</li>
+<li>Red cases are error or edge cases, dashed ones needed a real Slack click. <b>Open</b> means the case was not run yet.</li>
+</ul></div>
+
+<div class="kpis">
+  <div class="kpi"><b>16 of 18</b><span>cases passed</span></div>
+  <div class="kpi amber"><b>0</b><span>problems found and fixed</span></div>
+  <div class="kpi cor"><b>3</b><span>error and edge cases</span></div>
+  <div class="kpi"><b>2</b><span>open</span></div>
+  <div class="kpi"><b>all</b><span>12 goals covered</span></div>
+</div>
+
+<h2>Path of a request</h2>
+<div class="flow"><div class="step"><div class="num">1</div><b>File arrives</b><span>webhook, one run per file</span><div class="chips"></div></div><div class="arrow">›</div><div class="step"><div class="num">2</div><b>OCR</b><span>free: PDF text or Tesseract</span><div class="chips"><a class="chip auto pass" href="#c-A1" title="Clean printed note stays on free OCR">A1</a><a class="chip error pass" href="#c-B1" title="Advertising PDF is not booked">B1</a><a class="chip auto open" href="#c-F1" title="Delivery note as a PDF with a text layer">F1</a></div></div><div class="arrow">›</div><div class="step"><div class="num">3</div><b>AI reads</b><span>Haiku reads, gemma4 checks</span><div class="chips"><a class="chip auto pass" href="#c-A2" title="Handwritten note goes to Haiku and gemma4">A2</a><a class="chip auto pass" href="#c-A3" title="US note: date format, gallons, English">A3</a><a class="chip error pass" href="#c-B2" title="Tax notice is not booked">B2</a></div></div><div class="arrow">›</div><div class="step"><div class="num">4</div><b>Rules</b><span>required fields, sum, type</span><div class="chips"><a class="chip manual pass" href="#c-C1" title="Missing order number and date are noticed">C1</a><a class="chip manual pass" href="#c-C2" title="Items do not add up to the printed total">C2</a><a class="chip auto open" href="#c-F2" title="Rule for handwritten remarks">F2</a></div></div><div class="arrow">›</div><div class="step"><div class="num">5</div><b>Human in Slack</b><span>approve, correct, reject</span><div class="chips"><a class="chip manual pass" href="#c-D1" title="Correct the missing fields">D1</a><a class="chip manual pass" href="#c-D2" title="Reject an unusable note">D2</a><a class="chip manual pass" href="#c-D3" title="Approve although the fields are still empty">D3</a><a class="chip manual pass" href="#c-D4" title="Correct a wrong quantity">D4</a><a class="chip manual pass" href="#c-D5" title="Reject the contradicting note">D5</a><a class="chip manual pass" href="#c-D6" title="Approve although the sum is still wrong">D6</a></div></div><div class="arrow">›</div><div class="step"><div class="num">6</div><b>Duplicate check</b><span>supplier + note number</span><div class="chips"><a class="chip auto pass" href="#c-E1" title="Clean note sent twice">E1</a><a class="chip manual pass" href="#c-E2" title="Corrected note sent again, nobody is asked">E2</a></div></div><div class="arrow">›</div><div class="step"><div class="num">7</div><b>Storage</b><span>tables, Slack message, cost log</span><div class="chips"></div></div><div class="arrow">›</div><div class="step"><div class="num">8</div><b>Error path</b><span>unreadable file</span><div class="chips"><a class="chip error pass" href="#c-B3" title="Broken image ends in the error path">B3</a></div></div></div>
+<p class="legend">The small tags show where a case happens on the path. Mint = normal case, coral = error or edge case, dashed = real click or mail, pale = open.</p>
+
+<section class="grp"><h2><span class="gl">A</span> Normal delivery notes <small>3 of 3 passed</small></h2><p class="gt">Are clean, handwritten and foreign-format notes read correctly, and does the cheapest way run first?</p><div class="cards"><article class="card auto pass" id="c-A1">
+  <header><span class="id">A1</span><h3>Clean printed note stays on free OCR</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>L1: a clean printed delivery note from a fictional office supplier, 4 items, all fields present.</dd>
+    <dt>Should happen</dt><dd>All fields read by OCR alone, no AI call, saved without a human. Cost 0 $.<small>Based on: Expected values read from the image by hand (Soll_L1-L3.json)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage OCR, result saved, 0 $, 17.4 s, no AI.</dd>
+    
+  </dl>
+</article>
+<article class="card auto pass" id="c-A2">
+  <header><span class="id">A2</span><h3>Handwritten note goes to Haiku and gemma4</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>L2: a freight forwarder's note with five handwritten remarks and a driver signature, 3 items.</dd>
+    <dt>Should happen</dt><dd>OCR is not sure, so Haiku reads the image and gemma4 confirms the values. Saved.<small>Based on: Expected values read from the image by hand (Soll_L1-L3.json)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage Prüfer (Haiku, then gemma4), saved. 2,353 tokens in, 462 out, 0.0047 $, 96.1 s.</dd>
+    <dt>Note</dt><dd class="note">The long duration includes the cold start of the local model (about a minute).</dd>
+  </dl>
+</article>
+<article class="card auto pass" id="c-A3">
+  <header><span class="id">A3</span><h3>US note: date format, gallons, English</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>L3: a note from a US supplier with a US date, gallons and rolls, 4 items.</dd>
+    <dt>Should happen</dt><dd>Fields read as on the note, date converted to the German format. Saved.<small>Based on: Expected values read from the image by hand (Soll_L1-L3.json)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage Prüfer, saved. 2,353 tokens in, 443 out, 0.0046 $, 35.4 s.</dd>
+    
+  </dl>
+</article></div></section>
+<section class="grp"><h2><span class="gl">B</span> Wrong documents and broken files <small>3 of 3 passed</small></h2><p class="gt">Is advertising or a tax notice never booked as a delivery note, and does a broken file end in the error path?</p><div class="cards"><article class="card error pass" id="c-B1">
+  <header><span class="id">B1</span><h3>Advertising PDF is not booked</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>T10: a PDF with a promotional mail instead of a delivery note.</dd>
+    <dt>Should happen</dt><dd>Recognised as no delivery note, goes to the clarification queue, nothing booked.<small>Based on: Test plan written before the run (Testbelege README)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage OCR, result clarification, reason "not a delivery note (detected: unknown)", 0 $, 0.3 s.</dd>
+    
+  </dl>
+</article>
+<article class="card error pass" id="c-B2">
+  <header><span class="id">B2</span><h3>Tax notice is not booked</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>T04: a sample tax notice with amounts, as a PNG.</dd>
+    <dt>Should happen</dt><dd>Document type "notice" is recognised, clarification queue, nothing booked.<small>Based on: Test plan written before the run (Testbelege README)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage Prüfer, result clarification, reason "not a delivery note (detected: notice)", 0.0029 $, 23.2 s.</dd>
+    
+  </dl>
+</article>
+<article class="card error pass" id="c-B3">
+  <header><span class="id">B3</span><h3>Broken image ends in the error path</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>T12: a JPG that cannot be opened.</dd>
+    <dt>Should happen</dt><dd>The error path catches it, a row is written, the run does not crash.<small>Based on: Test plan written before the run (Testbelege README)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage OCR, result error, reason "file not readable", 0 $, 1.5 s. A cost row was written.</dd>
+    
+  </dl>
+</article></div></section>
+<section class="grp"><h2><span class="gl">C</span> Rules ask a human <small>2 of 2 passed</small></h2><p class="gt">Do the fixed rules notice a missing field or a wrong sum and ask a person with the reason in plain words?</p><div class="cards"><article class="card manual pass" id="c-C1">
+  <header><span class="id">C1</span><h3>Missing order number and date are noticed</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file plus a real Slack message</div>
+  <dl>
+    <dt>What I sent</dt><dd>L4 (LS-2026-04911): order number and delivery date are empty on the note.</dd>
+    <dt>Should happen</dt><dd>The model returns empty fields and invents nothing. The required-field rule asks a human, naming both fields.<small>Based on: Test plan written before the run; required fields are supplier, note number, order number, delivery date</small></dd>
+    <dt>What happened</dt><dd class="res">Slack message "Action required: check" with the note image and the reasons "order number missing" and "delivery date missing". Read by Haiku, checked by gemma4, 0.0036 $.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-C2">
+  <header><span class="id">C2</span><h3>Items do not add up to the printed total</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file plus a real Slack message</div>
+  <dl>
+    <dt>What I sent</dt><dd>L5 (LS-2026-04912): items 24 + 6 + 500 + 40 = 570, printed total 640.</dd>
+    <dt>Should happen</dt><dd>The sum rule finds the contradiction and asks a human. No AI needed.<small>Based on: Test plan written before the run; sum check in the code node Regeln prüfen</small></dd>
+    <dt>What happened</dt><dd class="res">Slack message with the reason "Sum of items 570 ≠ total 640". Read by OCR only, 0 $.</dd>
+    
+  </dl>
+</article></div></section>
+<section class="grp"><h2><span class="gl">D</span> What the human can answer <small>6 of 6 passed</small></h2><p class="gt">Does each answer (approve, correct, reject) end where the rules say, and is every correction logged?</p><div class="cards"><article class="card manual pass" id="c-D1">
+  <header><span class="id">D1</span><h3>Correct the missing fields</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L4: in the form, choose Correct and enter order number BST-48099 and delivery date 19.05.2026.</dd>
+    <dt>Should happen</dt><dd>The rules run again, the note is saved with the human values, both changes are logged as old → new.<small>Based on: Test plan written before the run</small></dd>
+    <dt>What happened</dt><dd class="res">Saved, release "human (corrected)". Logged: order number empty → BST-48099, delivery date empty → 19.05.2026 (2 changes). Slack message sent, 136.8 s.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-D2">
+  <header><span class="id">D2</span><h3>Reject an unusable note</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L4: in the form, choose Reject with a comment.</dd>
+    <dt>Should happen</dt><dd>Nothing is saved, the note goes to the clarification queue with status rejected.<small>Based on: Test plan written before the run</small></dd>
+    <dt>What happened</dt><dd class="res">Queue row with status rejected and the comment as reason. Slack message "rejected", 88 s.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-D3">
+  <header><span class="id">D3</span><h3>Approve although the fields are still empty</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L4: in the form, choose Approve without entering the missing values.</dd>
+    <dt>Should happen</dt><dd>Approval does not skip the rules. The note ends in the clarification queue.<small>Based on: Test plan written before the run; the rules run again after the form</small></dd>
+    <dt>What happened</dt><dd class="res">Clarification, reason "required field missing despite the human's decision: order number, delivery date". Nothing saved.</dd>
+    <dt>Note</dt><dd class="note">The duration of 1,586 s is the time until the click, not processing time.</dd>
+  </dl>
+</article>
+<article class="card manual pass" id="c-D4">
+  <header><span class="id">D4</span><h3>Correct a wrong quantity</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L5: in the form, choose Correct and change position 3 from 500 to 570.</dd>
+    <dt>Should happen</dt><dd>The sum now fits (640). The note is saved and the change is logged.<small>Based on: Test plan written before the run</small></dd>
+    <dt>What happened</dt><dd class="res">Saved, release "human (corrected)", reason "corrected: position 3: 500 → 570". Correction row with comment, 83.6 s, 0 $.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-D5">
+  <header><span class="id">D5</span><h3>Reject the contradicting note</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L5: in the form, choose Reject.</dd>
+    <dt>Should happen</dt><dd>Not saved, clarification queue with status rejected.<small>Based on: Test plan written before the run</small></dd>
+    <dt>What happened</dt><dd class="res">Slack message "rejected", reason "rejected by a human: test: note unusable, ask the supplier", 65.5 s, 0 $.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-D6">
+  <header><span class="id">D6</span><h3>Approve although the sum is still wrong</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real Slack button and form</div>
+  <dl>
+    <dt>What I sent</dt><dd>L5: in the form, choose Approve with the sum unchanged.</dd>
+    <dt>Should happen</dt><dd>The rules run again and still see 570 ≠ 640. The note ends in the clarification queue.<small>Based on: Test plan written before the run</small></dd>
+    <dt>What happened</dt><dd class="res">Clarification, reason "sum of items 570 ≠ total 640 despite the human's decision". Queue row written, 133.9 s, 0 $.</dd>
+    
+  </dl>
+</article></div></section>
+<section class="grp"><h2><span class="gl">E</span> Duplicates <small>2 of 2 passed</small></h2><p class="gt">Is the same delivery note never stored twice, and is nobody asked about a duplicate?</p><div class="cards"><article class="card auto pass" id="c-E1">
+  <header><span class="id">E1</span><h3>Clean note sent twice</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file through the webhook</div>
+  <dl>
+    <dt>What I sent</dt><dd>L1 sent a second time after it was saved.</dd>
+    <dt>Should happen</dt><dd>The second run is flagged as duplicate, not stored again, no AI.<small>Based on: Test plan written before the run (Testbelege README)</small></dd>
+    <dt>What happened</dt><dd class="res">Stage OCR, result duplicate, reason names supplier and note number, 0 $, 18 s.</dd>
+    
+  </dl>
+</article>
+<article class="card manual pass" id="c-E2">
+  <header><span class="id">E2</span><h3>Corrected note sent again, nobody is asked</h3><span class="badge pass">passed</span></header>
+  <div class="kind">Real file plus a real Slack message</div>
+  <dl>
+    <dt>What I sent</dt><dd>L5 sent again after the corrected version was saved.</dd>
+    <dt>Should happen</dt><dd>Found as duplicate before the Slack action, so no question is sent. Only a message.<small>Based on: Design: duplicate check before the Slack action (block 7)</small></dd>
+    <dt>What happened</dt><dd class="res">Slack message "duplicate" with the reason "already stored", no button. Stage OCR, 0 $, 16.1 s.</dd>
+    
+  </dl>
+</article></div></section>
+<section class="grp"><h2><span class="gl">F</span> Not tested yet <small>0 of 2 passed</small></h2><p class="gt">Known gaps, listed openly.</p><div class="cards"><article class="card auto open" id="c-F1">
+  <header><span class="id">F1</span><h3>Delivery note as a PDF with a text layer</h3><span class="badge open">open</span></header>
+  <div class="kind">Not run</div>
+  <dl>
+    <dt>What I sent</dt><dd>A real delivery note as PDF. All test notes so far were images.</dd>
+    <dt>Should happen</dt><dd>The text is taken straight from the PDF path, without Tesseract.<small>Based on: Design: block 2, PDF path</small></dd>
+    <dt>What happened</dt><dd class="res"><em>not run yet</em></dd>
+    <dt>Note</dt><dd class="note">The PDF path was built but never fed a real delivery note.</dd>
+  </dl>
+</article>
+<article class="card auto open" id="c-F2">
+  <header><span class="id">F2</span><h3>Rule for handwritten remarks</h3><span class="badge open">open</span></header>
+  <div class="kind">Not run</div>
+  <dl>
+    <dt>What I sent</dt><dd>L2 again, to check the rule that handles remarks on the note.</dd>
+    <dt>Should happen</dt><dd>The remarks are read and the note is routed by the rule.<small>Based on: Design: rules in the code node Regeln prüfen</small></dd>
+    <dt>What happened</dt><dd class="res"><em>not run yet</em></dd>
+    <dt>Note</dt><dd class="note">Not exercised in the final test round.</dd>
+  </dl>
+</article></div></section>
+
+<h2>Coverage: goals against cases</h2>
+<div class="matrix"><table>
+<thead><tr><th>Goal</th><th class="v"><a href="#c-A1">A1</a></th><th class="v"><a href="#c-A2">A2</a></th><th class="v"><a href="#c-A3">A3</a></th><th class="v"><a href="#c-B1">B1</a></th><th class="v"><a href="#c-B2">B2</a></th><th class="v"><a href="#c-B3">B3</a></th><th class="v"><a href="#c-C1">C1</a></th><th class="v"><a href="#c-C2">C2</a></th><th class="v"><a href="#c-D1">D1</a></th><th class="v"><a href="#c-D2">D2</a></th><th class="v"><a href="#c-D3">D3</a></th><th class="v"><a href="#c-D4">D4</a></th><th class="v"><a href="#c-D5">D5</a></th><th class="v"><a href="#c-D6">D6</a></th><th class="v"><a href="#c-E1">E1</a></th><th class="v"><a href="#c-E2">E2</a></th><th class="v"><a href="#c-F1">F1</a></th><th class="v"><a href="#c-F2">F2</a></th><th>Covered</th></tr></thead>
+<tbody><tr><th>File is accepted</th><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-open">●</td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Clean notes run on free OCR only</th><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>AI reads what OCR cannot</th><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Second model double-checks</th><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Missing required fields detected</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Sum of items checked</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Other documents are not booked</th><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Human decides in Slack</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Corrections are logged</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Duplicates are caught</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Broken file is handled</th><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr><tr><th>Cost logged for every run</th><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class="m-hit">●</td><td class=""></td><td class=""></td><td class="cov ok">✓</td></tr></tbody>
+<tfoot><tr><td>Every goal at least once?</td><td colspan="18"></td><td class="cov ok">✓</td></tr></tfoot>
+</table></div>
+<p class="legend">● passed, yellow = still open. Empty fields are no error: a case simply does not touch that goal.</p>
+</div></body></html>

@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "title": "Mini-IDP Schmidt: test plan",
+    "stand": "2026-10-29",
+    "hinweis": "Every case sent a real file through the real workflow with curl. Slack answers were given by hand. Runs took place on 28 October 2026 with fictional delivery notes. Durations of human cases include the time until the Slack answer. The notes in the workflow and the Slack texts are German, the language of the course project."
+  },
+  "steps": [
+    {"id": "intake", "label": "File arrives", "sub": "webhook, one run per file"},
+    {"id": "ocr", "label": "OCR", "sub": "free: PDF text or Tesseract"},
+    {"id": "ai", "label": "AI reads", "sub": "Haiku reads, gemma4 checks"},
+    {"id": "rules", "label": "Rules", "sub": "required fields, sum, type"},
+    {"id": "human", "label": "Human in Slack", "sub": "approve, correct, reject"},
+    {"id": "dup", "label": "Duplicate check", "sub": "supplier + note number"},
+    {"id": "store", "label": "Storage", "sub": "tables, Slack message, cost log"},
+    {"id": "error", "label": "Error path", "sub": "unreadable file"}
+  ],
+  "goals": [
+    ["accept", "File is accepted"],
+    ["ocr_only", "Clean notes run on free OCR only"],
+    ["ai_read", "AI reads what OCR cannot"],
+    ["cross_check", "Second model double-checks"],
+    ["required", "Missing required fields detected"],
+    ["sum_check", "Sum of items checked"],
+    ["not_note", "Other documents are not booked"],
+    ["human", "Human decides in Slack"],
+    ["correction", "Corrections are logged"],
+    ["duplicate", "Duplicates are caught"],
+    ["error_path", "Broken file is handled"],
+    ["cost_log", "Cost logged for every run"]
+  ],
+  "groups": [
+    {"id": "A", "title": "Normal delivery notes", "text": "Are clean, handwritten and foreign-format notes read correctly, and does the cheapest way run first?"},
+    {"id": "B", "title": "Wrong documents and broken files", "text": "Is advertising or a tax notice never booked as a delivery note, and does a broken file end in the error path?"},
+    {"id": "C", "title": "Rules ask a human", "text": "Do the fixed rules notice a missing field or a wrong sum and ask a person with the reason in plain words?"},
+    {"id": "D", "title": "What the human can answer", "text": "Does each answer (approve, correct, reject) end where the rules say, and is every correction logged?"},
+    {"id": "E", "title": "Duplicates", "text": "Is the same delivery note never stored twice, and is nobody asked about a duplicate?"},
+    {"id": "F", "title": "Not tested yet", "text": "Known gaps, listed openly."}
+  ],
+  "cases": [
+    {
+      "id": "A1", "group": "A", "stage": "ocr", "kind": "auto", "how": "Real file through the webhook",
+      "title": "Clean printed note stays on free OCR",
+      "input": "L1: a clean printed delivery note from a fictional office supplier, 4 items, all fields present.",
+      "expect": "All fields read by OCR alone, no AI call, saved without a human. Cost 0 $.",
+      "source": "Expected values read from the image by hand (Soll_L1-L3.json)",
+      "result": "Stage OCR, result saved, 0 $, 17.4 s, no AI.",
+      "status": "pass", "goals": ["accept", "ocr_only", "cost_log"], "note": ""
+    },
+    {
+      "id": "A2", "group": "A", "stage": "ai", "kind": "auto", "how": "Real file through the webhook",
+      "title": "Handwritten note goes to Haiku and gemma4",
+      "input": "L2: a freight forwarder's note with five handwritten remarks and a driver signature, 3 items.",
+      "expect": "OCR is not sure, so Haiku reads the image and gemma4 confirms the values. Saved.",
+      "source": "Expected values read from the image by hand (Soll_L1-L3.json)",
+      "result": "Stage Prüfer (Haiku, then gemma4), saved. 2,353 tokens in, 462 out, 0.0047 $, 96.1 s.",
+      "status": "pass", "goals": ["accept", "ai_read", "cross_check", "cost_log"],
+      "note": "The long duration includes the cold start of the local model (about a minute)."
+    },
+    {
+      "id": "A3", "group": "A", "stage": "ai", "kind": "auto", "how": "Real file through the webhook",
+      "title": "US note: date format, gallons, English",
+      "input": "L3: a note from a US supplier with a US date, gallons and rolls, 4 items.",
+      "expect": "Fields read as on the note, date converted to the German format. Saved.",
+      "source": "Expected values read from the image by hand (Soll_L1-L3.json)",
+      "result": "Stage Prüfer, saved. 2,353 tokens in, 443 out, 0.0046 $, 35.4 s.",
+      "status": "pass", "goals": ["accept", "ai_read", "cross_check", "cost_log"], "note": ""
+    },
+    {
+      "id": "B1", "group": "B", "stage": "ocr", "kind": "error", "how": "Real file through the webhook",
+      "title": "Advertising PDF is not booked",
+      "input": "T10: a PDF with a promotional mail instead of a delivery note.",
+      "expect": "Recognised as no delivery note, goes to the clarification queue, nothing booked.",
+      "source": "Test plan written before the run (Testbelege README)",
+      "result": "Stage OCR, result clarification, reason \"not a delivery note (detected: unknown)\", 0 $, 0.3 s.",
+      "status": "pass", "goals": ["accept", "not_note", "cost_log"], "note": ""
+    },
+    {
+      "id": "B2", "group": "B", "stage": "ai", "kind": "error", "how": "Real file through the webhook",
+      "title": "Tax notice is not booked",
+      "input": "T04: a sample tax notice with amounts, as a PNG.",
+      "expect": "Document type \"notice\" is recognised, clarification queue, nothing booked.",
+      "source": "Test plan written before the run (Testbelege README)",
+      "result": "Stage Prüfer, result clarification, reason \"not a delivery note (detected: notice)\", 0.0029 $, 23.2 s.",
+      "status": "pass", "goals": ["accept", "ai_read", "not_note", "cost_log"], "note": ""
+    },
+    {
+      "id": "B3", "group": "B", "stage": "error", "kind": "error", "how": "Real file through the webhook",
+      "title": "Broken image ends in the error path",
+      "input": "T12: a JPG that cannot be opened.",
+      "expect": "The error path catches it, a row is written, the run does not crash.",
+      "source": "Test plan written before the run (Testbelege README)",
+      "result": "Stage OCR, result error, reason \"file not readable\", 0 $, 1.5 s. A cost row was written.",
+      "status": "pass", "goals": ["accept", "error_path", "cost_log"], "note": ""
+    },
+    {
+      "id": "C1", "group": "C", "stage": "rules", "kind": "manual", "how": "Real file plus a real Slack message",
+      "title": "Missing order number and date are noticed",
+      "input": "L4 (LS-2026-04911): order number and delivery date are empty on the note.",
+      "expect": "The model returns empty fields and invents nothing. The required-field rule asks a human, naming both fields.",
+      "source": "Test plan written before the run; required fields are supplier, note number, order number, delivery date",
+      "result": "Slack message \"Action required: check\" with the note image and the reasons \"order number missing\" and \"delivery date missing\". Read by Haiku, checked by gemma4, 0.0036 $.",
+      "status": "pass", "goals": ["accept", "ai_read", "cross_check", "required", "human", "cost_log"], "note": ""
+    },
+    {
+      "id": "C2", "group": "C", "stage": "rules", "kind": "manual", "how": "Real file plus a real Slack message",
+      "title": "Items do not add up to the printed total",
+      "input": "L5 (LS-2026-04912): items 24 + 6 + 500 + 40 = 570, printed total 640.",
+      "expect": "The sum rule finds the contradiction and asks a human. No AI needed.",
+      "source": "Test plan written before the run; sum check in the code node Regeln prüfen",
+      "result": "Slack message with the reason \"Sum of items 570 ≠ total 640\". Read by OCR only, 0 $.",
+      "status": "pass", "goals": ["accept", "ocr_only", "sum_check", "human", "cost_log"], "note": ""
+    },
+    {
+      "id": "D1", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Correct the missing fields",
+      "input": "L4: in the form, choose Correct and enter order number BST-48099 and delivery date 19.05.2026.",
+      "expect": "The rules run again, the note is saved with the human values, both changes are logged as old → new.",
+      "source": "Test plan written before the run",
+      "result": "Saved, release \"human (corrected)\". Logged: order number empty → BST-48099, delivery date empty → 19.05.2026 (2 changes). Slack message sent, 136.8 s.",
+      "status": "pass", "goals": ["human", "correction", "cost_log"], "note": ""
+    },
+    {
+      "id": "D2", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Reject an unusable note",
+      "input": "L4: in the form, choose Reject with a comment.",
+      "expect": "Nothing is saved, the note goes to the clarification queue with status rejected.",
+      "source": "Test plan written before the run",
+      "result": "Queue row with status rejected and the comment as reason. Slack message \"rejected\", 88 s.",
+      "status": "pass", "goals": ["human", "cost_log"], "note": ""
+    },
+    {
+      "id": "D3", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Approve although the fields are still empty",
+      "input": "L4: in the form, choose Approve without entering the missing values.",
+      "expect": "Approval does not skip the rules. The note ends in the clarification queue.",
+      "source": "Test plan written before the run; the rules run again after the form",
+      "result": "Clarification, reason \"required field missing despite the human's decision: order number, delivery date\". Nothing saved.",
+      "status": "pass", "goals": ["required", "human", "cost_log"],
+      "note": "The duration of 1,586 s is the time until the click, not processing time."
+    },
+    {
+      "id": "D4", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Correct a wrong quantity",
+      "input": "L5: in the form, choose Correct and change position 3 from 500 to 570.",
+      "expect": "The sum now fits (640). The note is saved and the change is logged.",
+      "source": "Test plan written before the run",
+      "result": "Saved, release \"human (corrected)\", reason \"corrected: position 3: 500 → 570\". Correction row with comment, 83.6 s, 0 $.",
+      "status": "pass", "goals": ["sum_check", "human", "correction", "cost_log"], "note": ""
+    },
+    {
+      "id": "D5", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Reject the contradicting note",
+      "input": "L5: in the form, choose Reject.",
+      "expect": "Not saved, clarification queue with status rejected.",
+      "source": "Test plan written before the run",
+      "result": "Slack message \"rejected\", reason \"rejected by a human: test: note unusable, ask the supplier\", 65.5 s, 0 $.",
+      "status": "pass", "goals": ["human", "cost_log"], "note": ""
+    },
+    {
+      "id": "D6", "group": "D", "stage": "human", "kind": "manual", "how": "Real Slack button and form",
+      "title": "Approve although the sum is still wrong",
+      "input": "L5: in the form, choose Approve with the sum unchanged.",
+      "expect": "The rules run again and still see 570 ≠ 640. The note ends in the clarification queue.",
+      "source": "Test plan written before the run",
+      "result": "Clarification, reason \"sum of items 570 ≠ total 640 despite the human's decision\". Queue row written, 133.9 s, 0 $.",
+      "status": "pass", "goals": ["sum_check", "human", "cost_log"], "note": ""
+    },
+    {
+      "id": "E1", "group": "E", "stage": "dup", "kind": "auto", "how": "Real file through the webhook",
+      "title": "Clean note sent twice",
+      "input": "L1 sent a second time after it was saved.",
+      "expect": "The second run is flagged as duplicate, not stored again, no AI.",
+      "source": "Test plan written before the run (Testbelege README)",
+      "result": "Stage OCR, result duplicate, reason names supplier and note number, 0 $, 18 s.",
+      "status": "pass", "goals": ["accept", "ocr_only", "duplicate", "cost_log"], "note": ""
+    },
+    {
+      "id": "E2", "group": "E", "stage": "dup", "kind": "manual", "how": "Real file plus a real Slack message",
+      "title": "Corrected note sent again, nobody is asked",
+      "input": "L5 sent again after the corrected version was saved.",
+      "expect": "Found as duplicate before the Slack action, so no question is sent. Only a message.",
+      "source": "Design: duplicate check before the Slack action (block 7)",
+      "result": "Slack message \"duplicate\" with the reason \"already stored\", no button. Stage OCR, 0 $, 16.1 s.",
+      "status": "pass", "goals": ["accept", "duplicate", "cost_log"], "note": ""
+    },
+    {
+      "id": "F1", "group": "F", "stage": "ocr", "kind": "auto", "how": "Not run",
+      "title": "Delivery note as a PDF with a text layer",
+      "input": "A real delivery note as PDF. All test notes so far were images.",
+      "expect": "The text is taken straight from the PDF path, without Tesseract.",
+      "source": "Design: block 2, PDF path",
+      "result": "", "status": "open", "goals": ["accept"], "note": "The PDF path was built but never fed a real delivery note."
+    },
+    {
+      "id": "F2", "group": "F", "stage": "rules", "kind": "auto", "how": "Not run",
+      "title": "Rule for handwritten remarks",
+      "input": "L2 again, to check the rule that handles remarks on the note.",
+      "expect": "The remarks are read and the note is routed by the rule.",
+      "source": "Design: rules in the code node Regeln prüfen",
+      "result": "", "status": "open", "goals": [], "note": "Not exercised in the final test round."
+    }
+  ]
+}
