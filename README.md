@@ -1,6 +1,9 @@
 # n8n Workflows
 
-Example workflows from my automation work (n8n, self-hosted on a VPS). Every workflow has its own folder with an explanation, screenshots and the exported JSON files.
+I am currently in an advanced training programme on AI-supported workflow automation. 
+These workflows are my practice projects: built in n8n (self-hosted on a VPS), tested against written expectations, with known limits listed openly.
+
+Every workflow has its own folder with an explanation, screenshots and the exported JSON files.
 
 ## Workflows
 
