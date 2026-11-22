@@ -44,7 +44,11 @@ Quellcode in [`custom-node/`](custom-node/). Sendet Start-, Erfolgs- oder Fail-P
 
 27 Fälle, Erwartungen vorab aus Regelwerk und Gesetzestext, nicht aus dem Gedächtnis: 8 Abdeckung, 1 Regression, 9 Varianten, 6 Fehlerfälle, 3 Sonderfälle (Tageslimit, KI-Ausfall, Fehler im Workflow mit Alarm). Alle 41 Artikel werden mindestens einmal abgerufen. Ein KI-Lauf kostet im Schnitt etwa 0,002 €.
 
-Selbst ausführen: `GUIDE_URL=https://<dein-n8n>/webhook/guide-request node testing/run_tests.js` (alle Fälle) oder mit Präfix (`... run_tests.js 09`).
+[![Abdeckungs-Matrix: jede Zeile ein Fall, jede Spalte ein Gesetzesartikel](images/test-coverage.png)](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html?ansicht=matrix)
+
+Die Matrix zeigt, welcher Fall welchen Artikel abruft. Ein Klick auf das Bild öffnet den interaktiven [Testplan](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) mit allen 27 Fällen.
+
+Selbst ausführen (nur mit eigenem Workflow, siehe [Einrichten](#einrichten)): Die Adresse deines Webhooks in `GUIDE_URL` setzen und `node testing/run_tests.js` starten. Mit Präfix läuft nur ein Fall, zum Beispiel `node testing/run_tests.js 09`.
 
 ## Grenzen
 
