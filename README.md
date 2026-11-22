@@ -1,9 +1,9 @@
 # n8n Workflows
 
-Ich befinde mich derzeit in einer fortgeschrittenen Weiterbildung zu KI-gestützter Workflow-Automatisierung. 
-Diese Workflows sind meine Praxisprojekte: gebaut in n8n (selbst gehostet auf einem VPS), gegen vorab schriftlich festgehaltene Erwartungen getestet, bekannte Grenzen offen benannt.
+Ich befinde mich derzeit in einer zertifizierten Weiterbildung zum Digitalisierungsmanager und vertiefe mein Wissen zu KI-gestützten Workflows.
 
-Jeder Workflow hat einen eigenen Ordner mit Beschreibung, Screenshots und den exportierten JSON-Dateien. 
+Jeder Workflow hier ist gebaut in n8n (selbst gehostet auf einem VPS), hat einen eigenen Ordner mit Beschreibung, Screenshots und den exportierten JSON-Dateien. 
+Alle Projekte sind gegen vorab schriftlich festgehaltene Erwartungen getestet, bekannte Grenzen offen benannt.
 Die Workflows und ihre Sticky Notes sind auf Englisch, alles andere auf Deutsch.
 
 ## Workflows
