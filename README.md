@@ -1,9 +1,10 @@
 # n8n Workflows
 
-Ich mache gerade eine fortgeschrittene Weiterbildung zu KI-gestützter Workflow-Automatisierung und baue dabei in meiner Freizeit eigene Workflows in n8n (selbst gehostet auf einem VPS). 
+Ich absolviere aktuell eine Weiterbildung zum Digitalisierungsmanager und setze neben dem Kurs in meiner Freizeit eigene Workflows in n8n um (selbst gehostet auf einem VPS). 
 Hier liegt eine Auswahl aus einem größeren Pool an Workflows, die ich nach und nach fertigstelle und veröffentliche. Die Übersicht in diesem Repository wird laufend erweitert.
 
-Die Workflows sind gegen vorab schriftlich festgehaltene Erwartungen getestet, bekannte Grenzen sind offen benannt. Jeder Workflow hat einen eigenen Ordner mit Beschreibung, Screenshots und den exportierten JSON-Dateien. 
+Die Workflows sind gegen vorab schriftlich festgehaltene Erwartungen getestet, bekannte Grenzen sind offen benannt. 
+Jeder Workflow hat einen eigenen Ordner mit Beschreibung, Screenshots und den exportierten JSON-Dateien. 
 Die Workflows und ihre Sticky Notes sind auf Englisch, alles andere auf Deutsch.
 
 ## Workflows
