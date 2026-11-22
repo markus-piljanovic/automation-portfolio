@@ -9,7 +9,7 @@ Ein Berater klickt sich durch etwa 20 Fragen zu einem geplanten KI-Projekt und b
 
 ## Idee
 
-- Feste Regeln im Code wählen die Themen aus den Klick-Antworten. Gleiche Antworten ergeben immer das gleiche Ergebnis.
+- Feste Regeln im Code wählen die Themen basierend auf den Klick-Antworten der Eingabemaske. Gleiche Antworten ergeben immer das gleiche Ergebnis.
 - Die passenden Gesetzesartikel kommen aus einer Datenbank (297 Karten: DSGVO 118, AI Act 179), per exaktem Filter und nicht per Ähnlichkeitssuche.
 - Die KI schreibt pro Thema nur drei Sätze aus diesen Karten. Eine Code-Prüfung ersetzt jede Zusammenfassung, die keinen erlaubten Artikel nennt.
 - Ein erster Versuch als Chatbot konnte nicht garantieren, dass alle Gesetze abgedeckt sind. Deshalb dieser Aufbau.
