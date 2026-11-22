@@ -15,7 +15,8 @@
   "options": {
    "selbst": "Ich selbst, Standort EU",
    "selbstx": "Ich selbst, Standort außerhalb der EU",
-   "kunde": "Mein Kunde bzw. seine IT",
+   "kunde": "Mein Kunde bzw. seine IT, Standort EU",
+   "kundex": "Mein Kunde bzw. seine IT, außerhalb der EU",
    "cloud": "Ein Cloud-Dienst",
    "unklar": "Weiß ich nicht"
   }
@@ -54,7 +55,8 @@
    "besch": "Mitarbeiter",
    "bewerber": "Bewerber",
    "minder": "Kinder oder Jugendliche",
-   "dritte": "Andere Personen"
+   "dritte": "Andere Personen",
+   "unklar": "Weiß ich nicht"
   }
  },
  "inhalte": {
@@ -84,7 +86,8 @@
   "type": "one",
   "options": {
    "einzel": "Wenige, einzeln von Hand",
-   "hoch": "Viele, laufend automatisch"
+   "hoch": "Viele, laufend automatisch",
+   "unklar": "Weiß ich nicht"
   }
  },
  "test": {
@@ -108,18 +111,16 @@
    "aleph": "Aleph Alpha",
    "lokal": "Lokal gehostetes Modell",
    "keinllm": "Keine KI im Workflow",
-   "unklar": "Weiß ich nicht"
+   "unklar": "Weiß ich nicht",
+   "andere_usa": "Sonstige KI (USA)",
+   "andere_eu": "Sonstige KI (EU)"
   }
  },
  "dienste": {
   "label": "Weitere Dienste",
   "type": "multi",
   "options": {
-   "shauto": "Automatisierung auf meinem Server",
-   "shdb": "Datenbank auf meinem Server",
-   "shsonst": "Sonstiges auf meinem Server",
    "auto": "Automatisierungs-Plattform in der Cloud",
-   "cloud": "Server- oder Cloud-Anbieter",
    "crm": "CRM, Ticketsystem oder E-Mail",
    "voice": "Telefonie oder Sprachbot",
    "keine": "Keine weiteren Dienste",
@@ -186,7 +187,8 @@
    "behoerde": "Sozialleistungen",
    "justiz": "Polizei, Migration, Justiz oder Wahlen",
    "infra": "Strom, Wasser, Gas oder Verkehr",
-   "keiner": "Keine davon"
+   "keiner": "Keine davon",
+   "unklar": "Weiß ich nicht"
   }
  },
  "bewert": {

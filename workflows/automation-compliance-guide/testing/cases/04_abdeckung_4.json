@@ -13,11 +13,6 @@
   "daten": [
    "keine"
   ],
-  "betroffen": [
-   "minder",
-   "bewerber",
-   "endkunden"
-  ],
   "inhalte": [
    "urheber",
    "gobd"
@@ -25,15 +20,11 @@
   "haltung": [
    "unklar"
   ],
-  "umfang": "einzel",
-  "test": "anon",
   "llm": [
    "unklar"
   ],
   "dienste": [
-   "crm",
-   "shdb",
-   "cloud"
+   "crm"
   ],
   "region": "std",
   "avv": "keine",
@@ -55,11 +46,10 @@
   "status": 200,
   "ok": true,
   "stop": false,
-  "aufgaben": 14,
+  "aufgaben": 13,
   "summaryKeys": [
    "rolle|D",
    "betrieb|D",
-   "betroffen|D",
    "haltung|D",
    "llm|D",
    "dienste|D",
@@ -85,23 +75,6 @@
     "D": [
      "28",
      "32"
-    ],
-    "AI": []
-   },
-   "betroffen": {
-    "D": [
-     "8",
-     "12",
-     "13",
-     "14",
-     "15",
-     "16",
-     "17",
-     "18",
-     "19",
-     "20",
-     "21",
-     "88"
     ],
     "AI": []
    },
@@ -168,7 +141,7 @@
     ]
    }
   },
-  "karten": 51,
+  "karten": null,
   "kiStatus": "ok",
   "ersetzt": []
  }

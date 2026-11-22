@@ -1,0 +1,59 @@
+{
+ "id": "20_negativ_dienst_server_anbieter",
+ "zweck": "Der Wert cloud (Server-Anbieter) ist bei Weitere Dienste nicht mehr erlaubt",
+ "input": {
+  "name": "Fall 20",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "vertrag",
+   "komm"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "openai"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto",
+   "cloud"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 422,
+  "ok": false,
+  "fehler": [
+   "dienste: ungültiger Wert"
+  ]
+ }
+}

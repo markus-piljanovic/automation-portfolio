@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation Compliance Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* KONTEXT: Entwurf Seite 1 und 2 der Compliance-Guide-Demo, hell auf dunkelgrünem Canvas, vertikal.
+   BEISPIEL: Klick auf "Weiter" schiebt Seite 2 (Daten) in die Karte; rechts klappt die Karte "Daten" zu und "Projekt und Rolle" wird zum grünen Haken. */
+
+/* ---------- ABSCHNITT 1: Farben und Grundlagen ---------- */
+:root{
+  --bg:#0f2a21; --card:#ffffff; --line:#e2e6ec; --ink:#1b2330; --mut:#6a7485; --faint:#a3abb8;
+  --acc:#1e9a69; --acc-bg:#e3f5ec; --gl:#8ccfae; --dim:#153227;
+  --t:.55s cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(circle,rgba(255,255,255,.10) 1.2px,transparent 1.4px) 0 0/22px 22px,var(--bg);color:var(--ink);font:15px/1.45 "DM Sans","Segoe UI",system-ui,sans-serif;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ---------- ABSCHNITT 2: Kopfzeile ---------- */
+.top{width:100%;max-width:940px;margin:0 auto;padding:clamp(8px,2vh,24px) 20px 0;flex:none;display:flex;align-items:center;gap:12px}
+.top h1{font-size:18px;font-weight:650;letter-spacing:-.01em;color:#eaf7f0}
+.top small{color:#8fb5a2;font-weight:400;margin-left:6px;font-size:13px}
+.top .sp{flex:1}
+.pill{font-size:12px;color:#7fe3bd;background:rgba(95,227,192,.12);border:1px solid rgba(95,227,192,.4);padding:4px 11px;border-radius:99px;white-space:nowrap}
+
+/* ---------- ABSCHNITT 3: Bühne (links aktive Seite, rechts Weg) ---------- */
+.wrap{width:100%;max-width:940px;margin:clamp(8px,2vh,22px) auto clamp(10px,2.2vh,26px);padding:0 20px;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:20px;align-items:stretch}
+
+/* ---------- ABSCHNITT 4: Aktive Seite links ---------- */
+.main{background:var(--card);border-radius:18px;padding:clamp(12px,2.2vh,28px) 28px clamp(10px,1.8vh,20px);display:flex;flex-direction:column;min-height:0;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+.cont{flex:1;min-height:0;display:flex;flex-direction:column;transition:transform .3s ease,opacity .3s ease}
+/* „Beim Wechsel: alter Inhalt schiebt weg, neuer kommt von der Seite.“ */
+.cont.out-l{transform:translateX(-46px);opacity:0}
+.cont.out-r{transform:translateX(46px);opacity:0}
+.cont.pre-r{transform:translateX(46px);opacity:0;transition:none}
+.cont.pre-l{transform:translateX(-46px);opacity:0;transition:none}
+.mh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.step{font-size:12px;font-weight:650;color:var(--acc);text-transform:uppercase;letter-spacing:.06em}
+.main h2{font-size:22px;letter-spacing:-.02em;margin-top:0}
+.sub{color:var(--mut)}
+.law{display:inline-block;font-size:12px;color:var(--mut);background:#f1f4f2;border:1px solid var(--line);border-radius:99px;padding:1px 10px}
+.row{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;padding:clamp(6px,1.2vh,16px) 0;border-top:2px solid var(--gl);margin-top:clamp(6px,1.2vh,16px)}
+.row:first-of-type{margin-top:clamp(8px,1.6vh,18px)}
+.row.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;align-content:center}
+.ql{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:clamp(6px,1.2vh,12px);font-weight:650;font-size:17px;color:#0d4f37}
+.ql em{font-style:normal;font-weight:400;color:#8a94a3;font-size:11.5px;margin-left:auto;order:2}
+.qq{color:var(--mut);font-size:13.5px;font-weight:400;flex-basis:100%;order:3;margin:-4px 0 0}
+
+/* ---------- ABSCHNITT 5: Eingabefeld und Antwort-Chips ---------- */
+.inp{width:100%;padding:clamp(8px,1.2vh,12px) 14px;border:1px solid var(--line);border-radius:11px;font:inherit;background:#fff;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.c{position:relative;padding:clamp(6px,1vh,10px) 14px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font-size:14px;cursor:default;transition:border-color .15s}
+.c:hover{border-color:var(--faint)}
+.c.on{background:var(--acc-bg);border-color:var(--acc);color:#0d6b46;font-weight:600}
+.c.on::before{content:"✓";margin-right:7px;font-weight:700}
+.c[data-ex]:hover::after{content:attr(data-ex);position:absolute;left:0;bottom:calc(100% + 6px);z-index:5;background:var(--ink);color:#fff;font-size:12px;font-weight:400;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.info{width:17px;height:17px;border-radius:50%;border:1px solid var(--faint);color:var(--faint);font-size:11px;font-weight:600;display:inline-grid;place-items:center;cursor:help}
+.info:hover::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 2px);width:max-content;max-width:min(400px,90vw);white-space:normal;z-index:6;background:var(--ink);color:#fff;font-weight:400;font-size:12.5px;line-height:1.4;padding:9px 12px;border-radius:10px}
+
+/* „Gruppierte Chips: kleines Etikett vor den Chips der Gruppe.“ */
+.chips.gr{gap:6px 16px}
+.grp{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.gl{font-size:11.5px;color:var(--mut);margin-right:2px}
+.tb .chips.gr{gap:4px 14px}
+
+/* ---------- ABSCHNITT 5b: Neue Bedienung (nur Seite 3): Form zeigt die Art der Auswahl, Handlungsanweisung, feste Etikettenspalte ---------- */
+.gc{display:contents}
+.neu .c::before{content:"";display:inline-block;width:11px;height:11px;border:1.5px solid #9aa4b2;margin-right:7px;vertical-align:-1px;box-sizing:border-box;background:#fff;font-size:8px;line-height:8px;text-align:center;color:#fff;font-weight:700}
+.neu .c.r::before{border-radius:50%}
+.neu .c.k::before{border-radius:3px}
+.neu .c.on::before{content:"";border-color:var(--acc);background:var(--acc)}
+.neu .c.k.on::before{content:"✓"}
+.neu .c.r.on::before{background:radial-gradient(circle,var(--acc) 0 2.6px,#fff 3px)}
+.neu .chips.gr{flex-direction:column;flex-wrap:nowrap;gap:6px}
+.neu .grp+.grp{border-top:1px dotted #cfd8d3;padding-top:3px;margin-top:1px}
+.nt{font-size:11.5px;color:#6a7485;align-self:center;white-space:nowrap}
+.tc .ql{margin-bottom:3px}
+.tc .neu .grp{grid-template-columns:122px 1fr}
+.tc .nt{font-size:11px}
+.tc .neu .grp+.grp{padding-top:1px;margin-top:0}
+.tc .neu .chips.gr{gap:1px}
+.tc .neu .c{padding:2px 9px}
+.gh{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8a94a3;font-weight:600;margin-bottom:-2px}
+.neu .grp{display:grid;grid-template-columns:132px 1fr;align-items:start;gap:0}
+.neu .gc{display:flex;flex-wrap:wrap;gap:6px}
+.neu .gl{font-size:13px;font-weight:600;color:#0d4f37;padding-top:5px;margin:0}
+.tb .neu .chips.gr{gap:3px}
+.tb .neu .c{padding:3px 9px;font-size:12.5px}
+.tb .neu .gl{padding-top:3px;font-size:12.5px}
+.tb .neu .row{padding-top:4px;padding-bottom:4px;margin-top:4px}
+
+/* ---------- ABSCHNITT 6: Knöpfe ---------- */
+.foot{flex:none;display:flex;align-items:center;gap:14px;border-top:2px solid var(--gl);padding-top:8px;margin-top:2px}
+.hint{color:var(--faint);font-size:12px;flex:1}
+.btn{border:1px solid var(--line);background:#fff;color:#55606f;padding:5px 14px;border-radius:9px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn:disabled{color:var(--faint);cursor:default}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri:hover{background:#17805a}
+.btn.pri:disabled{background:#cfe5da;border-color:#cfe5da;color:#fff}
+
+/* ---------- ABSCHNITT 7: Weg rechts (erledigt = Haken, aktuell = zugeklappt, wartend = Karte) ---------- */
+.side{min-height:0;padding-top:2px}
+.side h3{font-size:12px;color:#7fa391;text-transform:uppercase;letter-spacing:.06em;font-weight:650;padding:0 4px 10px}
+/* „Jeder Block klappt per Grid-Trick sanft auf und zu.“ */
+.g{display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows var(--t),opacity .4s}
+.g>.in{overflow:hidden;min-height:0}
+.g.off{grid-template-rows:0fr;opacity:0}
+.w{margin-bottom:10px;border:1px dashed rgba(255,255,255,.2);border-radius:14px;padding:11px 14px;background:var(--dim);transition:background .3s,border-color .3s}
+.wt{display:flex;align-items:center;gap:9px;font-weight:650;color:#a9c7b8}
+.wt i{font-style:normal;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.1);color:#a9c7b8;font-size:12px;display:grid;place-items:center}
+.w ul{list-style:none;margin:8px 0 0 31px;color:#7fa391;font-size:13px}
+.w ul li{padding:1px 0}
+/* „Kurz vor dem Wechsel leuchtet die Karte auf, die gleich nach links wandert.“ */
+.it.lit .w{background:#1f5a44;border:1px solid #5fe3c0}
+.it.lit .wt,.it.lit .wt i{color:#eaf7f0}
+.dn{margin-bottom:10px;display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:12px;background:#17402f;border:1px solid rgba(95,227,192,.45);color:#9ff0d2;font-weight:600;font-size:14px;cursor:pointer}
+.dn i{font-style:normal;width:20px;height:20px;border-radius:50%;background:#5fe3c0;color:#0f2a21;font-size:12px;font-weight:700;display:grid;place-items:center}
+.dn:hover{background:#1d4d39}
+
+/* ---------- ABSCHNITT 8: Enger setzen. JS setzt auf body die Klasse ta (Frage neben den Titel) und tb (Chips kleiner, Untertitel weg), je nach Fensterhöhe und Dichte der Seite ---------- */
+.pair .qq{order:3;flex-basis:100%}
+.pair .ql em{order:2}
+.ta .qq{flex:0 1 auto;flex-basis:auto;order:0;margin:0 0 0 2px;font-size:12.5px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ta .ql{flex-wrap:nowrap;gap:6px;white-space:nowrap}
+.ta .ql em{white-space:nowrap;font-size:11.5px;order:3;flex:none;margin-left:auto}
+.ta .pair .ql{flex-wrap:wrap;white-space:normal}
+.ta .pair .qq{order:3;flex-basis:100%;margin:-4px 0 0;white-space:normal}
+.ta .pair .ql em{order:2}
+.ta .c{font-size:13.5px;padding:6px 12px}
+.ta .chips{gap:6px}
+.ta .foot{padding-top:8px;margin-top:2px}
+.ta .btn{padding:5px 14px;font-size:13.5px;border-radius:9px}
+.ta .hint{font-size:12px}
+.tb .c{font-size:13px;padding:4px 10px;border-radius:9px}
+.tb .chips{gap:5px}
+.tb .ql{margin-bottom:5px}
+.tb .row{padding-top:5px;padding-bottom:5px;margin-top:5px}
+.tb .inp{padding:6px 12px}
+.tc .sub{display:none}
+.tc .gh{display:none}
+.tc .neu .row{padding-top:3px;padding-bottom:3px;margin-top:3px}
+.tc .pair .qq{display:none}
+.tc .main h2{font-size:20px}
+
+/* ---------- ABSCHNITT 9: Ergebnisseite und Ladeanzeige ---------- */
+.rh{display:flex;align-items:center;gap:18px;margin-top:6px}
+.rh h2{flex:1}
+.stats{display:flex;gap:8px}
+.stat{background:var(--acc-bg);border-radius:11px;padding:5px 12px;text-align:center;line-height:1.15}
+.stat b{display:block;font-size:20px;color:#0d6b46}
+.stat span{font-size:11px;color:var(--mut)}
+.stat.warn{background:#fff1ee}.stat.warn b{color:#c2410c}
+.stop2{margin-top:10px;background:#fff1ee;border:1px solid #f3b5a8;color:#9a2f17;border-radius:11px;padding:8px 12px;font-size:13px}
+.zl{display:flex;align-items:center;gap:10px;border-top:2px solid var(--gl);margin-top:10px;padding-top:8px;font-size:12px;color:var(--mut)}
+.zl .sp{flex:1}
+.rth{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8a94a3;font-weight:600;margin-top:10px}
+.rt{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;max-height:76px;overflow-y:auto}
+.rt button{font:inherit;font-size:12.5px;font-weight:600;padding:4px 9px;white-space:nowrap;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--mut);cursor:pointer}
+.rt button b{font-weight:600;color:var(--faint);margin-left:4px}
+.rt button:hover{border-color:var(--faint)}
+.rt button.on{background:var(--acc-bg);border-color:var(--acc);color:#0d6b46}
+.rt button.on b{color:#0d6b46}
+.tdl{list-style:none;flex:1;min-height:0;overflow-y:auto;margin-top:2px}
+.tdl li{background:var(--acc-bg);border-radius:10px;margin-bottom:4px;padding:0 12px}
+.tdl li:has(input:checked){opacity:.6}
+.tdl summary{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;list-style:none}
+.tdl summary::-webkit-details-marker{display:none}
+.tdl input{accent-color:var(--acc);width:15px;height:15px;flex:none}
+.tdl summary b{flex:1;font-weight:600;font-size:13.5px;line-height:1.3;color:#0b3d2b}
+.tdl li:has(input:checked) summary b{color:var(--faint);text-decoration:line-through}
+.rf{font-size:10.5px;color:var(--mut);background:#f1f4f2;border:1px solid var(--line);border-radius:99px;padding:0 7px;white-space:nowrap}
+.rf{background:#fff}
+.rf.d{border-color:rgba(245,158,11,.5);color:#965a06}
+.rf.ai{border-color:rgba(139,92,246,.45);color:#5a3fb0}
+.rf.n{border-color:#cfd6dd;color:#55606f}
+.laws .w.d{border-color:rgba(245,158,11,.45)}
+.laws .w.d .wt i{background:rgba(245,158,11,.25);color:#f6c779}
+.laws .w.ai{border-color:rgba(167,139,250,.5)}
+.laws .w.ai .wt i{background:rgba(167,139,250,.28);color:#cdbcfb}
+.tdl summary::after{content:"+";color:var(--faint);font-weight:600;width:14px;text-align:center}
+.tdl details[open] summary::after{content:"\2013"}
+.tdb{padding:0 0 11px 27px;font-size:13.5px;color:#3b4656}
+.tdb p{margin-top:5px}
+.tdb .k{font-weight:650;color:#0d4f37}
+.ld{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--acc-bg);border-top-color:var(--acc);animation:sp .9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ld ul{list-style:none;text-align:left;margin-top:6px}
+.ld li{padding:3px 0;color:var(--faint);transition:color .3s}
+.ld li::before{content:"\25CB";margin-right:9px}
+.ld li.on{color:var(--ink)}
+.ld li.on::before{content:"\2713";color:var(--acc);font-weight:700}
+.laws .w ul{margin-left:0;font-size:12px}
+.laws .w ul li{display:flex;gap:6px;padding:2px 4px;border-radius:6px;transition:background .25s,color .25s}
+.laws .w ul li.hl{background:#1f5a44;color:#eaf7f0;font-weight:600}
+.laws .wt{font-size:13.5px}
+.side{overflow-y:auto}
+/* ---------- ABSCHNITT 10: Wendekarte Checkliste / Gesetzestext ---------- */
+.flip{flex:1;min-height:0;position:relative;perspective:1600px;margin-top:10px}
+.fi{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,0,.2,1)}
+.flip.turn .fi{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;background:var(--card)}
+.face.back{transform:rotateY(180deg)}
+.flip .zl{margin-top:0}
+.tdb a.gz{color:#0d6b46;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+.tdb a.gz:hover{color:var(--acc)}
+.bk{display:flex;align-items:center;gap:10px;border-top:2px solid var(--gl);padding-top:8px;font-size:12px;color:var(--mut)}
+.bk .sp{flex:1}
+.zur{color:#0d6b46;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;text-decoration:underline;text-underline-offset:2px}
+.lt{flex:1;min-height:0;overflow-y:auto;padding:4px 4px 8px 0}
+.lt h4{font-size:15px;color:#0b3d2b;margin:12px 0 2px}
+.lt h4 small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+.lt p{font-size:13px;line-height:1.5;color:#3b4656;margin-top:8px}
+.lt .ln{display:block}
+.lt .lb{padding-left:22px;text-indent:-16px;margin-top:3px}
+.lt p b{color:#0d4f37}
+.lt .fn{font-size:11.5px;color:var(--faint);margin-top:10px}
+.lt .zur{display:inline-block;margin-top:12px}
+/* „Notausgang: reicht selbst das Verkleinern nicht, scrollt nur die Karte innen.“ */
+.main.scroll .cont{overflow-y:auto}
+@media(max-width:900px){ .wrap{grid-template-columns:1fr} .main{padding:20px} }
+@media(prefers-reduced-motion:reduce){ *{transition-duration:.01s!important} }
+
+/* ---------- ABSCHNITT 11: Echte Maske (zusätzlich zur Demo) ---------- */
+.c{cursor:pointer}
+.hint.bad{color:#b3261e;font-weight:600}
+.vs{font-size:10.5px;color:#a45a00;background:#fff3e0;border:1px solid #f0c27b;border-radius:99px;padding:0 7px;white-space:nowrap}
+.klar{margin-top:10px;background:#fff8ec;border:1px solid #f0c27b;color:#7a4a00;border-radius:11px;padding:8px 12px;font-size:13px}
+.klar a{color:#a45a00;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.ks{background:var(--acc-bg);border-radius:10px;padding:8px 12px;margin:8px 0 4px;font-size:13px;line-height:1.5;color:#0b3d2b}
+.ks b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#4d7f69;margin-bottom:2px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <svg width="30" height="30" viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="31" height="31" rx="9" fill="#17382d" stroke="#2c6a52"/><circle cx="9" cy="17" r="3" fill="#5fe3c0"/><circle cx="25" cy="10" r="3" fill="#8be9a8"/><circle cx="25" cy="24" r="3" fill="#5fe3c0"/><path d="M12 16l10-5M12 18l10 5" stroke="#8aa0c8" stroke-width="1.5"/></svg>
+  <h1>Rechtscheck für deinen KI-Workflow<small>DSGVO und EU AI Act</small></h1>
+  <span class="sp"></span>
+  <span class="pill">Echte Maske: Antworten gehen an deinen Workflow</span>
+</header>
+
+<main class="wrap">
+  <section class="main"><div class="cont" id="cont"></div><div class="foot" id="foot"></div></section>
+  <aside class="side" id="side"></aside>
+</main>
+
+<script>
+// KONTEXT: Echte Maske des Automation Compliance Guide. Gleiches Design wie die Demo, aber die Antworten kommen vom Nutzer, werden an den Webhook geschickt und das Ergebnis wird aus der Antwort des Workflows gebaut.
+// BEISPIEL: Du klickst "Mein Kunde", "Cloud-Dienst", "ChatGPT" und so weiter, "Guide erstellen" schickt die 20 Antworten an den Webhook, die Seite zeigt danach die To-dos mit Gesetzestext auf der Rückseite.
+// Erzeugt von build_live.py aus entwurf_seite1.html (Design) und Guide_Live.html (Aufgabentexte, Gesetzestexte). Nicht von Hand ändern.
+
+// ---------- ABSCHNITT 0: Anbindung an den Workflow ----------
+// „Adresse des Webhooks. Im Repo steht hier ein Platzhalter, den du durch deinen eigenen Webhook ersetzt.“
+const GUIDE_URL = "https://your-n8n-host.example/webhook/guide-request";
+
+// ---------- ABSCHNITT 1: Daten (vom Build eingesetzt) ----------
+// „Je Seite: Titel, ein Satz, Gesetz und die Fragen. Zwei Fragen in einer Zeile stehen nebeneinander.“
+const SEITEN = [
+  {t:"Projekt und Rolle", s:"Wer du im Projekt bist und wo der Workflow läuft.", law:"betrifft DSGVO und AI Act", rows:[
+    [{id:"name", l:"Projektname", t:"text", info:"Erscheint als Titel im Ergebnis und im PDF."}],
+    [{id:"rolle", l:"Deine Rolle", q:"Wer entscheidet, wofür die Daten genutzt werden?", kind:"Eine Antwort",
+      info:"Entscheidet der Kunde, bist du Auftragsverarbeiter. Entscheidest du selbst, bist du Verantwortlicher. Verkaufst du die KI-Lösung unter deinem Namen, bist du zusätzlich Anbieter im Sinne des AI Act.",
+      o:[["avv","Mein Kunde, ich baue nur in seinem Auftrag"],["eigen","Ich selbst, mein eigenes Projekt"],["anbieter","Ich verkaufe die KI-Lösung an mehrere Kunden"],["unklar","Weiß ich nicht"]]}],
+    [{id:"betrieb", l:"Server", q:"Wer verwaltet den Server, auf dem der Workflow läuft?", kind:"Eine Antwort",
+      info:"Wer den Server verwaltet, ist für Zugriff, Backups, Updates und Verschlüsselung zuständig.",
+      o:[["selbst","Ich selbst, Standort EU (z. B. Contabo Deutschland)"],["selbstx","Ich selbst, außerhalb der EU"],["kunde","Mein Kunde bzw. seine IT, Standort EU"],["kundex","Mein Kunde bzw. seine IT, außerhalb der EU"],["cloud","Cloud-Dienst (z. B. n8n Cloud)"],["unklar","Weiß ich nicht"]]}],
+    [{id:"besonder", l:"Sonderfälle", q:"Trifft eines davon auf dich oder deinen Kunden zu?", kind:"Mehrfachauswahl",
+      info:"Diese Fälle führen zu einem Eskalationshinweis. Die passenden Gesetze (z. B. § 203 StGB) sind nicht im Datenbestand des Guides.",
+      o:[["geheim","Schweigepflicht (z. B. Arzt, Anwalt)"],["branche","Behördenaufsicht (z. B. Bank, Klinik)"],["nichts","Nichts davon"]]}]
+  ]},
+  {t:"Daten", s:"Welche Angaben über Menschen der Workflow verarbeitet und wo sie bleiben.", law:"betrifft DSGVO", dicht:true, rows:[
+    [{id:"daten", l:"Angaben über Menschen", q:"Welche fließen durch den Workflow?", kind:"Mehrfachauswahl",
+      info:"Auch was nur kurz durchläuft, zählt. Nachrichten zählen immer mit, weil Menschen darin alles schreiben können.",
+      o:[["kontakt","Name und Kontakt (z. B. E-Mail, Telefon, Adresse)"],["vertrag","Kunden- und Zahlungsdaten (z. B. Kundennummer, IBAN)"],["komm","Nachrichten (z. B. Mails, Chats, Tickets)"],["besch","Personalakten (z. B. Lebenslauf, Gehalt)"],["gesund","Gesundheit (z. B. Krankmeldung, Diagnose)"],["besond","Herkunft, Religion, Politik"],["bio","Foto, Stimme, Video"],["straf","Straftaten (z. B. Führungszeugnis)"],["keine","Keine Angaben (z. B. nur Produktdaten)"],["unklar","Weiß ich nicht"]]}],
+    [{id:"betroffen", l:"Betroffene", q:"Über wen sind diese Angaben?", kind:"Mehrfachauswahl",
+      info:"Betroffene sind die Menschen, um die es in den Daten geht, nicht die Nutzer des Workflows.",
+      o:[["endkunden","Privatkunden"],["b2b","Firmenkontakte"],["besch","Mitarbeiter"],["bewerber","Bewerber"],["minder","Minderjährige (unter 18)"],["dritte","Andere (z. B. Personen in Dokumenten)"],["unklar","Weiß ich nicht"]]}],
+    [{id:"haltung", l:"Speicherorte", q:"Wo bleiben die Daten nach dem Lauf liegen?", kind:"Mehrfachauswahl",
+      info:"n8n speichert die Daten jedes Laufs standardmäßig im Verlauf (Executions). Wissensdatenbanken für die KI enthalten oft Klartext.",
+      o:[["logs","n8n-Verlauf (Executions, standardmäßig an)"],["vektor","Wissensdatenbank (z. B. Supabase, Pinecone)"],["memory","Chat-Gedächtnis"],["tabelle","Tabelle oder Datenbank (z. B. Google Sheets)"],["backup","Backups"],["keine","Nirgends, sofort gelöscht"],["unklar","Weiß ich nicht"]]}],
+    [{id:"inhalte", l:"Besondere Inhalte", q:"Verarbeitet der Workflow eines davon?", kind:"Mehrfachauswahl",
+      info:"Dafür gelten eigene Gesetze (z. B. GoBD für Buchungsbelege, Urheberrecht), die nicht im Datenbestand des Guides sind. Der Guide gibt deshalb einen Eskalationshinweis.",
+      o:[["gobd","Rechnungen, Buchungsbelege (müssen aufbewahrt werden)"],["urheber","Fremde Inhalte (z. B. Fachartikel, Fotos)"],["nichts","Nichts davon"]]}],
+    [{id:"umfang", l:"Anzahl Betroffene", q:"Wie viele Menschen?", kind:"Eine Antwort",
+      info:"Das Gesetz nennt keine feste Zahl, es spricht von „umfangreich“. Im Zweifel „Viele“ wählen.",
+      o:[["einzel","Wenige, von Hand (z. B. 10 Rechnungen pro Woche)"],["hoch","Viele, automatisch (z. B. täglich hunderte Anfragen)"],["unklar","Weiß ich nicht"]]},
+     {id:"test", l:"Tests", q:"Mit welchen Daten testest du?", kind:"Eine Antwort",
+      info:"Stopp-Regel: Echte Daten zum Ausprobieren sind keine Ausnahme, solange AVV und Drittland nicht geklärt sind.",
+      o:[["echt","Echte Daten"],["anon","Erfundene"],["keiner","Noch offen"]]}]
+  ]}
+  ,{t:"Anbieter und Verträge", s:"Welche Dienste die Daten sehen und was vertraglich geregelt ist.", law:"betrifft DSGVO", dicht:true, neu:true, rows:[
+    [{id:"llm", l:"KI-Modelle", q:"Welche KI liest die Daten deines Workflows?", kind:"Mehrfachauswahl", gh:"Hosting-Standort",
+      info:"Die KI liest die Texte und Daten, die dein Workflow ihr schickt. Sitzt die Firma außerhalb der EU, gehen die Daten in ein Drittland, auch wenn das Rechenzentrum in der EU steht. Eine unbekannte KI unter USA behandelt der Guide wie außerhalb der EU (sichere Seite).",
+      g:[["USA",["openai","anthropic","google","azure","andere_usa"]],["EU",["mistral","aleph","andere_eu"]],["Mein Rechner",["lokal"]],["",["keinllm","unklar"]]],
+      o:[["openai","ChatGPT (OpenAI)","v"],["anthropic","Claude (Anthropic)","v"],["google","Gemini (Google)","v"],["azure","Microsoft (Copilot, Azure)","v"],["andere_usa","Sonstige"],["mistral","Mistral"],["aleph","Aleph Alpha"],["andere_eu","Sonstige"],["lokal","Lokales Modell","v"],["keinllm","Keine KI im Workflow"],["unklar","Weiß ich nicht"]]}],
+    [{id:"dienste", l:"Weitere Dienste", q:"Welche Dienste sehen die Daten?", kind:"Mehrfachauswahl",
+      info:"Gemeint sind Dienste, die bei einer anderen Firma laufen und die Daten sehen. Dein eigener Server zählt hier nicht, den hast du in Schritt 1 angegeben. Solche Dienste brauchen in der Regel einen AVV.",
+      o:[["auto","Make, Zapier, n8n Cloud"],["crm","CRM, Mail (HubSpot, Gmail)","v"],["voice","Telefonie (VAPI, Twilio)","v"],["keine","Keine weiteren"],["unklar","Weiß ich nicht"]]}],
+    [{id:"region", l:"Standort", q:"Wo verarbeiten die Anbieter die Daten?", kind:"Eine Antwort",
+      info:"Gemeint ist das Rechenzentrum der Dienste, nicht dein eigener Server. Bei vielen Anbietern muss die EU-Region im Konto aktiv gewählt werden.",
+      o:[["eu","In der EU (EU-Region im Konto gewählt)"],["std","Außerhalb EU oder offen"],["unklar","Weiß ich nicht"]]},
+     {id:"anbieter", l:"Training", q:"Dürfen Anbieter damit ihre KI trainieren?", kind:"Eine Antwort",
+      info:"Bei API- und Business-Tarifen ist Training oft ausgeschlossen, aber nicht immer. Teils muss man es im Konto abstellen.",
+      o:[["zero","Nein, abgestellt (Vertrag oder Einstellung)"],["std","Ja oder nicht abgestellt"],["unklar","Weiß ich nicht"]]}],
+    [{id:"avv", l:"Datenschutzvertrag (AVV)", q:"Mit jedem Dienst abgeschlossen?", kind:"Eine Antwort",
+      info:"Bei großen Anbietern ist das ein Online-Dokument (Data Processing Addendum, DPA), das man im Konto akzeptiert. Er muss vor dem ersten echten Datensatz gelten.",
+      o:[["alle","Ja, mit allen"],["teil","Nur mit einigen"],["keine","Mit keinem"],["unklar","Weiß ich nicht"]]}]
+  ]}
+  ,{t:"KI-Einsatz", s:"Was die KI mit Menschen macht.", law:"betrifft AI Act und DSGVO", dicht:true, rows:[
+    [{id:"kontakt", l:"Wer sieht die KI", q:"Wer sieht oder hört, was die KI erzeugt?", kind:"Mehrfachauswahl",
+      info:"Menschen müssen erkennen können, dass sie es mit einer KI zu tun haben (Transparenzpflicht).",
+      o:[["direkt","Kunden im Gespräch (Chatbot, Sprachbot)"],["generiert","KI-Inhalte für Kunden oder Öffentlichkeit (Texte, Bilder, Stimmen)"],["intern","Nur Mitarbeiter, intern"],["kein","Niemand, die KI arbeitet im Hintergrund (z. B. sortiert Belege)"]]}],
+    [{id:"auto", l:"Wer entscheidet", q:"Wer entscheidet am Ende: die KI oder ein Mensch?", kind:"Eine Antwort",
+      info:"Folgen für Menschen heißt: rechtliche oder ähnlich spürbare Wirkung, z. B. Absage, Kündigung, Preisänderung, Kontosperre.",
+      o:[["assist","Ein Mensch, die KI macht nur Vorschläge"],["hitl","Die KI, ein Mensch gibt jedes Ergebnis frei"],["voll","Die KI allein, mit Folgen für Menschen (z. B. Absage, Preis, Sperre)"],["voll0","Die KI allein, ohne Folgen (z. B. Ablage, Sortieren)"],["unklar","Weiß ich nicht"]]}],
+    [{id:"bereich", l:"Einsatzbereich", q:"Hilft die KI bei einer dieser Entscheidungen?", kind:"Mehrfachauswahl",
+      info:"Diese Bereiche führt der AI Act als Hochrisiko (Anhang III). Maßgeblich ist, wofür die KI eingesetzt wird, nicht die Branche des Kunden.",
+      o:[["hr","Personal (Bewerber auswählen, Mitarbeiter bewerten)"],["kredit","Kredit oder Versicherung (Kreditwürdigkeit, Tarif)"],["bildung","Bildung (Zulassung, Noten, Prüfungen)"],["gesund","Notfall (Notrufe, Triage)"],["behoerde","Sozialleistungen (Anspruch prüfen)"],["justiz","Polizei, Migration, Justiz oder Wahlen"],["infra","Strom, Wasser, Gas oder Verkehr steuern"],["keiner","Keine davon (z. B. Kundenservice, Buchhaltung)"],["unklar","Weiß ich nicht"]]}],
+    [{id:"bewert", l:"Bewertung von Menschen", q:"Macht die KI eines davon?", kind:"Mehrfachauswahl",
+      info:"Einiges davon ist verboten (AI Act Art. 5), z. B. Gefühle erkennen am Arbeitsplatz oder in der Bildung (Ausnahme: medizinische oder Sicherheitsgründe) und Bewertung nach Sozialverhalten mit Nachteilen.",
+      o:[["emotion","Gefühle erkennen (z. B. bei Mitarbeitern oder Schülern)"],["verhalten","Verhalten bewerten (Scoring, Profiling)"],["bio","Menschen an Gesicht, Stimme oder Fingerabdruck erkennen"],["kateg","Menschen nach Herkunft, Religion o. Ä. einordnen"],["nichts","Nichts davon"],["unklar","Weiß ich nicht"]]}],
+    [{id:"text", l:"Projektbeschreibung", t:"text", info:"Max. 300 Zeichen. Schaltet nichts, hilft der KI nur beim Formulieren der Zusammenfassungen."}]
+  ]}
+];
+// „Alle Aufgaben: Gruppe b, Bedingung c, auslösende Frage f, Gesetz, Titel, Fundstelle und die Kurztexte k = [Was, Wer und wo, Warum, Fundstellen].“
+const TD = [{"b": "rollen", "c": "rolle_avv", "f": "rolle", "law": "D", "title": "Unterauftragnehmer vom Kunden genehmigen lassen", "ref": "DSGVO Art. 28 Abs. 2, 4, 9", "k": ["Lass dir vom Kunden schriftlich erlauben, dass {dienste} seine Daten sehen.", "Du, als Anlage „Unterauftragnehmer“ im AVV mit dem Kunden. Ablage: Projektakte.", "Der Kunde ist verantwortlich und muss wissen, wer seine Daten sieht.", [["DSGVO", "28", [2, 4, 9]]]]}, {"b": "extern", "c": "avv_not_all", "f": "avv", "law": "D", "title": "AVV mit allen Diensten abschließen", "ref": "DSGVO Art. 28 Abs. 3, 9", "k": ["Akzeptiere bei jedem Dienst den AVV (Data Processing Addendum), bevor echte Daten fließen.", "Wer das Konto hat, du oder der Kunde. Ablage: Projektakte.", "Wer Daten im Auftrag verarbeitet, braucht einen schriftlichen Vertrag mit festen Inhalten.", [["DSGVO", "28", [3, 9]]]]}, {"b": "extern", "c": "training_open", "f": "anbieter", "law": "D", "title": "Training mit Kundendaten abstellen", "ref": "DSGVO Art. 28 Abs. 3 a, Art. 29", "k": ["Setze im Konto das Opt-out oder wähle einen Tarif ohne Training.", "Du. Screenshot mit Datum in die Projektakte.", "Ein Dienstleister darf Daten nur für den Auftrag nutzen, nicht für eigenes Training.", [["DSGVO", "28", [3]], ["DSGVO", "29", []]]]}, {"b": "extern", "c": "not_avv", "f": "dienste", "law": "D", "title": "Liste der Dienstleister führen", "ref": "DSGVO Art. 28 Abs. 1, 3", "k": ["Halte alle Dienste fest, die Daten sehen: Name, Zweck, Sitz, Serverstandort, AVV ja oder nein.", "Du, in der Projektakte. Bei jedem Wechsel aktualisieren.", "So lässt sich zeigen, dass jeder Dienst ausreichende Garantien bietet und einen Vertrag hat.", [["DSGVO", "28", [1, 3]]]]}, {"b": "extern", "c": "hoster", "f": "betrieb", "law": "D", "title": "AVV mit deinem Server-Anbieter abschließen", "ref": "DSGVO Art. 28 Abs. 3 (Einschätzung)", "k": ["Schließe mit deinem Server-Anbieter (z. B. Contabo) einen AVV, meist im Kundenkonto.", "Du. Ablage: Projektakte, Kopie an den Kunden.", "Wer Daten im Auftrag verarbeitet, braucht einen Vertrag. Ob ein reiner Server-Vermieter darunter fällt, ist eine Einschätzung.", [["DSGVO", "28", [3]]]]}, {"b": "dritt", "c": "server_noneu", "f": "betrieb", "law": "D", "title": "Server in die EU verlegen oder Grundlage klären", "ref": "DSGVO Art. 44, 45, 46", "k": ["Der Server steht außerhalb der EU. Wechsle auf einen Standort in der EU oder kläre die Grundlage (Angemessenheitsbeschluss oder Standarddatenschutzklauseln).", "Der Betreiber des Servers (du oder die IT deines Kunden). Nachweis in die Projektakte.", "Ohne eine dieser Grundlagen ist die Übermittlung in ein Drittland nicht erlaubt.", [["DSGVO", "44", []], ["DSGVO", "45", []], ["DSGVO", "46", []]]]}, {"b": "dritt", "c": "us_llm", "f": "llm", "law": "D", "title": "Grundlage für den Datenfluss zu {llm_us} klären", "ref": "DSGVO Art. 44, 45, 46", "k": ["Prüfe, ob ein Angemessenheitsbeschluss gilt oder Standarddatenschutzklauseln im Vertrag stehen.", "Du, im Vertrag des Anbieters. Nachweis in die Projektakte.", "Ohne eine dieser Grundlagen ist die Übermittlung in ein Drittland nicht erlaubt.", [["DSGVO", "44", []], ["DSGVO", "45", []], ["DSGVO", "46", []]]]}, {"b": "dritt", "c": "llm_unklar", "f": "llm", "law": "D", "title": "KI-Anbieter festlegen", "ref": "Praxis", "k": ["Lege fest, welche KI oder welchen Dienst du nutzt, samt Tarif.", "Du mit dem Kunden, vor dem Bau. Ergebnis in die Projektakte.", "Erst dann lässt sich prüfen, ob Daten die EU verlassen und welcher Vertrag nötig ist.", []]}, {"b": "dritt", "c": "region_not_eu", "f": "region", "law": "D", "title": "EU-Serverstandort einstellen", "ref": "Praxis", "k": ["Wähle im Konto jedes Anbieters die EU-Region („Region“ oder „Data Residency“).", "Du. Screenshot in die Projektakte.", "Weniger Datenabfluss, ersetzt aber nicht die Grundlage für Firmen in den USA.", []]}, {"b": "dritt", "c": "", "f": "llm", "law": "D", "title": "Einwilligung nicht als Lösung einplanen", "ref": "DSGVO Art. 49 Abs. 1 a", "k": ["Ersetze eine fehlende Grundlage nicht durch die Einwilligung der Betroffenen.", "Du, bei der Planung.", "Die Einwilligung ist nur eine Ausnahme für Einzelfälle.", [["DSGVO", "49", [1]]]]}, {"b": "transp", "c": "direkt", "f": "kontakt", "law": "AI", "title": "KI-Hinweis zu Beginn einbauen", "ref": "AI Act Art. 50 Abs. 1, 5", "k": ["Die erste Nachricht sagt klar, dass eine KI antwortet.", "Du, im Begrüßungstext des Bots.", "Menschen müssen erkennen, dass sie mit einer KI sprechen, außer es ist offensichtlich.", [["EU AI Act", "50", [1, 5]]]]}, {"b": "transp", "c": "intern", "f": "kontakt", "law": "AI", "title": "KI-Hinweis für Mitarbeiter einbauen", "ref": "AI Act Art. 50 Abs. 1, 5", "k": ["Mitarbeiter, die mit der KI sprechen, bekommen zu Beginn einen klaren Hinweis darauf.", "Du, im Begrüßungstext oder in der Einführung.", "Menschen müssen erkennen, dass sie mit einer KI sprechen, außer es ist offensichtlich.", [["EU AI Act", "50", [1, 5]]]]}, {"b": "transp", "c": "generiert", "f": "kontakt", "law": "AI", "title": "KI-Inhalte kennzeichnen", "ref": "AI Act Art. 50 Abs. 2, 4", "k": ["Prüfe, ob der Anbieter erzeugte Bilder, Töne oder Videos maschinenlesbar kennzeichnet. Veröffentlichte KI-Texte und Deepfakes legst du offen.", "Kennzeichnen: der Anbieter. Offenlegen: der Kunde, du baust den Hinweis ein.", "Empfänger sollen KI-Inhalte als solche erkennen.", [["EU AI Act", "50", [2, 4]]]]}, {"b": "eskal", "c": "", "f": "besonder", "law": "D", "title": "Datenschutzbeauftragten und Anwalt einbinden", "ref": "Checkliste", "k": ["Hol vor dem Bau eine Einschätzung ein, weil Daten die EU verlassen.", "Der Kunde bzw. sein Datenschutzbeauftragter, du lieferst die Unterlagen.", "Der Guide ist Orientierung, keine Rechtsberatung.", []]}, {"b": "besond", "c": "", "f": "daten", "law": "D", "title": "Sensible Daten: Ausnahme prüfen oder streichen", "ref": "DSGVO Art. 9 Abs. 1, 2", "k": ["Prüfe, ob eine Ausnahme greift (z. B. ausdrückliche Einwilligung). Sonst nimm das Feld aus dem Workflow.", "Der Kunde entscheidet über die Ausnahme, du setzt um.", "Sensible Daten dürfen ohne Ausnahme nicht verarbeitet werden.", [["DSGVO", "9", [1, 2]]]]}, {"b": "dsfa", "c": "dsfa_pruef", "f": "umfang", "law": "D", "title": "Prüfen, ob eine Folgenabschätzung nötig ist", "ref": "DSGVO Art. 35 Abs. 1, 3, 4", "k": ["Prüfe die drei Regelbeispiele und die Liste deiner Aufsichtsbehörde, halte das Ergebnis mit Begründung fest.", "Der Kunde, du lieferst die technischen Angaben.", "Bei voraussichtlich hohem Risiko muss die Abschätzung vor dem Start stehen.", [["DSGVO", "35", [1, 3, 4]]]]}, {"b": "dsfa", "c": "dsfa_pflicht", "f": "umfang", "law": "D", "title": "Folgenabschätzung vor dem Bau durchführen", "ref": "DSGVO Art. 35 Abs. 2, 3, 7", "k": ["Führe die Abschätzung vor dem Bau durch: Zweck, Notwendigkeit, Risiken und Schutzmaßnahmen.", "Der Kunde, ggf. mit seinem Datenschutzbeauftragten. Du lieferst Datenfluss und Technik.", "In diesen Fällen ist sie vor dem Start vorgeschrieben.", [["DSGVO", "35", [2, 3, 7]]]]}, {"b": "autom", "c": "", "f": "auto", "law": "D", "title": "Menschliche Prüfung vor Entscheidungen einbauen", "ref": "DSGVO Art. 22 Abs. 1, 3", "k": ["Bevor ein Ergebnis eine Person spürbar betrifft, prüft ein Mensch und gibt frei.", "Du baust den Freigabeschritt ein. Der Kunde benennt, wer freigibt.", "Rein automatische Entscheidungen mit erheblicher Wirkung sind nur eingeschränkt erlaubt.", [["DSGVO", "22", [1, 3]]]]}, {"b": "hoch", "c": "", "f": "bereich", "law": "AI", "title": "Hochrisiko-Einstufung prüfen lassen", "ref": "AI Act Art. 6, Anhang III", "k": ["Prüfe, ob das System unter einen Hochrisiko-Bereich fällt. Dann gelten deutlich mehr Pflichten.", "Der Kunde mit Anwalt, du lieferst Zweck und Funktionsweise.", "Hochrisiko-KI darf nur mit zusätzlichen Pflichten betrieben werden.", [["EU AI Act", "6", []], ["EU AI Act", "III", []]]]}, {"b": "verbot", "c": "", "f": "bewert", "law": "AI", "title": "Verbotene Praktiken ausschließen", "ref": "AI Act Art. 5 Abs. 1", "k": ["Gleiche die Funktion mit der Verbotsliste ab. Trifft etwas zu, nicht bauen.", "Du, vor dem Bau, im Zweifel mit Anwalt.", "Diese Praktiken sind verboten, Ausnahmen sind eng begrenzt.", [["EU AI Act", "5", [1]]]]}, {"b": "geltung", "c": "", "f": "", "law": "AI", "title": "Maßnahmen zur KI-Kompetenz ergreifen", "ref": "AI Act Art. 4 Abs. 1", "k": ["Schule alle, die beim Kunden mit der KI arbeiten, kurz zu Funktion, Grenzen und Fehlern.", "Der Kunde, du kannst die Schulung liefern.", "Gilt für alle Anbieter und Betreiber von KI-Systemen, unabhängig vom Risiko.", [["EU AI Act", "4", []]]]}];
+// „Originaltexte der Artikel aus den Gesetzeskarten: Titel t und Text c mit Absätzen (1), (2) …“
+const LT = {"EU AI Act|III": {"t": "", "c": "ANHANG III\nHochrisiko-KI-Systeme gemäß Artikel 6 Absatz 2\nAls Hochrisiko-KI-Systeme gemäß Artikel 6 Absatz 2 gelten die in folgenden Bereichen aufgeführten KI-Systeme:\n1. Biometrie, soweit ihr Einsatz nach einschlägigem Unionsrecht oder nationalem Recht zugelassen ist:\na) biometrische Fernidentifizierungssysteme.\nDazu gehören nicht KI-Systeme, die bestimmungsgemäß für die biometrische Verifizierung, deren einziger Zweck darin besteht, zu bestätigen, dass eine bestimmte natürliche Person die Person ist, für die sie sich ausgibt, verwendet werden sollen;\nb) KI-Systeme, die bestimmungsgemäß für die biometrische Kategorisierung nach sensiblen oder geschützten Attributen oder Merkmalen auf der Grundlage von Rückschlüssen auf diese Attribute oder Merkmale verwendet werden sollen;\nc) KI-Systeme, die bestimmungsgemäß zur Emotionserkennung verwendet werden sollen.\n2. Kritische Infrastruktur: KI-Systeme, die bestimmungsgemäß als Sicherheitsbauteile im Rahmen der Verwaltung und des Betriebs kritischer digitaler Infrastruktur, des Straßenverkehrs oder der Wasser-, Gas-, Wärme- oder Stromversorgung verwendet werden sollen\n3. Allgemeine und berufliche Bildung\na) KI-Systeme, die bestimmungsgemäß zur Feststellung des Zugangs oder der Zulassung oder zur Zuweisung natürlicher Personen zu Einrichtungen aller Ebenen der allgemeinen und beruflichen Bildung verwendet werden sollen;\nb) KI-Systeme, die bestimmungsgemäß für die Bewertung von Lernergebnissen verwendet werden sollen, einschließlich des Falles, dass diese Ergebnisse dazu dienen, den Lernprozess natürlicher Personen in Einrichtungen oder Programmen aller Ebenen der allgemeinen und beruflichen Bildung zu steuern;\nc) KI-Systeme, die bestimmungsgemäß zum Zweck der Bewertung des angemessenen Bildungsniveaus, das eine Person im Rahmen von oder innerhalb von Einrichtungen aller Ebenen der allgemeinen und beruflichen Bildung erhalten wird oder zu denen sie Zugang erhalten wird, verwendet werden sollen;\nd) KI-Systeme, die bestimmungsgemäß zur Überwachung und Erkennung von verbotenem Verhalten von Schülern bei Prüfungen im Rahmen von oder innerhalb von Einrichtungen aller Ebenen der allgemeinen und beruflichen Bildung verwendet werden sollen.\n4. Beschäftigung, Personalmanagement und Zugang zur Selbstständigkeit\na) KI-Systeme, die bestimmungsgemäß für die Einstellung oder Auswahl natürlicher Personen verwendet werden sollen, insbesondere um gezielte Stellenanzeigen zu schalten, Bewerbungen zu sichten oder zu filtern und Bewerber zu bewerten;\nb) KI-Systeme, die bestimmungsgemäß für Entscheidungen, die die Bedingungen von Arbeitsverhältnissen, Beförderungen und Kündigungen von Arbeitsvertragsverhältnissen beeinflussen, für die Zuweisung von Aufgaben aufgrund des individuellen Verhaltens oder persönlicher Merkmale oder Eigenschaften oder für die Beobachtung und Bewertung der Leistung und des Verhaltens von Personen in solchen Beschäftigungsverhältnissen verwendet werden soll.\n5. Zugänglichkeit und Inanspruchnahme grundlegender privater und grundlegender öffentlicher Dienste und Leistungen:\na) KI-Systeme, die bestimmungsgemäß von Behörden oder im Namen von Behörden verwendet werden sollen, um zu beurteilen, ob natürliche Personen Anspruch auf grundlegende öffentliche Unterstützungsleistungen und -dienste, einschließlich Gesundheitsdiensten, haben und ob solche Leistungen und Dienste zu gewähren, einzuschränken, zu widerrufen oder zurückzufordern sind;\nb) KI-Systeme, die bestimmungsgemäß für die Kreditwürdigkeitsprüfung und Bonitätsbewertung natürlicher Personen verwendet werden sollen, mit Ausnahme von KI-Systemen, die zur Aufdeckung von Finanzbetrug verwendet werden;\nc) KI-Systeme, die bestimmungsgemäß für die Risikobewertung und Preisbildung in Bezug auf natürliche Personen im Fall von Lebens- und Krankenversicherungen verwendet werden sollen;\n\nd) KI-Systeme, die bestimmungsgemäß zur Bewertung und Klassifizierung von Notrufen von natürlichen Personen oder für die Entsendung oder Priorisierung des Einsatzes von Not- und Rettungsdiensten, einschließlich Polizei, Feuerwehr und medizinischer Nothilfe, sowie für Systeme für die Triage von Patienten bei der Notfallversorgung verwendet werden sollen.\n6. Strafverfolgung, soweit ihr Einsatz nach einschlägigem Unionsrecht oder nationalem Recht zugelassen ist:\na) KI-Systeme, die bestimmungsgemäß von Strafverfolgungsbehörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Unterstützung von Strafverfolgungsbehörden oder in deren Namen zur Bewertung des Risikos einer natürlichen Person, zum Opfer von Straftaten zu werden, verwendet werden sollen;\nb) KI-Systeme, die bestimmungsgemäß von Strafverfolgungsbehörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Unterstützung von Strafverfolgungsbehörden als Lügendetektoren oder ähnliche Instrumente verwendet werden sollen;\nc) KI-Systeme, die bestimmungsgemäß von Strafverfolgungsbehörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Unterstützung von Strafverfolgungsbehörden zur Bewertung der Verlässlichkeit von Beweismitteln im Zuge der Ermittlung oder Verfolgung von Straftaten verwendet werden sollen;\nd) KI-Systeme, die bestimmungsgemäß von Strafverfolgungsbehörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Unterstützung von Strafverfolgungsbehörden zur Bewertung des Risikos, dass eine natürliche Person eine Straftat begeht oder erneut begeht, nicht nur auf der Grundlage der Erstellung von Profilen natürlicher Personen gemäß Artikel 3 Absatz 4 der Richtlinie (EU) 2016/680 oder zur Bewertung persönlicher Merkmale und Eigenschaften oder vergangenen kriminellen Verhaltens von natürlichen Personen oder Gruppen verwendet werden sollen;\ne) KI-Systeme, die bestimmungsgemäß von Strafverfolgungsbehörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Unterstützung von Strafverfolgungsbehörden zur Erstellung von Profilen natürlicher Personen gemäß Artikel 3 Absatz 4 der Richtlinie (EU) 2016/680 im Zuge der Aufdeckung, Ermittlung oder Verfolgung von Straftaten verwendet werden sollen.\n7. Migration, Asyl und Grenzkontrolle, soweit ihr Einsatz nach einschlägigem Unionsrecht oder nationalem Recht zugelassen ist:\na) KI-Systeme, die bestimmungsgemäß von zuständigen Behörden oder in deren Namen oder Organen, Einrichtungen und sonstigen Stellen der Union als Lügendetektoren verwendet werden sollen oder ähnliche Instrumente;\nb) KI-Systeme, die bestimmungsgemäß von zuständigen Behörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union zur Bewertung eines Risikos verwendet werden sollen, einschließlich eines Sicherheitsrisikos, eines Risikos der irregulären Einwanderung oder eines Gesundheitsrisikos, das von einer natürlichen Person ausgeht, die in das Hoheitsgebiet eines Mitgliedstaats einzureisen beabsichtigt oder eingereist ist;\nc) KI-Systeme, die bestimmungsgemäß von zuständigen Behörden oder in deren Namen oder von Organen, Einrichtungen und sonstigen Stellen der Union verwendet werden sollen, um zuständige Behörden bei der Prüfung von Asyl- und Visumanträgen sowie Aufenthaltstiteln und damit verbundenen Beschwerden im Hinblick auf die Feststellung der Berechtigung der den Antrag stellenden natürlichen Personen, einschließlich damit zusammenhängender Bewertungen der Verlässlichkeit von Beweismitteln, zu unterstützen;\nd) KI-Systeme, die bestimmungsgemäß von oder im Namen der zuständigen Behörden oder Organen, Einrichtungen und sonstigen Stellen der Union, im Zusammenhang mit Migration, Asyl oder Grenzkontrolle zum Zwecke der Aufdeckung, Anerkennung oder Identifizierung natürlicher Personen verwendet werden sollen, mit Ausnahme der Überprüfung von Reisedokumenten.\n\n8. Rechtspflege und demokratische Prozesse\na) KI-Systeme, die bestimmungsgemäß von einer oder im Namen einer Justizbehörde verwendet werden sollen, um eine Justizbehörde bei der Ermittlung und Auslegung von Sachverhalten und Rechtsvorschriften und bei der Anwendung des Rechts auf konkrete Sachverhalte zu unterstützen, oder die auf ähnliche Weise für die alternative Streitbeilegung genutzt werden sollen;\nb) KI-Systeme, die bestimmungsgemäß verwendet werden sollen, um das Ergebnis einer Wahl oder eines Referendums oder das Wahlverhalten natürlicher Personen bei der Ausübung ihres Wahlrechts bei einer Wahl oder einem Referendum zu beeinflussen. Dazu gehören nicht KI-Systeme, deren Ausgaben natürliche Personen nicht direkt ausgesetzt sind, wie Instrumente zur Organisation, Optimierung oder Strukturierung politischer Kampagnen in administrativer oder logistischer Hinsicht."}, "DSGVO|35": {"t": "Datenschutz-Folgenabschätzung", "c": "(1) Hat eine Form der Verarbeitung, insbesondere bei Verwendung neuer Technologien, aufgrund der Art, des Umfangs, der Umstände und der Zwecke der Verarbeitung voraussichtlich ein hohes Risiko für die Rechte und Freiheiten natürlicher Personen zur Folge, so führt der Verantwortliche vorab eine Abschätzung der Folgen der vorgesehenen Verarbeitungsvorgänge für den Schutz personenbezogener Daten durch. Für die Untersuchung mehrerer ähnlicher Verarbeitungsvorgänge mit ähnlich hohen Risiken kann eine einzige Abschätzung vorgenommen werden.\n(2) Der Verantwortliche holt bei der Durchführung einer Datenschutz-Folgenabschätzung den Rat des Datenschutzbeauftragten, sofern ein solcher benannt wurde, ein.\n(3) Eine Datenschutz-Folgenabschätzung gemäß Absatz 1 ist insbesondere in folgenden Fällen erforderlich:\na) systematische und umfassende Bewertung persönlicher Aspekte natürlicher Personen, die sich auf automatisierte Verarbeitung einschließlich Profiling gründet und die ihrerseits als Grundlage für Entscheidungen dient, die Rechtswirkung gegenüber natürlichen Personen entfalten oder diese in ähnlich erheblicher Weise beeinträchtigen;\nb) umfangreiche Verarbeitung besonderer Kategorien von personenbezogenen Daten gemäß Artikel 9 Absatz 1 oder von personenbezogenen Daten über strafrechtliche Verurteilungen und Straftaten gemäß Artikel 10 oder\nc) systematische umfangreiche Überwachung öffentlich zugänglicher Bereiche.\n(4) Die Aufsichtsbehörde erstellt eine Liste der Verarbeitungsvorgänge, für die gemäß Absatz 1 eine Datenschutz-Folgenabschätzung durchzuführen ist, und veröffentlicht diese. Die Aufsichtsbehörde übermittelt diese Listen dem in Artikel 68 genannten Ausschuss.\n(5) Die Aufsichtsbehörde kann des Weiteren eine Liste der Arten von Verarbeitungsvorgängen erstellen und veröffentlichen, für die keine Datenschutz-Folgenabschätzung erforderlich ist. Die Aufsichtsbehörde übermittelt diese Listen dem Ausschuss.\n(6) Vor Festlegung der in den Absätzen 4 und 5 genannten Listen wendet die zuständige Aufsichtsbehörde das Kohärenzverfahren gemäß Artikel 63 an, wenn solche Listen Verarbeitungstätigkeiten umfassen, die mit dem Angebot von Waren oder Dienstleistungen für betroffene Personen oder der Beobachtung des Verhaltens dieser Personen in mehreren Mitgliedstaaten im Zusammenhang stehen oder die den freien Verkehr personenbezogener Daten innerhalb der Union erheblich beeinträchtigen könnten.\n(7) Die Folgenabschätzung enthält zumindest Folgendes:\na) eine systematische Beschreibung der geplanten Verarbeitungsvorgänge und der Zwecke der Verarbeitung, gegebenenfalls einschließlich der von dem Verantwortlichen verfolgten berechtigten Interessen;\nb) eine Bewertung der Notwendigkeit und Verhältnismäßigkeit der Verarbeitungsvorgänge in Bezug auf den Zweck;\nc) eine Bewertung der Risiken für die Rechte und Freiheiten der betroffenen Personen gemäß Absatz 1 und\nd) die zur Bewältigung der Risiken geplanten Abhilfemaßnahmen, einschließlich Garantien, Sicherheitsvorkehrungen und Verfahren, durch die der Schutz personenbezogener Daten sichergestellt und der Nachweis dafür erbracht wird, dass diese Verordnung eingehalten wird, wobei den Rechten und berechtigten Interessen der betroffenen Personen und sonstiger Betroffener Rechnung getragen wird.\n(8) Die Einhaltung genehmigter Verhaltensregeln gemäß Artikel 40 durch die zuständigen Verantwortlichen oder die zuständigen Auftragsverarbeiter ist bei der Beurteilung der Auswirkungen der von diesen durchgeführten Verarbeitungsvorgänge, insbesondere für die Zwecke einer Datenschutz-Folgenabschätzung, gebührend zu berücksichtigen.\n(9) Der Verantwortliche holt gegebenenfalls den Standpunkt der betroffenen Personen oder ihrer Vertreter zu der beabsichtigten Verarbeitung unbeschadet des Schutzes gewerblicher oder öffentlicher Interessen oder der Sicherheit der Verarbeitungsvorgänge ein.\n\n(10) Falls die Verarbeitung gemäß Artikel 6 Absatz 1 Buchstabe c oder e auf einer Rechtsgrundlage im Unionsrecht oder im Recht des Mitgliedstaats, dem der Verantwortliche unterliegt, beruht und falls diese Rechtsvorschriften den konkreten Verarbeitungsvorgang oder die konkreten Verarbeitungsvorgänge regeln und bereits im Rahmen der allgemeinen Folgenabschätzung im Zusammenhang mit dem Erlass dieser Rechtsgrundlage eine Datenschutz-Folgenabschätzung erfolgte, gelten die Absätze 1 bis 7 nur, wenn es nach dem Ermessen der Mitgliedstaaten erforderlich ist, vor den betreffenden Verarbeitungstätigkeiten eine solche Folgenabschätzung durchzuführen.\n(11) Erforderlichenfalls führt der Verantwortliche eine Überprüfung durch, um zu bewerten, ob die Verarbeitung gemäß der Datenschutz-Folgenabschätzung durchgeführt wird; dies gilt zumindest, wenn hinsichtlich des mit den Verarbeitungsvorgängen verbundenen Risikos Änderungen eingetreten sind."}, "DSGVO|49": {"t": "Ausnahmen für bestimmte Fälle", "c": "(1) Falls weder ein Angemessenheitsbeschluss nach Artikel 45 Absatz 3 vorliegt noch geeignete Garantien nach Artikel 46, einschließlich verbindlicher interner Datenschutzvorschriften, bestehen, ist eine Übermittlung oder eine Reihe von Übermittlungen personenbezogener Daten an ein Drittland oder an eine internationale Organisation nur unter einer der folgenden Bedingungen zulässig:\na) die betroffene Person hat in die vorgeschlagene Datenübermittlung ausdrücklich eingewilligt, nachdem sie über die für sie bestehenden möglichen Risiken derartiger Datenübermittlungen ohne Vorliegen eines Angemessenheitsbeschlusses und ohne geeignete Garantien unterrichtet wurde,\nb) die Übermittlung ist für die Erfüllung eines Vertrags zwischen der betroffenen Person und dem Verantwortlichen oder zur Durchführung von vorvertraglichen Maßnahmen auf Antrag der betroffenen Person erforderlich,\nc) die Übermittlung ist zum Abschluss oder zur Erfüllung eines im Interesse der betroffenen Person von dem Verantwortlichen mit einer anderen natürlichen oder juristischen Person geschlossenen Vertrags erforderlich,\nd) die Übermittlung ist aus wichtigen Gründen des öffentlichen Interesses notwendig,\ne) die Übermittlung ist zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen erforderlich,\nf) die Übermittlung ist zum Schutz lebenswichtiger Interessen der betroffenen Person oder anderer Personen erforderlich, sofern die betroffene Person aus physischen oder rechtlichen Gründen außerstande ist, ihre Einwilligung zu geben,\ng) die Übermittlung erfolgt aus einem Register, das gemäß dem Recht der Union oder der Mitgliedstaaten zur Information der Öffentlichkeit bestimmt ist und entweder der gesamten Öffentlichkeit oder allen Personen, die ein berechtigtes Interesse nachweisen können, zur Einsichtnahme offensteht, aber nur soweit die im Recht der Union oder der Mitgliedstaaten festgelegten Voraussetzungen für die Einsichtnahme im Einzelfall gegeben sind.\nFalls die Übermittlung nicht auf eine Bestimmung der Artikel 45 oder 46 — einschließlich der verbindlichen internen Datenschutzvorschriften — gestützt werden könnte und keine der Ausnahmen für einen bestimmten Fall gemäß dem ersten Unterabsatz anwendbar ist, darf eine Übermittlung an ein Drittland oder eine internationale Organisation nur dann erfolgen, wenn die Übermittlung nicht wiederholt erfolgt, nur eine begrenzte Zahl von betroffenen Personen betrifft, für die Wahrung der zwingenden berechtigten Interessen des Verantwortlichen erforderlich ist, sofern die Interessen oder die Rechte und Freiheiten der betroffenen Person nicht überwiegen, und der Verantwortliche alle Umstände der Datenübermittlung beurteilt und auf der Grundlage dieser Beurteilung geeignete Garantien in Bezug auf den Schutz personenbezogener Daten vorgesehen hat. Der Verantwortliche setzt die Aufsichtsbehörde von der Übermittlung in Kenntnis. Der Verantwortliche unterrichtet die betroffene Person über die Übermittlung und seine zwingenden berechtigten Interessen; dies erfolgt zusätzlich zu den der betroffenen Person nach den Artikeln 13 und 14 mitgeteilten Informationen.\n(2) Datenübermittlungen gemäß Absatz 1 Unterabsatz 1 Buchstabe g dürfen nicht die Gesamtheit oder ganze Kategorien der im Register enthaltenen personenbezogenen Daten umfassen. Wenn das Register der Einsichtnahme durch Personen mit berechtigtem Interesse dient, darf die Übermittlung nur auf Anfrage dieser Personen oder nur dann erfolgen, wenn diese Personen die Adressaten der Übermittlung sind.\n(3) Absatz 1 Unterabsatz 1 Buchstaben a, b und c und sowie Absatz 1 Unterabsatz 2 gelten nicht für Tätigkeiten, die Behörden in Ausübung ihrer hoheitlichen Befugnisse durchführen.\n(4) Das öffentliche Interesse im Sinne des Absatzes 1 Unterabsatz 1 Buchstabe d muss im Unionsrecht oder im Recht des Mitgliedstaats, dem der Verantwortliche unterliegt, anerkannt sein.\n\n(5) Liegt kein Angemessenheitsbeschluss vor, so können im Unionsrecht oder im Recht der Mitgliedstaaten aus wichtigen Gründen des öffentlichen Interesses ausdrücklich Beschränkungen der Übermittlung bestimmter Kategorien von personenbezogenen Daten an Drittländer oder internationale Organisationen vorgesehen werden. Die Mitgliedstaaten teilen der Kommission derartige Bestimmungen mit.\n(6) Der Verantwortliche oder der Auftragsverarbeiter erfasst die von ihm vorgenommene Beurteilung sowie die angemessenen Garantien im Sinne des Absatzes 1 Unterabsatz 2 des vorliegenden Artikels in der Dokumentation gemäß Artikel 30."}, "EU AI Act|6": {"t": "Einstufungsvorschriften für Hochrisiko-KI-Systeme", "c": "(1) Ungeachtet dessen, ob ein KI-System unabhängig von den unter den Buchstaben a und b genannten Produkten in Verkehr gebracht oder in Betrieb genommen wird, gilt es als Hochrisiko-KI-System, wenn die beiden folgenden Bedingungen erfüllt sind:\na) das KI-System soll als Sicherheitsbauteil eines unter die in Anhang I aufgeführten Harmonisierungsrechtsvorschriften der Union fallenden Produkts verwendet werden oder das KI-System ist selbst ein solches Produkt;\nb) das Produkt, dessen Sicherheitsbauteil gemäß Buchstabe a das KI-System ist, oder das KI-System selbst als Produkt muss einer Konformitätsbewertung durch Dritte im Hinblick auf das Inverkehrbringen oder die Inbetriebnahme dieses Produkts gemäß den in Anhang I aufgeführten Harmonisierungsrechtsvorschriften der Union unterzogen werden.\n(1a) \nFür die Zwecke dieser Verordnung, einschließlich des Absatzes 1 dieses Artikels, gelten KI-Systeme, die ausschließlich für nicht sicherheitsrelevante Aspekte der Nutzerunterstützung, Leistungsoptimierung, Leistungseffizienz, Automatisierung oder Benutzerfreundlichkeit oder Qualitätskontrolle verwendet werden, nicht als Sicherheitsbauteile.\n(1b) \nUngeachtet des Absatzes 1a gelten KI-Systeme, deren Ausfall oder Fehlfunktion Gesundheit und Sicherheit gefährden würde, als Sicherheitsbauteile.\n(1c) \nEin Produkt, das ausschließlich aufgrund anderer Risiken als Risiken für Gesundheit und Sicherheit einer Konformitätsbewertung durch Dritte unterzogen werden muss, insbesondere aufgrund von Risiken im Zusammenhang mit der Verbreitung von Funkfrequenzen oder elektromagnetischen Interferenzen, die Gesundheit und Sicherheit nicht beeinträchtigen, gilt nicht als Produkt, das die Bedingung in Absatz 1 Buchstabe b erfüllt.\n(2) Zusätzlich zu den in Absatz 1 genannten Hochrisiko-KI-Systemen gelten die in Anhang III genannten KI-Systeme als hochriskant.\n(3) Abweichend von Absatz 2 gilt ein in Anhang III genanntes KI-System nicht als hochriskant, wenn es kein erhebliches Risiko der Beeinträchtigung in Bezug auf die Gesundheit, Sicherheit oder Grundrechte natürlicher Personen birgt, indem es unter anderem nicht das Ergebnis der Entscheidungsfindung wesentlich beeinflusst.\nUnterabsatz 1 gilt, wenn eine der folgenden Bedingungen erfüllt ist:\na) das KI-System ist dazu bestimmt, eine eng gefasste Verfahrensaufgabe durchzuführen;\nb) das KI-System ist dazu bestimmt, das Ergebnis einer zuvor abgeschlossenen menschlichen Tätigkeit zu verbessern;\nc) das KI-System ist dazu bestimmt, Entscheidungsmuster oder Abweichungen von früheren Entscheidungsmustern zu erkennen, und ist nicht dazu gedacht, die zuvor abgeschlossene menschliche Bewertung ohne eine angemessene menschliche Überprüfung zu ersetzen oder zu beeinflussen; oder\nd) das KI-System ist dazu bestimmt, eine vorbereitende Aufgabe für eine Bewertung durchzuführen, die für die Zwecke der in Anhang III aufgeführten Anwendungsfälle relevant ist.\nUngeachtet des Unterabsatzes 1 gilt ein in Anhang III aufgeführtes KI-System immer dann als hochriskant, wenn es ein Profiling natürlicher Personen vornimmt.\n(4) Ein Anbieter, der der Auffassung ist, dass ein in Anhang III aufgeführtes KI-System nicht hochriskant ist, dokumentiert seine Bewertung, bevor dieses System in Verkehr gebracht oder in Betrieb genommen wird. Dieser Anbieter unterliegt der Registrierungspflicht gemäß Artikel 49 Absatz 2. Auf Verlangen der zuständigen nationalen Behörden legt der Anbieter die Dokumentation der Bewertung vor.\n(5) Die Kommission stellt nach Konsultation des Europäischen Gremiums für Künstliche Intelligenz (im Folgenden „KI-Gremium“) spätestens bis zum 2. Februar 2026 Leitlinien zur praktischen Umsetzung dieses Artikels gemäß Artikel 96 und eine umfassende Liste praktischer Beispiele für Anwendungsfälle für KI-Systeme, die hochriskant oder nicht hochriskant sind, bereit.\n\n(6) Die Kommission ist befugt, gemäß Artikel 97 delegierte Rechtsakte zu erlassen, um Absatz 3 Unterabsatz 2 des vorliegenden Artikels zu ändern, indem neue Bedingungen zu den darin genannten Bedingungen hinzugefügt oder diese geändert werden, wenn konkrete und zuverlässige Beweise für das Vorhandensein von KI-Systemen vorliegen, die in den Anwendungsbereich von Anhang III fallen, jedoch kein erhebliches Risiko der Beeinträchtigung in Bezug auf die Gesundheit, Sicherheit oder Grundrechte natürlicher Personen bergen.\n(7) Die Kommission erlässt gemäß Artikel 97 delegierte Rechtsakte, um Absatz 3 Unterabsatz 2 des vorliegenden Artikels zu ändern, indem eine der darin festgelegten Bedingungen gestrichen wird, wenn konkrete und zuverlässige Beweise dafür vorliegen, dass dies für die Aufrechterhaltung des Schutzniveaus in Bezug auf Gesundheit, Sicherheit und die in dieser Verordnung vorgesehenen Grundrechte erforderlich ist.\n(8) Eine Änderung der in Absatz 3 Unterabsatz 2 festgelegten Bedingungen, die gemäß den Absätzen 6 und 7 des vorliegenden Artikels erlassen wurde, darf das allgemeine Schutzniveau in Bezug auf Gesundheit, Sicherheit und die in dieser Verordnung vorgesehenen Grundrechte nicht senken; dabei ist die Kohärenz mit den gemäß Artikel 7 Absatz 1 erlassenen delegierten Rechtsakten sicherzustellen und die Marktentwicklungen und die technologischen Entwicklungen sind zu berücksichtigen."}, "DSGVO|22": {"t": "Automatisierte Entscheidungen im Einzelfall einschließlich Profiling", "c": "(1) Die betroffene Person hat das Recht, nicht einer ausschließlich auf einer automatisierten Verarbeitung — einschließlich Profiling — beruhenden Entscheidung unterworfen zu werden, die ihr gegenüber rechtliche Wirkung entfaltet oder sie in ähnlicher Weise erheblich beeinträchtigt.\n(2) Absatz 1 gilt nicht, wenn die Entscheidung\na) für den Abschluss oder die Erfüllung eines Vertrags zwischen der betroffenen Person und dem Verantwortlichen erforderlich ist,\nb) aufgrund von Rechtsvorschriften der Union oder der Mitgliedstaaten, denen der Verantwortliche unterliegt, zulässig ist und diese Rechtsvorschriften angemessene Maßnahmen zur Wahrung der Rechte und Freiheiten sowie der berechtigten Interessen der betroffenen Person enthalten oder\nc) mit ausdrücklicher Einwilligung der betroffenen Person erfolgt.\n(3) In den in Absatz 2 Buchstaben a und c genannten Fällen trifft der Verantwortliche angemessene Maßnahmen, um die Rechte und Freiheiten sowie die berechtigten Interessen der betroffenen Person zu wahren, wozu mindestens das Recht auf Erwirkung des Eingreifens einer Person seitens des Verantwortlichen, auf Darlegung des eigenen Standpunkts und auf Anfechtung der Entscheidung gehört.\n(4) Entscheidungen nach Absatz 2 dürfen nicht auf besonderen Kategorien personenbezogener Daten nach Artikel 9 Absatz 1 beruhen, sofern nicht Artikel 9 Absatz 2 Buchstabe a oder g gilt und angemessene Maßnahmen zum Schutz der Rechte und Freiheiten sowie der berechtigten Interessen der betroffenen Person getroffen wurden."}, "DSGVO|44": {"t": "Allgemeine Grundsätze der Datenübermittlung", "c": "Jedwede Übermittlung personenbezogener Daten, die bereits verarbeitet werden oder nach ihrer Übermittlung an ein Drittland oder eine internationale Organisation verarbeitet werden sollen, ist nur zulässig, wenn der Verantwortliche und der Auftragsverarbeiter die in diesem Kapitel niedergelegten Bedingungen einhalten und auch die sonstigen Bestimmungen dieser Verordnung eingehalten werden; dies gilt auch für die etwaige Weiterübermittlung personenbezogener Daten durch das betreffende Drittland oder die betreffende internationale Organisation an ein anderes Drittland oder eine andere internationale Organisation. Alle Bestimmungen dieses Kapitels sind anzuwenden, um sicherzustellen, dass das durch diese Verordnung gewährleistete Schutzniveau für natürliche Personen nicht untergraben wird."}, "DSGVO|45": {"t": "Datenübermittlung auf der Grundlage eines Angemessenheitsbeschlusses", "c": "(1) Eine Übermittlung personenbezogener Daten an ein Drittland oder eine internationale Organisation darf vorgenommen werden, wenn die Kommission beschlossen hat, dass das betreffende Drittland, ein Gebiet oder ein oder mehrere spezifische Sektoren in diesem Drittland oder die betreffende internationale Organisation ein angemessenes Schutzniveau bietet. Eine solche Datenübermittlung bedarf keiner besonderen Genehmigung.\n(2) Bei der Prüfung der Angemessenheit des gebotenen Schutzniveaus berücksichtigt die Kommission insbesondere das Folgende:\na) die Rechtsstaatlichkeit, die Achtung der Menschenrechte und Grundfreiheiten, die in dem betreffenden Land bzw. bei der betreffenden internationalen Organisation geltenden einschlägigen Rechtsvorschriften sowohl allgemeiner als auch sektoraler Art — auch in Bezug auf öffentliche Sicherheit, Verteidigung, nationale Sicherheit und Strafrecht sowie Zugang der Behörden zu personenbezogenen Daten — sowie die Anwendung dieser Rechtsvorschriften, Datenschutzvorschriften, Berufsregeln und Sicherheitsvorschriften einschließlich der Vorschriften für die Weiterübermittlung personenbezogener Daten an ein anderes Drittland bzw. eine andere internationale Organisation, die Rechtsprechung sowie wirksame und durchsetzbare Rechte der betroffenen Person und wirksame verwaltungsrechtliche und gerichtliche Rechtsbehelfe für betroffene Personen, deren personenbezogene Daten übermittelt werden,\nb) die Existenz und die wirksame Funktionsweise einer oder mehrerer unabhängiger Aufsichtsbehörden in dem betreffenden Drittland oder denen eine internationale Organisation untersteht und die für die Einhaltung und Durchsetzung der Datenschutzvorschriften, einschließlich angemessener Durchsetzungsbefugnisse, für die Unterstützung und Beratung der betroffenen Personen bei der Ausübung ihrer Rechte und für die Zusammenarbeit mit den Aufsichtsbehörden der Mitgliedstaaten zuständig sind, und\nc) die von dem betreffenden Drittland bzw. der betreffenden internationalen Organisation eingegangenen internationalen Verpflichtungen oder andere Verpflichtungen, die sich aus rechtsverbindlichen Übereinkünften oder Instrumenten sowie aus der Teilnahme des Drittlands oder der internationalen Organisation an multilateralen oder regionalen Systemen insbesondere in Bezug auf den Schutz personenbezogener Daten ergeben.\n(3) Nach der Beurteilung der Angemessenheit des Schutzniveaus kann die Kommission im Wege eines Durchführungsrechtsaktes beschließen, dass ein Drittland, ein Gebiet oder ein oder mehrere spezifische Sektoren in einem Drittland oder eine internationale Organisation ein angemessenes Schutzniveau im Sinne des Absatzes 2 des vorliegenden Artikels bieten. In dem Durchführungsrechtsakt ist ein Mechanismus für eine regelmäßige Überprüfung, die mindestens alle vier Jahre erfolgt, vorzusehen, bei der allen maßgeblichen Entwicklungen in dem Drittland oder bei der internationalen Organisation Rechnung getragen wird. Im Durchführungsrechtsakt werden der territoriale und der sektorale Anwendungsbereich sowie gegebenenfalls die in Absatz 2 Buchstabe b des vorliegenden Artikels genannte Aufsichtsbehörde bzw. genannten Aufsichtsbehörden angegeben. Der Durchführungsrechtsakt wird gemäß dem in Artikel 93 Absatz 2 genannten Prüfverfahren erlassen.\n(4) Die Kommission überwacht fortlaufend die Entwicklungen in Drittländern und bei internationalen Organisationen, die die Wirkungsweise der nach Absatz 3 des vorliegenden Artikels erlassenen Beschlüsse und der nach Artikel 25 Absatz 6 der Richtlinie 95/46/EG erlassenen Feststellungen beeinträchtigen könnten.\n\n(5) Die Kommission widerruft, ändert oder setzt die in Absatz 3 des vorliegenden Artikels genannten Beschlüsse im Wege von Durchführungsrechtsakten aus, soweit dies nötig ist und ohne rückwirkende Kraft, soweit entsprechende Informationen — insbesondere im Anschluss an die in Absatz 3 des vorliegenden Artikels genannte Überprüfung — dahingehend vorliegen, dass ein Drittland, ein Gebiet oder ein oder mehrere spezifischer Sektor in einem Drittland oder eine internationale Organisation kein angemessenes Schutzniveau im Sinne des Absatzes 2 des vorliegenden Artikels mehr gewährleistet. Diese Durchführungsrechtsakte werden gemäß dem Prüfverfahren nach Artikel 93 Absatz 2 erlassen.\nIn hinreichend begründeten Fällen äußerster Dringlichkeit erlässt die Kommission gemäß dem in Artikel 93 Absatz 3 genannten Verfahren sofort geltende Durchführungsrechtsakte.\n(6) Die Kommission nimmt Beratungen mit dem betreffenden Drittland bzw. der betreffenden internationalen Organisation auf, um Abhilfe für die Situation zu schaffen, die zu dem gemäß Absatz 5 erlassenen Beschluss geführt hat.\n(7) Übermittlungen personenbezogener Daten an das betreffende Drittland, das Gebiet oder einen oder mehrere spezifische Sektoren in diesem Drittland oder an die betreffende internationale Organisation gemäß den Artikeln 46 bis 49 werden durch einen Beschluss nach Absatz 5 des vorliegenden Artikels nicht berührt.\n(8) Die Kommission veröffentlicht im \nAmtsblatt der Europäischen Union\n und auf ihrer Website eine Liste aller Drittländer beziehungsweise Gebiete und spezifischen Sektoren in einem Drittland und aller internationalen Organisationen, für die sie durch Beschluss festgestellt hat, dass sie ein angemessenes Schutzniveau gewährleisten bzw. nicht mehr gewährleisten.\n(9) Von der Kommission auf der Grundlage von Artikel 25 Absatz 6 der Richtlinie 95/46/EG erlassene Feststellungen bleiben so lange in Kraft, bis sie durch einen nach dem Prüfverfahren gemäß den Absätzen 3 oder 5 des vorliegenden Artikels erlassenen Beschluss der Kommission geändert, ersetzt oder aufgehoben werden."}, "DSGVO|9": {"t": "Verarbeitung besonderer Kategorien personenbezogener Daten", "c": "(1) Die Verarbeitung personenbezogener Daten, aus denen die rassische und ethnische Herkunft, politische Meinungen, religiöse oder weltanschauliche Überzeugungen oder die Gewerkschaftszugehörigkeit hervorgehen, sowie die Verarbeitung von genetischen Daten, biometrischen Daten zur eindeutigen Identifizierung einer natürlichen Person, Gesundheitsdaten oder Daten zum Sexualleben oder der sexuellen Orientierung einer natürlichen Person ist untersagt.\n\n(2) Absatz 1 gilt nicht in folgenden Fällen:\na) Die betroffene Person hat in die Verarbeitung der genannten personenbezogenen Daten für einen oder mehrere festgelegte Zwecke ausdrücklich eingewilligt, es sei denn, nach Unionsrecht oder dem Recht der Mitgliedstaaten kann das Verbot nach Absatz 1 durch die Einwilligung der betroffenen Person nicht aufgehoben werden,\nb) die Verarbeitung ist erforderlich, damit der Verantwortliche oder die betroffene Person die ihm bzw. ihr aus dem Arbeitsrecht und dem Recht der sozialen Sicherheit und des Sozialschutzes erwachsenden Rechte ausüben und seinen bzw. ihren diesbezüglichen Pflichten nachkommen kann, soweit dies nach Unionsrecht oder dem Recht der Mitgliedstaaten oder einer Kollektivvereinbarung nach dem Recht der Mitgliedstaaten, das geeignete Garantien für die Grundrechte und die Interessen der betroffenen Person vorsieht, zulässig ist,\nc) die Verarbeitung ist zum Schutz lebenswichtiger Interessen der betroffenen Person oder einer anderen natürlichen Person erforderlich und die betroffene Person ist aus körperlichen oder rechtlichen Gründen außerstande, ihre Einwilligung zu geben,\nd) die Verarbeitung erfolgt auf der Grundlage geeigneter Garantien durch eine politisch, weltanschaulich, religiös oder gewerkschaftlich ausgerichtete Stiftung, Vereinigung oder sonstige Organisation ohne Gewinnerzielungsabsicht im Rahmen ihrer rechtmäßigen Tätigkeiten und unter der Voraussetzung, dass sich die Verarbeitung ausschließlich auf die Mitglieder oder ehemalige Mitglieder der Organisation oder auf Personen, die im Zusammenhang mit deren Tätigkeitszweck regelmäßige Kontakte mit ihr unterhalten, bezieht und die personenbezogenen Daten nicht ohne Einwilligung der betroffenen Personen nach außen offengelegt werden,\ne) die Verarbeitung bezieht sich auf personenbezogene Daten, die die betroffene Person offensichtlich öffentlich gemacht hat,\nf) die Verarbeitung ist zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen oder bei Handlungen der Gerichte im Rahmen ihrer justiziellen Tätigkeit erforderlich,\ng) die Verarbeitung ist auf der Grundlage des Unionsrechts oder des Rechts eines Mitgliedstaats, das in angemessenem Verhältnis zu dem verfolgten Ziel steht, den Wesensgehalt des Rechts auf Datenschutz wahrt und angemessene und spezifische Maßnahmen zur Wahrung der Grundrechte und Interessen der betroffenen Person vorsieht, aus Gründen eines erheblichen öffentlichen Interesses erforderlich,\nh) die Verarbeitung ist für Zwecke der Gesundheitsvorsorge oder der Arbeitsmedizin, für die Beurteilung der Arbeitsfähigkeit des Beschäftigten, für die medizinische Diagnostik, die Versorgung oder Behandlung im Gesundheits- oder Sozialbereich oder für die Verwaltung von Systemen und Diensten im Gesundheits- oder Sozialbereich auf der Grundlage des Unionsrechts oder des Rechts eines Mitgliedstaats oder aufgrund eines Vertrags mit einem Angehörigen eines Gesundheitsberufs und vorbehaltlich der in Absatz 3 genannten Bedingungen und Garantien erforderlich,\ni) die Verarbeitung ist aus Gründen des öffentlichen Interesses im Bereich der öffentlichen Gesundheit, wie dem Schutz vor schwerwiegenden grenzüberschreitenden Gesundheitsgefahren oder zur Gewährleistung hoher Qualitäts- und Sicherheitsstandards bei der Gesundheitsversorgung und bei Arzneimitteln und Medizinprodukten, auf der Grundlage des Unionsrechts oder des Rechts eines Mitgliedstaats, das angemessene und spezifische Maßnahmen zur Wahrung der Rechte und Freiheiten der betroffenen Person, insbesondere des Berufsgeheimnisses, vorsieht, erforderlich, oder\nj) die Verarbeitung ist auf der Grundlage des Unionsrechts oder des Rechts eines Mitgliedstaats, das in angemessenem Verhältnis zu dem verfolgten Ziel steht, den Wesensgehalt des Rechts auf Datenschutz wahrt und angemessene und spezifische Maßnahmen zur Wahrung der Grundrechte und Interessen der betroffenen Person vorsieht, für im öffentlichen Interesse liegende Archivzwecke, für wissenschaftliche oder historische Forschungszwecke oder für statistische Zwecke gemäß Artikel 89 Absatz 1 erforderlich.\n\n(3) Die in Absatz 1 genannten personenbezogenen Daten dürfen zu den in Absatz 2 Buchstabe h genannten Zwecken verarbeitet werden, wenn diese Daten von Fachpersonal oder unter dessen Verantwortung verarbeitet werden und dieses Fachpersonal nach dem Unionsrecht oder dem Recht eines Mitgliedstaats oder den Vorschriften nationaler zuständiger Stellen dem Berufsgeheimnis unterliegt, oder wenn die Verarbeitung durch eine andere Person erfolgt, die ebenfalls nach dem Unionsrecht oder dem Recht eines Mitgliedstaats oder den Vorschriften nationaler zuständiger Stellen einer Geheimhaltungspflicht unterliegt.\n(4) Die Mitgliedstaaten können zusätzliche Bedingungen, einschließlich Beschränkungen, einführen oder aufrechterhalten, soweit die Verarbeitung von genetischen, biometrischen oder Gesundheitsdaten betroffen ist."}, "EU AI Act|4": {"t": "KI-Kompetenz", "c": "(1) Die Anbieter und Betreiber von KI-Systemen ergreifen Maßnahmen, um die Entwicklung der KI-Kompetenz ihres Personals und anderer Personen zu unterstützen, die in ihrem Auftrag mit dem Betrieb und der Nutzung von KI-Systemen befasst sind, wobei ihre technischen Kenntnisse, ihre Erfahrung, ihre Aus- und Fortbildung und der Kontext, in dem die KI-Systeme eingesetzt werden sollen, sowie die Personen oder Personengruppen, bei denen die KI-Systeme eingesetzt werden sollen, zu berücksichtigen sind. Diese Verpflichtung verpflichtet Anbieter oder Betreiber nicht, für irgendeine Person ein bestimmtes Niveau an KI-Kompetenz zu garantieren.\n(2) Die Kommission und die Mitgliedstaaten unterstützen und fördern die Bemühungen der Anbieter und Betreiber von KI-Systemen und insbesondere von KMU, ihre Verpflichtung nach Absatz 1 dieses Artikels zu erfüllen. Zu diesem Zweck veröffentlicht die Kommission praktische Beispiele dafür, wie diese Verpflichtung erfüllt wird auf der in Artikel 62 Absatz 3 Buchstabe b genannten zentralen Informationsplattform.\n(3) Das KI-Gremium nimmt unter Berücksichtigung der europäischen Kompetenzrahmen Empfehlungen an, um die Kommission und die Mitgliedstaaten unter anderem durch die Festlegung gemeinsamer Ziele bei der Förderung der KI-Kompetenz gemäß Absatz 1 zu unterstützen."}, "EU AI Act|5": {"t": "Verbotene Praktiken im KI-Bereich", "c": "(1) Folgende Praktiken im KI-Bereich sind verboten:\na) das Inverkehrbringen, die Inbetriebnahme oder die Verwendung eines KI-Systems, das Techniken der unterschwelligen Beeinflussung außerhalb des Bewusstseins einer Person oder absichtlich manipulative oder täuschende Techniken mit dem Ziel oder der Wirkung einsetzt, das Verhalten einer Person oder einer Gruppe von Personen wesentlich zu verändern, indem ihre Fähigkeit, eine fundierte Entscheidung zu treffen, deutlich beeinträchtigt wird, wodurch sie veranlasst wird, eine Entscheidung zu treffen, die sie andernfalls nicht getroffen hätte, und zwar in einer Weise, die dieser Person, einer anderen Person oder einer Gruppe von Personen erheblichen Schaden zufügt oder mit hinreichender Wahrscheinlichkeit zufügen wird.\nb) das Inverkehrbringen, die Inbetriebnahme oder die Verwendung eines KI-Systems, das eine Vulnerabilität oder Schutzbedürftigkeit einer natürlichen Person oder einer bestimmten Gruppe von Personen aufgrund ihres Alters, einer Behinderung oder einer bestimmten sozialen oder wirtschaftlichen Situation mit dem Ziel oder der Wirkung ausnutzt, das Verhalten dieser Person oder einer dieser Gruppe angehörenden Person in einer Weise wesentlich zu verändern, die dieser Person oder einer anderen Person erheblichen Schaden zufügt oder mit hinreichender Wahrscheinlichkeit zufügen wird;\nba) das Inverkehrbringen, die Inbetriebnahme oder die Verwendung eines KI-Systems, das realistische Bild-, Video-, Ton- oder ähnliche Inhalte erzeugt oder manipuliert, in denen intime Körperteile einer bestimmbaren natürlichen Person dargestellt werden oder eine an eindeutig sexuellen Handlungen beteiligte bestimmbare Person dargestellt wird, ohne dass die betreffende Person eine aus freien Stücken erfolgende, spezifische, aufgeklärte, eindeutige und ausdrückliche Zustimmung zu dieser Erzeugung oder Manipulation erteilt hat;\nbb) das Inverkehrbringen, die Inbetriebnahme oder die Verwendung eines KI-Systems, das Material oder Darbietungen im Sinne von Artikel 2 Buchstaben c und e der Richtlinie 2011/93/EU erzeugt oder manipuliert, es sei denn, nach nationalem Recht gilt das „unrechtmäßige“ Verhalten als gerechtfertigt;\nc) das Inverkehrbringen, die Inbetriebnahme oder die Verwendung von KI-Systemen zur Bewertung oder Einstufung von natürlichen Personen oder Gruppen von Personen über einen bestimmten Zeitraum auf der Grundlage ihres sozialen Verhaltens oder bekannter, abgeleiteter oder vorhergesagter persönlicher Eigenschaften oder Persönlichkeitsmerkmale, wobei die soziale Bewertung zu einem oder beiden der folgenden Ergebnisse führt:\ni) Schlechterstellung oder Benachteiligung bestimmter natürlicher Personen oder Gruppen von Personen in sozialen Zusammenhängen, die in keinem Zusammenhang zu den Umständen stehen, unter denen die Daten ursprünglich erzeugt oder erhoben wurden;\nii) Schlechterstellung oder Benachteiligung bestimmter natürlicher Personen oder Gruppen von Personen in einer Weise, die im Hinblick auf ihr soziales Verhalten oder dessen Tragweite ungerechtfertigt oder unverhältnismäßig ist;\nd) das Inverkehrbringen, die Inbetriebnahme für diesen spezifischen Zweck oder die Verwendung eines KI-Systems zur Durchführung von Risikobewertungen in Bezug auf natürliche Personen, um das Risiko, dass eine natürliche Person eine Straftat begeht, ausschließlich auf der Grundlage des Profiling einer natürlichen Person oder der Bewertung ihrer persönlichen Merkmale und Eigenschaften zu bewerten oder vorherzusagen; dieses Verbot gilt nicht für KI-Systeme, die dazu verwendet werden, die durch Menschen durchgeführte Bewertung der Beteiligung einer Person an einer kriminellen Aktivität, die sich bereits auf objektive und überprüfbare Tatsachen stützt, die in unmittelbarem Zusammenhang mit einer kriminellen Aktivität stehen, zu unterstützen;\ne) das Inverkehrbringen, die Inbetriebnahme für diesen spezifischen Zweck oder die Verwendung von KI-Systemen, die Datenbanken zur Gesichtserkennung durch das ungezielte Auslesen von Gesichtsbildern aus dem Internet oder von Überwachungsaufnahmen erstellen oder erweitern;\nf) das Inverkehrbringen, die Inbetriebnahme für diesen spezifischen Zweck oder die Verwendung von KI-Systemen zur Ableitung von Emotionen einer natürlichen Person am Arbeitsplatz und in Bildungseinrichtungen, es sei denn, die Verwendung des KI-Systems soll aus medizinischen Gründen oder Sicherheitsgründen eingeführt oder auf den Markt gebracht werden;\ng) das Inverkehrbringen, die Inbetriebnahme für diesen spezifischen Zweck oder die Verwendung von Systemen zur biometrischen Kategorisierung, mit denen natürliche Personen individuell auf der Grundlage ihrer biometrischen Daten kategorisiert werden, um ihre Rasse, ihre politischen Einstellungen, ihre Gewerkschaftszugehörigkeit, ihre religiösen oder weltanschaulichen Überzeugungen, ihr Sexualleben oder ihre sexuelle Ausrichtung zu erschließen oder abzuleiten; dieses Verbot gilt nicht für die Kennzeichnung oder Filterung rechtmäßig erworbener biometrischer Datensätze, wie z. B. Bilder auf der Grundlage biometrischer Daten oder die Kategorisierung biometrischer Daten im Bereich der Strafverfolgung;\nh) die Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken, außer wenn und insoweit dies im Hinblick auf eines der folgenden Ziele unbedingt erforderlich ist:\ni) gezielte Suche nach bestimmten Opfern von Entführung, Menschenhandel oder sexueller Ausbeutung sowie die Suche nach vermissten Personen;\nii) Abwenden einer konkreten, erheblichen und unmittelbaren Gefahr für das Leben oder die körperliche Unversehrtheit natürlicher Personen oder einer tatsächlichen und bestehenden oder tatsächlichen und vorhersehbaren Gefahr eines Terroranschlags;\niii) Aufspüren oder Identifizieren einer Person, die der Begehung einer Straftat verdächtigt wird, zum Zwecke der Durchführung von strafrechtlichen Ermittlungen oder von Strafverfahren oder der Vollstreckung einer Strafe für die in Anhang II aufgeführten Straftaten, die in dem betreffenden Mitgliedstaat nach dessen Recht mit einer Freiheitsstrafe oder einer freiheitsentziehenden Maßregel der Sicherung im Höchstmaß von mindestens vier Jahren bedroht ist.\nUnterabsatz 1 Buchstabe h gilt unbeschadet des Artikels 9 der Verordnung (EU) 2016/679 für die Verarbeitung biometrischer Daten zu anderen Zwecken als der Strafverfolgung.\n(1a) \nFür die Zwecke von Absatz 1 Unterabsatz 1 Buchstaben ba und bb:\na) Das Inverkehrbringen oder die Inbetriebnahme eines KI-Systems, das Material oder Darbietungen im Sinne von Absatz 1 Unterabsatz 1 Buchstaben ba oder bb generiert oder manipuliert, ist nur verboten, wenn\ni) die Erzeugung oder Manipulation die Zweckbestimmung des KI-Systems sind oder\nii) aufgrund der Gestaltung, des Trainings, der Architektur, der Fähigkeiten oder der nutzerseitigen Funktionen des Systems diese Erzeugung oder Manipulation ein nach vernünftigem Ermessen absehbares und reproduzierbares Ergebnis ist, ohne dass erhebliche technische Änderungen erforderlich sind, und das System nicht über zumutbare und angemessene technische Sicherheitsmaßnahmen und andere Schutzvorkehrungen verfügt, um diese Erzeugung oder Manipulation unter Berücksichtigung einer nach vernünftigem Ermessen absehbaren missbräuchlichen Nutzung zuverlässig zu verhindern und eine beobachtete oder gemeldete missbräuchliche Nutzung zu korrigieren.\nb) Die Verwendung eines KI-Systems, mit dem Material oder Darbietungen im Sinne von Absatz 1 Unterabsatz 1 Buchstaben ba und bb erzeugt oder manipuliert werden, ist nur verboten, wenn der Betreiber das System zum Zwecke der Erzeugung oder der Manipulation solchen Materials oder solcher Darbietungen verwendet.\n1b. Für die Zwecke von Absatz 1 Unterabsatz 1 Buchstabe ba gilt ein KI-System, mit dem das Material in einer Weise manipuliert wird, die die Sichtbarkeit der dargestellten intimen Körperteile weder erhöht noch die Art der dargestellten eindeutig sexuellen Handlungen verändert, nicht als manipulativ.\n\n(2) Die Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken im Hinblick auf die in Absatz 1 Unterabsatz 1 Buchstabe h genannten Ziele darf für die in jenem Buchstaben genannten Zwecke nur zur Bestätigung der Identität der speziell betroffenen Person erfolgen, wobei folgende Elemente berücksichtigt werden:\na) die Art der Situation, die der möglichen Verwendung zugrunde liegt, insbesondere die Schwere, die Wahrscheinlichkeit und das Ausmaß des Schadens, der entstehen würde, wenn das System nicht eingesetzt würde;\nb) die Folgen der Verwendung des Systems für die Rechte und Freiheiten aller betroffenen Personen, insbesondere die Schwere, die Wahrscheinlichkeit und das Ausmaß solcher Folgen.\nDarüber hinaus sind bei der Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken im Hinblick auf die in Absatz 1 Unterabsatz 1 Buchstabe h des vorliegenden Artikels genannten Ziele notwendige und verhältnismäßige Schutzvorkehrungen und Bedingungen für die Verwendung im Einklang mit nationalem Recht über die Ermächtigung ihrer Verwendung einzuhalten, insbesondere in Bezug auf die zeitlichen, geografischen und personenbezogenen Beschränkungen. Die Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen ist nur dann zu gestatten, wenn die Strafverfolgungsbehörde eine Folgenabschätzung im Hinblick auf die Grundrechte gemäß Artikel 27 abgeschlossen und das System gemäß Artikel 49 in der EU-Datenbank registriert hat. In hinreichend begründeten dringenden Fällen kann jedoch mit der Verwendung solcher Systeme zunächst ohne Registrierung in der EU-Datenbank begonnen werden, sofern diese Registrierung unverzüglich erfolgt.\n(3) Für die Zwecke des Absatz 1 Unterabsatz 1 Buchstabe h und des Absatzes 2 ist für jede Verwendung eines biometrischen Echtzeit-Fernidentifizierungssystems in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken eine vorherige Genehmigung erforderlich, die von einer Justizbehörde oder einer unabhängigen Verwaltungsbehörde des Mitgliedstaats, in dem die Verwendung erfolgen soll, auf begründeten Antrag und gemäß den in Absatz 5 genannten detaillierten nationalen Rechtsvorschriften erteilt wird, wobei deren Entscheidung bindend ist. In hinreichend begründeten dringenden Fällen kann jedoch mit der Verwendung eines solchen Systems zunächst ohne Genehmigung begonnen werden, sofern eine solche Genehmigung unverzüglich, spätestens jedoch innerhalb von 24 Stunden beantragt wird. Wird eine solche Genehmigung abgelehnt, so wird die Verwendung mit sofortiger Wirkung eingestellt und werden alle Daten sowie die Ergebnisse und Ausgaben dieser Verwendung unverzüglich verworfen und gelöscht.\nDie zuständige Justizbehörde oder eine unabhängige Verwaltungsbehörde, deren Entscheidung bindend ist, erteilt die Genehmigung nur dann, wenn sie auf der Grundlage objektiver Nachweise oder eindeutiger Hinweise, die ihr vorgelegt werden, davon überzeugt ist, dass die Verwendung des betreffenden biometrischen Echtzeit-Fernidentifizierungssystems für das Erreichen eines der in Absatz 1 Unterabsatz 1 Buchstabe h genannten Ziele — wie im Antrag angegeben — notwendig und verhältnismäßig ist und insbesondere auf das in Bezug auf den Zeitraum sowie den geografischen und persönlichen Anwendungsbereich unbedingt erforderliche Maß beschränkt bleibt. Bei ihrer Entscheidung über den Antrag berücksichtigt diese Behörde die in Absatz 2 genannten Elemente. Eine Entscheidung, aus der sich eine nachteilige Rechtsfolge für eine Person ergibt, darf nicht ausschließlich auf der Grundlage der Ausgabe des biometrischen Echtzeit-Fernidentifizierungssystems getroffen werden.\n\n(4) Unbeschadet des Absatzes 3 wird jede Verwendung eines biometrischen Echtzeit-Fernidentifizierungssystems in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken der zuständigen Marktüberwachungsbehörde und der nationalen Datenschutzbehörde gemäß den in Absatz 5 genannten nationalen Vorschriften mitgeteilt. Die Mitteilung muss mindestens die in Absatz 6 genannten Angaben enthalten und darf keine sensiblen operativen Daten enthalten.\n(5) Ein Mitgliedstaat kann die Möglichkeit einer vollständigen oder teilweisen Ermächtigung zur Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken innerhalb der in Absatz 1 Unterabsatz 1 Buchstabe h sowie Absätze 2 und 3 aufgeführten Grenzen und unter den dort genannten Bedingungen vorsehen. Die betreffenden Mitgliedstaaten legen in ihrem nationalen Recht die erforderlichen detaillierten Vorschriften für die Beantragung, Erteilung und Ausübung der in Absatz 3 genannten Genehmigungen sowie für die entsprechende Beaufsichtigung und Berichterstattung fest. In diesen Vorschriften wird auch festgelegt, im Hinblick auf welche der in Absatz 1 Unterabsatz 1 Buchstabe h aufgeführten Ziele und welche der unter Buchstabe h Ziffer iii genannten Straftaten die zuständigen Behörden ermächtigt werden können, diese Systeme zu Strafverfolgungszwecken zu verwenden. Die Mitgliedstaaten teilen der Kommission diese Vorschriften spätestens 30 Tage nach ihrem Erlass mit. Die Mitgliedstaaten können im Einklang mit dem Unionsrecht strengere Rechtsvorschriften für die Verwendung biometrischer Fernidentifizierungssysteme erlassen.\n(6) Die nationalen Marktüberwachungsbehörden und die nationalen Datenschutzbehörden der Mitgliedstaaten, denen gemäß Absatz 4 die Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken mitgeteilt wurden, legen der Kommission Jahresberichte über diese Verwendung vor. Zu diesem Zweck stellt die Kommission den Mitgliedstaaten und den nationalen Marktüberwachungs- und Datenschutzbehörden ein Muster zur Verfügung, das Angaben über die Anzahl der Entscheidungen der zuständigen Justizbehörden oder einer unabhängigen Verwaltungsbehörde, deren Entscheidung über Genehmigungsanträge gemäß Absatz 3 bindend ist, und deren Ergebnis enthält.\n(7) Die Kommission veröffentlicht Jahresberichte über die Verwendung biometrischer Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen zu Strafverfolgungszwecken, die auf aggregierten Daten aus den Mitgliedstaaten auf der Grundlage der in Absatz 6 genannten Jahresberichte beruhen. Diese Jahresberichte dürfen keine sensiblen operativen Daten im Zusammenhang mit den damit verbundenen Strafverfolgungsmaßnahmen enthalten.\n(8) Dieser Artikel berührt nicht die Verbote, die gelten, wenn KI-Praktiken gegen andere Rechtsvorschriften der Union verstoßen."}, "EU AI Act|50": {"t": "Transparenzpflichten für Anbieter und Betreiber bestimmter KI-Systeme", "c": "(1) Die Anbieter stellen sicher, dass KI-Systeme, die für die direkte Interaktion mit natürlichen Personen bestimmt sind, so konzipiert und entwickelt werden, dass die betreffenden natürlichen Personen informiert werden, dass sie mit einem KI-System interagieren, es sei denn, dies ist aus Sicht einer angemessen informierten, aufmerksamen und verständigen natürlichen Person aufgrund der Umstände und des Kontexts der Nutzung offensichtlich. Diese Pflicht gilt nicht für gesetzlich zur Aufdeckung, Verhütung, Ermittlung oder Verfolgung von Straftaten zugelassene KI-Systeme, wenn geeignete Schutzvorkehrungen für die Rechte und Freiheiten Dritter bestehen, es sei denn, diese Systeme stehen der Öffentlichkeit zur Anzeige einer Straftat zur Verfügung.\n(2) Anbieter von KI-Systemen, einschließlich KI-Systemen mit allgemeinem Verwendungszweck, die synthetische Audio-, Bild-, Video- oder Textinhalte erzeugen, stellen sicher, dass die Ausgaben des KI-Systems in einem maschinenlesbaren Format gekennzeichnet und als künstlich erzeugt oder manipuliert erkennbar sind. Die Anbieter sorgen dafür, dass — soweit technisch möglich — ihre technischen Lösungen wirksam, interoperabel, belastbar und zuverlässig sind und berücksichtigen dabei die Besonderheiten und Beschränkungen der verschiedenen Arten von Inhalten, die Umsetzungskosten und den allgemein anerkannten Stand der Technik, wie er in den einschlägigen technischen Normen zum Ausdruck kommen kann. Diese Pflicht gilt nicht, soweit die KI-Systeme eine unterstützende Funktion für die Standardbearbeitung ausführen oder die vom Betreiber bereitgestellten Eingabedaten oder deren Semantik nicht wesentlich verändern oder wenn sie zur Aufdeckung, Verhütung, Ermittlung oder Verfolgung von Straftaten gesetzlich zugelassen sind.\n(3) Die Betreiber eines Emotionserkennungssystems oder eines Systems zur biometrischen Kategorisierung informieren die davon betroffenen natürlichen Personen über den Betrieb des Systems und verarbeiten personenbezogene Daten gemäß den Verordnungen (EU) 2016/679 und (EU) 2018/1725 und der Richtlinie (EU) 2016/680. Diese Pflicht gilt nicht für gesetzlich zur Aufdeckung, Verhütung oder Ermittlung von Straftaten zugelassene KI-Systeme, die zur biometrischen Kategorisierung und Emotionserkennung im Einklang mit dem Unionsrecht verwendet werden, sofern geeignete Schutzvorkehrungen für die Rechte und Freiheiten Dritter bestehen.\n(4) Betreiber eines KI-Systems, das Bild-, Ton- oder Videoinhalte erzeugt oder manipuliert, die ein Deepfake sind, müssen offenlegen, dass die Inhalte künstlich erzeugt oder manipuliert wurden. Diese Pflicht gilt nicht, wenn die Verwendung zur Aufdeckung, Verhütung, Ermittlung oder Verfolgung von Straftaten gesetzlich zugelassen ist. Ist der Inhalt Teil eines offensichtlich künstlerischen, kreativen, satirischen, fiktionalen oder analogen Werks oder Programms, so beschränken sich die in diesem Absatz festgelegten Transparenzpflichten darauf, das Vorhandensein solcher erzeugten oder manipulierten Inhalte in geeigneter Weise offenzulegen, die die Darstellung oder den Genuss des Werks nicht beeinträchtigt.\nBetreiber eines KI-Systems, das Text erzeugt oder manipuliert, der veröffentlicht wird, um die Öffentlichkeit über Angelegenheiten von öffentlichem Interesse zu informieren, müssen offenlegen, dass der Text künstlich erzeugt oder manipuliert wurde. Diese Pflicht gilt nicht, wenn die Verwendung zur Aufdeckung, Verhütung, Ermittlung oder Verfolgung von Straftaten gesetzlich zugelassen ist oder wenn die durch KI erzeugten Inhalte einem Verfahren der menschlichen Überprüfung oder redaktionellen Kontrolle unterzogen wurden und wenn eine natürliche oder juristische Person die redaktionelle Verantwortung für die Veröffentlichung der Inhalte trägt.\n\n(5) Die in den Absätzen 1 bis 4 genannten Informationen werden den betreffenden natürlichen Personen spätestens zum Zeitpunkt der ersten Interaktion oder Aussetzung in klarer und eindeutiger Weise bereitgestellt. Die Informationen müssen den geltenden Barrierefreiheitsanforderungen entsprechen.\n(6) Die Absätze 1 bis 4 lassen die in Kapitel III festgelegten Anforderungen und Pflichten unberührt und berühren nicht andere Transparenzpflichten, die im Unionsrecht oder dem nationalen Recht für Betreiber von KI-Systemen festgelegt sind.\n(7) Die Kommission fördert und erleichtert die Ausarbeitung von Praxisleitfäden auf Unionsebene, um die wirksame Umsetzung der Pflichten in Bezug auf die Feststellung, Markierung und Kennzeichnung künstlich erzeugter oder manipulierter Inhalte zu erleichtern. Die Kommission prüft unter weitestgehender Berücksichtigung der Stellungnahme des KI-Gremiums nach dem Verfahren des Artikels 56 Absatz 6 Unterabsatz 1, ob die Befolgung dieser Praxisleitfäden angemessen ist, um die Einhaltung der in den Absätzen 2 und 4 dieses Artikels festgelegten Pflichten zu gewährleisten. Hält sie den Praxisleitfaden für unangemessen, so kann die Kommission einen Durchführungsrechtsakt gemäß dem in Artikel 98 Absatz 2 genannten Prüfverfahren erlassen, in dem gemeinsame Vorschriften für die Umsetzung dieser Pflichten festgelegt werden."}, "DSGVO|46": {"t": "Datenübermittlung vorbehaltlich geeigneter Garantien", "c": "(1) Falls kein Beschluss nach Artikel 45 Absatz 3 vorliegt, darf ein Verantwortlicher oder ein Auftragsverarbeiter personenbezogene Daten an ein Drittland oder eine internationale Organisation nur übermitteln, sofern der Verantwortliche oder der Auftragsverarbeiter geeignete Garantien vorgesehen hat und sofern den betroffenen Personen durchsetzbare Rechte und wirksame Rechtsbehelfe zur Verfügung stehen.\n(2) Die in Absatz 1 genannten geeigneten Garantien können, ohne dass hierzu eine besondere Genehmigung einer Aufsichtsbehörde erforderlich wäre, bestehen in\na) einem rechtlich bindenden und durchsetzbaren Dokument zwischen den Behörden oder öffentlichen Stellen,\nb) verbindlichen internen Datenschutzvorschriften gemäß Artikel 47,\nc) Standarddatenschutzklauseln, die von der Kommission gemäß dem Prüfverfahren nach Artikel 93 Absatz 2 erlassen werden,\nd) von einer Aufsichtsbehörde angenommenen Standarddatenschutzklauseln, die von der Kommission gemäß dem Prüfverfahren nach Artikel 93 Absatz 2 genehmigt wurden,\ne) genehmigten Verhaltensregeln gemäß Artikel 40 zusammen mit rechtsverbindlichen und durchsetzbaren Verpflichtungen des Verantwortlichen oder des Auftragsverarbeiters in dem Drittland zur Anwendung der geeigneten Garantien, einschließlich in Bezug auf die Rechte der betroffenen Personen, oder\nf) einem genehmigten Zertifizierungsmechanismus gemäß Artikel 42 zusammen mit rechtsverbindlichen und durchsetzbaren Verpflichtungen des Verantwortlichen oder des Auftragsverarbeiters in dem Drittland zur Anwendung der geeigneten Garantien, einschließlich in Bezug auf die Rechte der betroffenen Personen.\n(3) Vorbehaltlich der Genehmigung durch die zuständige Aufsichtsbehörde können die geeigneten Garantien gemäß Absatz 1 auch insbesondere bestehen in\na) Vertragsklauseln, die zwischen dem Verantwortlichen oder dem Auftragsverarbeiter und dem Verantwortlichen, dem Auftragsverarbeiter oder dem Empfänger der personenbezogenen Daten im Drittland oder der internationalen Organisation vereinbart wurden, oder\nb) Bestimmungen, die in Verwaltungsvereinbarungen zwischen Behörden oder öffentlichen Stellen aufzunehmen sind und durchsetzbare und wirksame Rechte für die betroffenen Personen einschließen.\n(4) Die Aufsichtsbehörde wendet das Kohärenzverfahren nach Artikel 63 an, wenn ein Fall gemäß Absatz 3 des vorliegenden Artikels vorliegt.\n(5) Von einem Mitgliedstaat oder einer Aufsichtsbehörde auf der Grundlage von Artikel 26 Absatz 2 der Richtlinie 95/46/EG erteilte Genehmigungen bleiben so lange gültig, bis sie erforderlichenfalls von dieser Aufsichtsbehörde geändert, ersetzt oder aufgehoben werden. Von der Kommission auf der Grundlage von Artikel 26 Absatz 4 der Richtlinie 95/46/EG erlassene Feststellungen bleiben so lange in Kraft, bis sie erforderlichenfalls mit einem nach Absatz 2 des vorliegenden Artikels erlassenen Beschluss der Kommission geändert, ersetzt oder aufgehoben werden."}, "DSGVO|28": {"t": "Auftragsverarbeiter", "c": "(1) Erfolgt eine Verarbeitung im Auftrag eines Verantwortlichen, so arbeitet dieser nur mit Auftragsverarbeitern, die hinreichend Garantien dafür bieten, dass geeignete technische und organisatorische Maßnahmen so durchgeführt werden, dass die Verarbeitung im Einklang mit den Anforderungen dieser Verordnung erfolgt und den Schutz der Rechte der betroffenen Person gewährleistet.\n(2) Der Auftragsverarbeiter nimmt keinen weiteren Auftragsverarbeiter ohne vorherige gesonderte oder allgemeine schriftliche Genehmigung des Verantwortlichen in Anspruch. Im Fall einer allgemeinen schriftlichen Genehmigung informiert der Auftragsverarbeiter den Verantwortlichen immer über jede beabsichtigte Änderung in Bezug auf die Hinzuziehung oder die Ersetzung anderer Auftragsverarbeiter, wodurch der Verantwortliche die Möglichkeit erhält, gegen derartige Änderungen Einspruch zu erheben.\n(3) Die Verarbeitung durch einen Auftragsverarbeiter erfolgt auf der Grundlage eines Vertrags oder eines anderen Rechtsinstruments nach dem Unionsrecht oder dem Recht der Mitgliedstaaten, der bzw. das den Auftragsverarbeiter in Bezug auf den Verantwortlichen bindet und in dem Gegenstand und Dauer der Verarbeitung, Art und Zweck der Verarbeitung, die Art der personenbezogenen Daten, die Kategorien betroffener Personen und die Pflichten und Rechte des Verantwortlichen festgelegt sind. Dieser Vertrag bzw. dieses andere Rechtsinstrument sieht insbesondere vor, dass der Auftragsverarbeiter\na) die personenbezogenen Daten nur auf dokumentierte Weisung des Verantwortlichen — auch in Bezug auf die Übermittlung personenbezogener Daten an ein Drittland oder eine internationale Organisation — verarbeitet, sofern er nicht durch das Recht der Union oder der Mitgliedstaaten, dem der Auftragsverarbeiter unterliegt, hierzu verpflichtet ist; in einem solchen Fall teilt der Auftragsverarbeiter dem Verantwortlichen diese rechtlichen Anforderungen vor der Verarbeitung mit, sofern das betreffende Recht eine solche Mitteilung nicht wegen eines wichtigen öffentlichen Interesses verbietet;\nb) gewährleistet, dass sich die zur Verarbeitung der personenbezogenen Daten befugten Personen zur Vertraulichkeit verpflichtet haben oder einer angemessenen gesetzlichen Verschwiegenheitspflicht unterliegen;\nc) alle gemäß Artikel 32 erforderlichen Maßnahmen ergreift;\nd) die in den Absätzen 2 und 4 genannten Bedingungen für die Inanspruchnahme der Dienste eines weiteren Auftragsverarbeiters einhält;\ne) angesichts der Art der Verarbeitung den Verantwortlichen nach Möglichkeit mit geeigneten technischen und organisatorischen Maßnahmen dabei unterstützt, seiner Pflicht zur Beantwortung von Anträgen auf Wahrnehmung der in Kapitel III genannten Rechte der betroffenen Person nachzukommen;\nf) unter Berücksichtigung der Art der Verarbeitung und der ihm zur Verfügung stehenden Informationen den Verantwortlichen bei der Einhaltung der in den Artikeln 32 bis 36 genannten Pflichten unterstützt;\ng) nach Abschluss der Erbringung der Verarbeitungsleistungen alle personenbezogenen Daten nach Wahl des Verantwortlichen entweder löscht oder zurückgibt, sofern nicht nach dem Unionsrecht oder dem Recht der Mitgliedstaaten eine Verpflichtung zur Speicherung der personenbezogenen Daten besteht;\nh) dem Verantwortlichen alle erforderlichen Informationen zum Nachweis der Einhaltung der in diesem Artikel niedergelegten Pflichten zur Verfügung stellt und Überprüfungen — einschließlich Inspektionen –, die vom Verantwortlichen oder einem anderen von diesem beauftragten Prüfer durchgeführt werden, ermöglicht und dazu beiträgt.\nMit Blick auf Unterabsatz 1 Buchstabe h informiert der Auftragsverarbeiter den Verantwortlichen unverzüglich, falls er der Auffassung ist, dass eine Weisung gegen diese Verordnung oder gegen andere Datenschutzbestimmungen der Union oder der Mitgliedstaaten verstößt.\n\n(4) Nimmt der Auftragsverarbeiter die Dienste eines weiteren Auftragsverarbeiters in Anspruch, um bestimmte Verarbeitungstätigkeiten im Namen des Verantwortlichen auszuführen, so werden diesem weiteren Auftragsverarbeiter im Wege eines Vertrags oder eines anderen Rechtsinstruments nach dem Unionsrecht oder dem Recht des betreffenden Mitgliedstaats dieselben Datenschutzpflichten auferlegt, die in dem Vertrag oder anderen Rechtsinstrument zwischen dem Verantwortlichen und dem Auftragsverarbeiter gemäß Absatz 3 festgelegt sind, wobei insbesondere hinreichende Garantien dafür geboten werden muss, dass die geeigneten technischen und organisatorischen Maßnahmen so durchgeführt werden, dass die Verarbeitung entsprechend den Anforderungen dieser Verordnung erfolgt. Kommt der weitere Auftragsverarbeiter seinen Datenschutzpflichten nicht nach, so haftet der erste Auftragsverarbeiter gegenüber dem Verantwortlichen für die Einhaltung der Pflichten jenes anderen Auftragsverarbeiters.\n(5) Die Einhaltung genehmigter Verhaltensregeln gemäß Artikel 40 oder eines genehmigten Zertifizierungsverfahrens gemäß Artikel 42 durch einen Auftragsverarbeiter kann als Faktor herangezogen werden, um hinreichende Garantien im Sinne der Absätze 1 und 4 des vorliegenden Artikels nachzuweisen.\n(6) Unbeschadet eines individuellen Vertrags zwischen dem Verantwortlichen und dem Auftragsverarbeiter kann der Vertrag oder das andere Rechtsinstrument im Sinne der Absätze 3 und 4 des vorliegenden Artikels ganz oder teilweise auf den in den Absätzen 7 und 8 des vorliegenden Artikels genannten Standardvertragsklauseln beruhen, auch wenn diese Bestandteil einer dem Verantwortlichen oder dem Auftragsverarbeiter gemäß den Artikeln 42 und 43 erteilten Zertifizierung sind.\n(7) Die Kommission kann im Einklang mit dem Prüfverfahren gemäß Artikel 87 Absatz 2 Standardvertragsklauseln zur Regelung der in den Absätzen 3 und 4 des vorliegenden Artikels genannten Fragen festlegen.\n(8) Eine Aufsichtsbehörde kann im Einklang mit dem Kohärenzverfahren gemäß Artikel 63 Standardvertragsklauseln zur Regelung der in den Absätzen 3 und 4 des vorliegenden Artikels genannten Fragen festlegen.\n(9) Der Vertrag oder das andere Rechtsinstrument im Sinne der Absätze 3 und 4 ist schriftlich abzufassen, was auch in einem elektronischen Format erfolgen kann.\n(10) Unbeschadet der Artikel 82, 83 und 84 gilt ein Auftragsverarbeiter, der unter Verstoß gegen diese Verordnung die Zwecke und Mittel der Verarbeitung bestimmt, in Bezug auf diese Verarbeitung als Verantwortlicher."}, "DSGVO|29": {"t": "Verarbeitung unter der Aufsicht des Verantwortlichen oder des Auftragsverarbeiters", "c": "Der Auftragsverarbeiter und jede dem Verantwortlichen oder dem Auftragsverarbeiter unterstellte Person, die Zugang zu personenbezogenen Daten hat, dürfen diese Daten ausschließlich auf Weisung des Verantwortlichen verarbeiten, es sei denn, dass sie nach dem Unionsrecht oder dem Recht der Mitgliedstaaten zur Verarbeitung verpflichtet sind."}};
+// „Beispielantworten (Testfall 09), nur für die Adresse #demo zum Prüfen.“
+const DEMOA = {"name": "Mieter-Chatbot", "rolle": "avv", "betrieb": "selbst", "besonder": ["nichts"], "daten": ["kontakt", "vertrag", "komm"], "betroffen": ["endkunden"], "haltung": ["logs", "vektor", "backup"], "umfang": "hoch", "test": "echt", "inhalte": ["nichts"], "llm": ["openai"], "llmx": "", "dienste": ["auto"], "region": "std", "avv": "teil", "anbieter": "std", "kontakt": ["direkt"], "auto": "assist", "bereich": ["keiner"], "bewert": ["nichts"], "text": "Chatbot fuer Mieteranfragen"};
+// „Themen der Checkliste: gleiche Namen wie die Schritte der Eingabe, dazu "Jedes Projekt".“
+const CL = ["Projekt und Rolle","Daten","Anbieter und Verträge","KI-Einsatz","Jedes Projekt"];
+// „Der Weg rechts: Titel und die Fragen, die dort kommen. Der letzte Eintrag ist das Ergebnis.“
+const WEG = [
+  {t:"Projekt und Rolle", f:["Projektname","Deine Rolle","Server","Sonderfälle"]},
+  {t:"Daten", f:["Angaben über Menschen","Betroffene","Speicherorte","Anzahl und Tests"]},
+  {t:"Anbieter und Verträge", f:["KI-Modelle","Weitere Dienste","Standort und Training","Datenschutzvertrag"]},
+  {t:"KI-Einsatz", f:["Wer sieht die KI","Wer entscheidet","Einsatzbereich","Bewertung von Menschen"]},
+  {t:"Dein Prüfplan", f:["Kennzahlen, To-dos, Gesetze"], ergebnis:true}
+];
+// „Platzhaltertexte der beiden Textfelder.“
+const PH = {name:"z. B. Mieter-Chatbot Hausverwaltung X", text:"z. B. Chatbot beantwortet Mieteranfragen"};
+// „Antworten, die alle anderen ausschließen (z. B. "Nichts davon" oder "Weiß ich nicht").“
+const EXCL = ["nichts","keine","unklar","keinllm","keiner","kein"];
+
+// ---------- ABSCHNITT 2: Zustand ----------
+// „A = alle Antworten, SRV = Antwort des Workflows, DONE = abgehakte To-dos, TDS = die To-dos dieses Ergebnisses.“
+const A = {}; const DONE = new Set(); let SRV = null, TDS = [], tab = -1;
+let cur = 0, busy = false, loading = false, msg = null;
+// „Fragen schnell finden: nach ID, mit der Seite, auf der sie stehen.“
+const FBY = {}; SEITEN.forEach((p, n) => p.rows.flat().forEach(f => { FBY[f.id] = f; f.page = n; }));
+
+// ---------- ABSCHNITT 3: Hilfsfunktionen ----------
+// „Sonderzeichen entschärfen, damit Text im HTML sicher bleibt.“
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// „Name vor der Klammer: aus "ChatGPT (OpenAI)" wird "ChatGPT".“
+const short = t => t.split(" (")[0];
+// „Beschriftung einer Antwort nachschlagen.“
+const lab = (id, k) => { const o = FBY[id].o.find(o => o[0] == k); return o ? o[1] : k; };
+// „Gewählte Antworten einer Frage immer als Liste.“
+const sel = id => [].concat(A[id] === undefined ? [] : A[id]);
+// „KI-Modelle auswerten: außerhalb der EU, EU, eigener Rechner, offen. Die beiden "Sonstige" bekommen sprechende Namen.“
+function llmInfo(){
+  const third = [], eu = [], v = sel("llm");
+  v.forEach(k => {
+    if(["openai","anthropic","google","azure"].includes(k)) third.push(short(lab("llm", k)));
+    if(k == "andere_usa") third.push("eine sonstige KI aus den USA");
+    if(["mistral","aleph"].includes(k)) eu.push(short(lab("llm", k)));
+    if(k == "andere_eu") eu.push("eine sonstige KI aus der EU");
+  });
+  return {third, eu, unklar: v.includes("unklar")};
+}
+// „Sind Dienste außerhalb des eigenen Servers im Spiel? Wenn nicht, entfallen Standort, Training und Vertrag.“
+function extPresent(){
+  const L = llmInfo();
+  return !!(L.third.length || L.eu.length || L.unklar || sel("dienste").some(k => ["auto","crm","voice","unklar"].includes(k)) || A.betrieb == "cloud");
+}
+// „Keine Angaben über Menschen: dann entfallen Betroffene, Anzahl und Tests.“
+const noPersons = () => sel("daten").length == 1 && sel("daten")[0] == "keine";
+// „Ist die Frage gerade ausgeblendet?“
+function hid(f){
+  if(["region","avv","anbieter"].includes(f.id)) return !extPresent();
+  if(["betroffen","umfang","test"].includes(f.id)) return noPersons();
+  return false;
+}
+// „Zeilen einer Seite ohne die ausgeblendeten Fragen.“
+const rowsOf = p => p.rows.map(r => r.filter(f => !hid(f))).filter(r => r.length);
+// „Platzhalter in den Aufgabentexten mit den gewählten Anbietern füllen.“
+function fillTxt(t){
+  const L = llmInfo();
+  const dn = sel("dienste").filter(k => ["auto","crm","voice"].includes(k)).map(k => short(lab("dienste", k)));
+  const ext = [...L.third, ...L.eu, ...dn];
+  const all = [...ext, ...(["selbst","selbstx"].includes(A.betrieb) ? ["deinen Server-Anbieter"] : [])];
+  return t.replace(/\{llm_us\}/g, L.third.join(", ") || "den Anbietern").replace(/\{dienste_ext\}/g, ext.join(", ") || "den Diensten").replace(/\{dienste\}/g, all.join(", ") || "den Diensten");
+}
+
+// ---------- ABSCHNITT 4: Fragen zeichnen ----------
+// „Einen Chip zeichnen: Name vorn, Beispiel in Klammern wandert in den Hinweis. Klick wird über data-f und data-v erkannt.“
+function chip(o, f){
+  const multi = f.kind == "Mehrfachauswahl", on = sel(f.id).includes(o[0]);
+  const m = o[1].match(/^(.*?)\s*\((.*)\)\s*$/), voll = o[2] == "v";
+  const nm = m && !voll ? m[1] : o[1], ex = m && !voll ? m[2] : "";
+  return `<span class="c${multi ? " k" : " r"}${on ? " on" : ""}" data-f="${f.id}" data-v="${o[0]}"${ex ? ` data-ex="${esc(ex)}"` : ""}>${esc(nm)}</span>`;
+}
+// „Alle Chips einer Frage. Bei Gruppen (z. B. KI-Firmen) je Gruppe ein Etikett mit seinen Chips.“
+function chipsHtml(f){
+  if(!f.g) return `<div class="chips">${f.o.map(o => chip(o, f)).join("")}</div>`;
+  return `<div class="chips gr">${f.gh ? `<div class="gh">${f.gh}</div>` : ""}${f.g.map(([gt, ids]) => `<div class="grp"><span class="gl">${gt}</span><div class="gc">${ids.map(id => chip(f.o.find(o => o[0] == id), f) + (f.notes && f.notes[id] ? `<span class="nt">${f.notes[id]}</span>` : "")).join("")}</div></div>`).join("")}</div>`;
+}
+// „Eine Frage zeichnen: Titel mit Hilfe, Frage daneben, darunter die Chips oder das Textfeld.“
+function frage(f){
+  const i = `<span class="info" data-tip="${esc(f.info)}">i</span>`;
+  if(f.t == "text") return `<div class="q"><div class="ql">${f.l}${i}<em>Optional</em></div><input class="inp" data-t="${f.id}" maxlength="${f.id == "text" ? 300 : 80}" placeholder="${esc(PH[f.id] || "")}" value="${esc(A[f.id] || "")}"></div>`;
+  return `<div class="q"><div class="ql">${f.l}${i}<span class="qq">${f.q}</span><em>${f.kind == "Mehrfachauswahl" ? "Wähle alle, die passen" : "Wähle eine"}</em></div>${chipsHtml(f)}</div>`;
+}
+
+// ---------- ABSCHNITT 5: Eingaben aufnehmen ----------
+// „Zustand der Sichtbarkeit merken, um zu sehen, ob nach einem Klick Fragen erscheinen oder verschwinden.“
+const sig = () => Object.values(FBY).map(f => hid(f) ? 1 : 0).join("");
+// „Ein Klick auf einen Chip: einfache Fragen setzen die Antwort, Mehrfachfragen schalten um, "Nichts davon" und "Weiß ich nicht" schließen die anderen aus.“
+function pick(f, v){
+  const vorher = sig(); const multi = f.kind == "Mehrfachauswahl";
+  if(!multi) A[f.id] = v;
+  else {
+    let l = sel(f.id);
+    if(l.includes(v)) l = l.filter(x => x != v);
+    else l = EXCL.includes(v) ? [v] : l.filter(x => !EXCL.includes(x)).concat(v);
+    A[f.id] = l;
+  }
+  // „Jede Änderung macht ein altes Ergebnis ungültig.“
+  SRV = null; DONE.clear(); msg = null;
+  // „Erscheinen oder verschwinden Fragen, die Seite neu zeichnen. Sonst nur die Haken der Chips setzen.“
+  if(sig() != vorher) { drawMain(); return; }
+  document.querySelectorAll(`#cont .c[data-f="${f.id}"]`).forEach(el => el.classList.toggle("on", sel(f.id).includes(el.dataset.v)));
+  const h = document.querySelector("#foot .hint"); if(h){ h.classList.remove("bad"); h.textContent = HINT; }
+}
+const HINT = "Wähle bei jeder Frage eine Antwort. Nur Orientierung, keine Rechtsberatung.";
+document.getElementById("cont").addEventListener("click", e => { const c = e.target.closest(".c[data-f]"); if(c && !loading && cur < 4) pick(FBY[c.dataset.f], c.dataset.v); });
+document.getElementById("cont").addEventListener("input", e => { const t = e.target.closest("[data-t]"); if(t) A[t.dataset.t] = t.value; });
+// „Welche sichtbaren Pflichtfragen sind noch offen?“
+function offen(){
+  const out = [];
+  SEITEN.forEach(p => rowsOf(p).flat().forEach(f => { if(f.t == "text") return; const v = A[f.id]; if(v === undefined || (Array.isArray(v) && !v.length)) out.push(f); }));
+  return out;
+}
+// „Antworten so senden, wie der Workflow sie erwartet: nur sichtbare Fragen, leere Felder weglassen.“
+function payload(){
+  const p = {};
+  SEITEN.forEach(pg => rowsOf(pg).flat().forEach(f => { const v = A[f.id]; if(v === undefined || v === "" || (Array.isArray(v) && !v.length)) return; p[f.id] = typeof v == "string" ? v.trim() : v; }));
+  return p;
+}
+
+// ---------- ABSCHNITT 6: Zeichnen ----------
+// „Passt die Karte nicht in die Fensterhöhe, wird sie gleichmäßig verkleinert (zoom), bis alles sichtbar ist. Untergrenze 70 %, darunter scrollt die Karte innen.“
+function fit(){
+  const m = document.querySelector(".main"), c = document.getElementById("cont");
+  if(cur == 4 || loading){ m.style.zoom = 1; m.classList.remove("scroll"); ["ta","tb","tc"].forEach(k => document.body.classList.remove(k)); return; }
+  const zuHoch = z => { m.style.zoom = z; return c.scrollHeight > c.clientHeight + 1; };
+  const stufe = n => { document.body.classList.toggle("ta", n >= 1); document.body.classList.toggle("tb", n >= 2); document.body.classList.toggle("tc", n >= 3); };
+  m.classList.remove("scroll");
+  for(let n = 0; n <= 3; n++){ stufe(n); if(!zuHoch(1)) return; }
+  if(zuHoch(0.7)){ m.classList.add("scroll"); return; }
+  let lo = 0.7, hi = 1;
+  for(let i = 0; i < 7; i++){ const mid = (lo + hi) / 2; if(zuHoch(mid)) hi = mid; else lo = mid; }
+  m.style.zoom = lo;
+}
+addEventListener("resize", fit);
+// „Aktive Seite links: Kopf, dann alle Zeilen, ganz unten die Knöpfe und der Hinweis (rot, wenn etwas fehlt).“
+function drawMain(){
+  if(cur == 4) return drawResult();
+  const p = SEITEN[cur], m = msg && msg.page == cur ? msg.html : "";
+  document.querySelector(".main").classList.add("neu");
+  document.getElementById("cont").innerHTML =
+    `<div class="mh"><span class="step">Schritt ${cur+1} von 4</span><span class="law">${p.law}</span></div>
+     <h2>${p.t}</h2><p class="sub">${p.s}</p>
+     ${rowsOf(p).map(r => `<div class="row${r.length > 1 ? " pair" : ""}">${r.map(frage).join("")}</div>`).join("")}`;
+  const last = cur == SEITEN.length - 1;
+  document.getElementById("foot").innerHTML =
+    `<button class="btn" id="bBack" ${cur == 0 ? "disabled" : ""}>Zurück</button>
+     <span class="hint${m ? " bad" : ""}">${m || HINT}</span>
+     <button class="btn pri" id="bNext">${last ? "Guide erstellen" : "Weiter"}</button>`;
+  fit();
+  document.getElementById("bBack").onclick = () => goTo(cur - 1);
+  document.getElementById("bNext").onclick = () => last ? laden() : goTo(cur + 1);
+}
+
+// ---------- ABSCHNITT 7: Ergebnis aus der Antwort des Workflows bauen ----------
+// „Aus der Serverantwort die To-dos wählen: Gruppe b muss an sein, Bedingung c muss stimmen. Reihenfolge wie die Gesetze, Aufgaben ohne Gesetzesstelle unten.“
+function ergebnis(){
+  const S = SRV, keep = (x, sw, c) => sw[x.b] && c[x.c || "always"];
+  // „Was bliebe, wenn alle "Weiß ich nicht" geklärt wären? Alles andere ist vorsorglich.“
+  const sicher = S.unk && S.unk.length && S.without ? new Set(TD.filter(x => keep(x, S.without.sw, S.without.conds)).map(x => x.title)) : null;
+  TDS = TD.filter(x => keep(x, S.sw, S.conds)).map(x => {
+    let f = x.f;
+    // „Die Eskalation hängt an der Frage, die sie ausgelöst hat.“
+    if(x.b == "eskal"){
+      const w = (S.sw.eskal || [])[0] || "besonder", DEPF = {dritt:(S.sw.dritt || ["llm"])[0], besond:"daten", besch:"daten", hoch:"bereich"};
+      f = w[0] == "@" ? (DEPF[w.slice(1)] || "daten") : w;
+    }
+    return {t:fillTxt(x.title), r:x.ref, l:x.law, f, was:fillTxt(x.k[0]), wer:fillTxt(x.k[1]), why:fillTxt(x.k[2]), q:x.k[3], vs:!!sicher && !sicher.has(x.title), c:f && FBY[f] ? FBY[f].page : 4};
+  });
+  const ohne = x => /^(Checkliste|Praxis)$/.test(x.r), artNr = x => +((x.r.match(/Art\. (\d+)/) || [0, 0])[1]);
+  TDS.sort((a, b) => ohne(a) - ohne(b) || (a.l == "AI") - (b.l == "AI") || artNr(a) - artNr(b));
+}
+// „Zahl der verschiedenen Gesetzesstellen: alles, was der Workflow abgerufen hat, plus die Grundlagen.“
+function zahlStellen(){
+  const s = new Set(); const S = SRV;
+  ["D","AI"].forEach(k => { ((S.basis || {})[k] || []).forEach(n => s.add(k + n)); Object.values(S.arts || {}).forEach(a => ((a || {})[k] || []).forEach(n => s.add(k + n))); });
+  return s.size;
+}
+// „Ergebnisseite zeichnen: Kopf mit Zahlen, Stopp-Streifen, Hinweise, dann die Checkliste. Ein To-do klappt auf, rechts leuchtet die passende Fundstelle.“
+function drawResult(){
+  const n = TDS.length, S = SRV;
+  const unk = (S.unk || []).filter(id => FBY[id]);
+  const hinweise =
+    (S.stop ? `<div class="stop2"><b>Stopp vor dem Start:</b> Keine echten Daten, auch nicht zum Testen, solange AVV und Drittland nicht geklärt sind.</div>` : "") +
+    (S.kiStatus == "fallback" ? `<div class="klar"><b>Die Zusammenfassungen der KI fehlen:</b> Die KI war nicht erreichbar. Aufgaben und Gesetzestexte sind vollständig.</div>` : "") +
+    (unk.length ? `<div class="klar"><b>Offen geblieben:</b> Bei ${unk.map(id => `<a data-go="${FBY[id].page}">${esc(FBY[id].l)}</a>`).join(", ")} hast du „Weiß ich nicht“ gewählt. Der Guide geht auf Nummer sicher und markiert die betroffenen Aufgaben als „vorsorglich“.</div>` : "");
+  document.getElementById("cont").innerHTML =
+    `<div class="mh"><span class="step">Ergebnis</span><span class="law">DSGVO und AI Act</span></div>
+     <div class="rh"><div style="flex:1"><h2>Dein Prüfplan</h2><p class="sub">für ${esc(A.name || "dein Projekt")}</p></div>
+       <div class="stats"><div class="stat"><b>${n}</b><span>Aufgaben</span></div><div class="stat"><b>${zahlStellen()}</b><span>Gesetzesstellen</span></div>${S.stop ? `<div class="stat warn"><b>1</b><span>Stopp</span></div>` : ""}</div></div>
+     ${hinweise}
+     <div class="rth">Aufgaben nach Thema</div><div class="rt" id="rt">${[["Alle", -1]].concat(CL.map((c, k) => [c, k])).map(([c, k]) => `<button data-k="${k}" class="${k == tab ? "on" : ""}">${c}<b>${k < 0 ? n : TDS.filter(x => x.c == k).length}</b></button>`).join("")}</div>
+     <div class="flip" id="flip"><div class="fi">
+       <div class="face front"><div class="zl"><span>Klick auf eine Aufgabe zeigt Auslöser, Warum, Was, Wer und wo.</span><span class="sp"></span><b id="zn"></b></div><ul class="tdl" id="tdl"></ul></div>
+       <div class="face back" id="back"></div>
+     </div></div>`;
+  liste(); lawsPanel();
+  document.getElementById("rt").onclick = e => { const b = e.target.closest("button"); if(!b) return; tab = +b.dataset.k; document.querySelectorAll("#rt button").forEach(x => x.classList.toggle("on", x == b)); liste(); };
+  document.querySelectorAll("#cont a[data-go]").forEach(a => a.onclick = () => goTo(+a.dataset.go));
+  fussleiste();
+}
+// „Die Liste zeichnen: nur die Aufgaben des gewählten Themas. Abgehakte bleiben gemerkt.“
+function liste(){
+  const n = TDS.length;
+  document.getElementById("tdl").innerHTML = TDS.map((x, i) => x.c != tab && tab >= 0 ? "" : `<li><details name="td" data-i="${i}"><summary><input type="checkbox" data-i="${i}"><b>${esc(x.t)}</b>${x.vs ? `<span class="vs">vorsorglich</span>` : ""}<span class="rf ${x.l == "AI" ? "ai" : /^(Checkliste|Praxis)$/.test(x.r) ? "n" : "d"}">${esc(x.r)}</span></summary>
+        <div class="tdb"><p><span class="k">Auslöser:</span> ${ausloeser(x)}</p><p><span class="k">Warum:</span> ${esc(x.why)}${x.q && x.q.length ? ` <a class="gz" data-i="${i}">${esc(x.r.replace(/\s*\(.*\)$/, ""))}</a>` : ""}</p><p><span class="k">Was:</span> ${esc(x.was)}</p><p><span class="k">Wer und wo:</span> ${esc(x.wer)}</p></div></details></li>`).join("");
+  document.querySelectorAll(".tdl input").forEach(c => { c.checked = DONE.has(+c.dataset.i); c.onclick = e => e.stopPropagation(); c.onchange = () => { c.checked ? DONE.add(+c.dataset.i) : DONE.delete(+c.dataset.i); document.getElementById("zn").textContent = DONE.size + " von " + n + " erledigt"; }; });
+  document.getElementById("zn").textContent = DONE.size + " von " + n + " erledigt";
+  document.querySelectorAll(".tdl a.gz").forEach(a => a.onclick = e => { e.preventDefault(); gesetz(+a.dataset.i); });
+  document.querySelectorAll(".tdl details").forEach(d => d.addEventListener("toggle", () => {
+    document.querySelectorAll(".laws li").forEach(li => li.classList.toggle("hl", d.open && li.dataset.i == d.dataset.i));
+  }));
+}
+// „Auslöser in Worten der Eingabe: Frage, gewählte Antwort und Schritt, z. B. Server: Ich selbst, Standort EU (Schritt 1).“
+function ausloeser(x){
+  const fr = FBY[x.f];
+  if(!x.f || !fr) return "Gilt für jedes Projekt";
+  const w = sel(x.f).map(k => lab(x.f, k)).join(", ");
+  return `${esc(fr.l)}${w ? ": " + esc(w) : ""} <span style="color:var(--faint)">(Schritt ${fr.page + 1})</span>`;
+}
+// „Rückseite füllen: oben die Zusammenfassung der KI (falls da), dann je zitiertem Artikel Titel und die genannten Absätze im Originaltext, dann umdrehen.“
+function gesetz(i){
+  const x = TDS[i];
+  const sm = SRV && SRV.summaries && x.f ? SRV.summaries[x.f + "|" + x.l] : "";
+  const teile = x.q.map(([g, a, abs]) => {
+    const L = LT[g + "|" + a]; if(!L) return "";
+    const st = L.c.split(/\n(?=\(\d+\))/);
+    const zeig = abs.length ? st.filter(p => abs.includes(+((p.match(/^\((\d+)\)/) || [0, 0])[1]))) : st;
+    const kurz = g == "EU AI Act" ? "AI Act" : g;
+    return `<h4>${kurz} Art. ${a}<small>${esc(L.t)}${abs.length ? " · Auszug: Abs. " + abs.join(", ") : ""}</small></h4>` +
+      zeig.map(p => `<p>${esc(p).replace(/^\((\d+)\)/, "<b>($1)</b>").split("\n").map(z => `<span class="ln${/^[a-z]{1,3}\)\s/.test(z) ? " lb" : ""}">${z}</span>`).join("")}</p>`).join("");
+  }).join("");
+  document.getElementById("back").innerHTML =
+    `<div class="bk"><span>Gesetzestext zu: <b style="color:#0b3d2b">${esc(x.t)}</b></span><span class="sp"></span><a class="zur">Hier geht's zurück zur Checkliste</a></div>
+     <div class="lt">${sm ? `<div class="ks"><b>Zusammenfassung der KI</b>${esc(sm)}</div>` : ""}${teile}<p class="fn">Originaltext aus den Gesetzeskarten des Guides (Stand DSGVO 06.10.2026, AI Act 27.07.2026).</p><a class="zur">Hier geht's zurück zur Checkliste</a></div>`;
+  document.querySelectorAll("#back .zur").forEach(z => z.onclick = () => document.getElementById("flip").classList.remove("turn"));
+  document.getElementById("flip").classList.add("turn");
+}
+// „Fußleiste der Ergebnisseite: zurück zu den Fragen oder alles neu beginnen.“
+function fussleiste(){
+  document.getElementById("foot").innerHTML =
+    `<button class="btn" id="bBack">Zurück</button><span class="hint">Ergebnis zu deinen Antworten. Nur Orientierung, keine Rechtsberatung.</span><button class="btn pri" id="bNext">Neu starten</button>`;
+  document.getElementById("bBack").onclick = () => goTo(3);
+  document.getElementById("bNext").onclick = () => { Object.keys(A).forEach(k => delete A[k]); SRV = null; DONE.clear(); tab = -1; msg = null; goTo(0); };
+  fit();
+}
+// „Rechts die Gesetzesstellen des Ergebnisses, getrennt nach DSGVO und AI Act. Klappt eine Aufgabe auf, leuchtet ihre Stelle.“
+function lawsPanel(){
+  document.getElementById("laws").innerHTML = `<div class="in">` + [["D","DSGVO"],["AI","EU AI Act"]].map(([k, nm]) =>
+    `<div class="w ${k == "D" ? "d" : "ai"}"><div class="wt"><i>§</i>${nm}</div><ul>${TDS.map((x, i) => x.l == k ? `<li data-i="${i}">${esc(x.r)}</li>` : "").join("")}</ul></div>`).join("") + `</div>`;
+}
+
+// ---------- ABSCHNITT 8: Absenden ----------
+// „Fehler anzeigen: zurück auf die letzte Seite oder zur ersten betroffenen Frage, der Hinweis steht unten in Rot.“
+function fehler(html, id){
+  loading = false; busy = false;
+  const cont = document.getElementById("cont"); cont.classList.remove("out-l");
+  cur = id && FBY[id] ? FBY[id].page : 3; msg = {page: cur, html};
+  drawMain(); setSide();
+}
+// „Nach Klick auf Guide erstellen: Pflichtfragen prüfen, Ladeanzeige zeigen, Webhook aufrufen, Ergebnis hereingleiten lassen.“
+async function laden(){
+  if(busy) return;
+  const o = offen();
+  if(o.length){ const s = o[0].page; msg = {page: s, html: "Noch offen: " + o.map(f => esc(f.l)).join(", ") + "."}; if(s == cur) drawMain(); else goTo(s); return; }
+  busy = true; loading = true;
+  const cont = document.getElementById("cont"), it = document.getElementById("it4");
+  it.classList.add("lit"); cont.classList.add("out-l");
+  document.getElementById("foot").innerHTML = "";
+  await new Promise(r => setTimeout(r, 380));
+  cont.innerHTML = `<div class="ld" role="status"><div class="spin"></div><h2>Dein Prüfplan wird erstellt</h2><p class="sub">Das dauert meist 15 bis 75 Sekunden (<span id="lt">0</span> s).</p>
+    <ul><li>Antworten prüfen</li><li>Passende Gesetzesartikel holen</li><li>KI schreibt die Zusammenfassungen</li></ul></div>`;
+  fit();
+  cont.classList.remove("out-l"); cont.classList.add("pre-r"); void cont.offsetWidth; cont.classList.remove("pre-r");
+  const t0 = Date.now(), zeitgeber = setInterval(() => { const l = document.getElementById("lt"); if(l) l.textContent = Math.round((Date.now() - t0) / 1000); }, 1000);
+  [900, 2000, 3100].forEach((t, i) => setTimeout(() => { const l = cont.querySelectorAll(".ld li")[i]; if(l) l.classList.add("on"); }, t));
+  const ctl = new AbortController(), abbruch = setTimeout(() => ctl.abort(), 115000);
+  try{
+    // „Mindestens 3 Sekunden zeigen, damit die Ladeanzeige nicht flackert.“
+    const [res] = await Promise.all([fetch(GUIDE_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload()), signal:ctl.signal}), new Promise(r => setTimeout(r, 3000))]);
+    let body = null; try{ body = await res.json(); }catch(e){ body = null; }
+    if(res.status == 429) return fehler("Das Tageslimit für KI-Anfragen ist für heute erreicht. Bitte versuche es morgen noch einmal.");
+    if(res.status == 422 || (body && body.ok === false)){
+      const ids = [...new Set(((body && body.errors) || []).map(e => String(e).split(":")[0]))].filter(id => FBY[id]);
+      return fehler("Bitte prüfe deine Antworten. " + (ids.length ? "Offen oder ungültig: " + ids.map(id => esc(FBY[id].l)).join(", ") + "." : "Der Guide konnte die Anfrage nicht lesen."), ids[0]);
+    }
+    if(!res.ok || !body || body.ok !== true) return fehler("Der Guide konnte gerade nicht antworten. Bitte versuche es in einer Minute noch einmal.");
+    SRV = body; DONE.clear(); tab = -1; ergebnis();
+  }catch(e){
+    return fehler(e && e.name == "AbortError" ? "Das dauert länger als erwartet. Bitte versuche es noch einmal." : "Keine Verbindung zum Guide. Bitte prüfe deine Internetverbindung und versuche es noch einmal.");
+  }finally{ clearInterval(zeitgeber); clearTimeout(abbruch); }
+  cont.classList.add("out-l");
+  setTimeout(() => {
+    loading = false; cur = 4; drawMain(); setSide();
+    cont.classList.remove("out-l"); cont.classList.add("pre-r"); void cont.offsetWidth; cont.classList.remove("pre-r");
+    it.classList.remove("lit"); setTimeout(() => busy = false, 450);
+  }, 380);
+}
+
+// ---------- ABSCHNITT 9: Weg rechts ----------
+// „Weg rechts einmal aufbauen: je Eintrag eine Karte (wartend) und ein Haken (erledigt).“
+function buildSide(){
+  document.getElementById("side").innerHTML = `<h3>Dein Weg</h3>` + WEG.map((s, i) =>
+    `<div class="it" id="it${i}">
+       <div class="g gw"><div class="in"><div class="w"><div class="wt"><i>${s.ergebnis ? "★" : i+1}</i>${s.t}</div><ul>${s.f.map(x => `<li>${x}</li>`).join("")}</ul></div></div></div>
+       ${s.ergebnis ? "" : `<div class="g gd"><div class="in"><div class="dn" data-i="${i}"><i>✓</i>${s.t}</div></div></div>`}
+     </div>`).join("") + `<div class="g laws off" id="laws"></div>`;
+  document.querySelectorAll(".dn").forEach(d => d.onclick = () => goTo(+d.dataset.i));
+  setSide();
+}
+// „Zustand je Eintrag: davor = Haken, aktuell = ganz zugeklappt (steht links), danach = Karte.“
+function setSide(){
+  WEG.forEach((s, i) => {
+    const gw = document.querySelector(`#it${i} .gw`), gd = document.querySelector(`#it${i} .gd`);
+    gw.classList.toggle("off", i <= cur);
+    if(gd) gd.classList.toggle("off", i >= cur);
+  });
+  document.getElementById("laws").classList.toggle("off", cur != 4);
+}
+
+// ---------- ABSCHNITT 10: Übergang zwischen Seiten ----------
+// „Zu Seite n wechseln: Karte leuchtet, Inhalt schiebt weg, dann kommt der neue von der Seite. Das Ergebnis gibt es nur nach dem Absenden.“
+function goTo(n){
+  if(busy || loading || n == cur || n < 0 || n > 4 || (n == 4 && !SRV)) return;
+  busy = true;
+  const vor = n > cur, cont = document.getElementById("cont"), it = document.getElementById("it" + n);
+  if(vor) it.classList.add("lit");
+  cont.classList.add(vor ? "out-l" : "out-r");
+  setTimeout(() => {
+    cur = n; drawMain(); setSide();
+    const c = document.getElementById("cont");
+    c.classList.remove("out-l", "out-r"); c.classList.add(vor ? "pre-r" : "pre-l"); void c.offsetWidth; c.classList.remove("pre-r", "pre-l");
+    it.classList.remove("lit");
+    setTimeout(() => busy = false, 450);
+  }, 380);
+}
+// „Pfeiltasten wechseln die Seite, aber nicht, solange man in einem Textfeld tippt.“
+addEventListener("keydown", e => { if(e.target.closest && e.target.closest("input")) return; if(e.key == "ArrowRight") goTo(cur + 1); if(e.key == "ArrowLeft") goTo(cur - 1); });
+
+// ---------- ABSCHNITT 11: Start ----------
+drawMain(); buildSide();
+// „Wenn die Schrift geladen ist, ändert sich die Höhe leicht, dann noch einmal passen.“
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+// „Mit #1 bis #4 öffnet die Seite direkt auf diesem Schritt. #demo füllt die Beispielantworten ein, #run schickt sie sofort ab (zum Prüfen).“
+const hm = location.hash.match(/^#(\d|demo|run)$/);
+if(hm){
+  if(hm[1] == "demo" || hm[1] == "run"){ Object.assign(A, JSON.parse(JSON.stringify(DEMOA))); cur = 3; drawMain(); setSide(); if(hm[1] == "run") laden(); }
+  else if(+hm[1] >= 1 && +hm[1] <= 4){ cur = +hm[1] - 1; drawMain(); setSide(); }
+}
+</script>
+</body>
+</html>

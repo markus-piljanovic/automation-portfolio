@@ -13,18 +13,12 @@
   "daten": [
    "keine"
   ],
-  "betroffen": [
-   "endkunden",
-   "b2b"
-  ],
   "inhalte": [
    "nichts"
   ],
   "haltung": [
    "vektor"
   ],
-  "umfang": "hoch",
-  "test": "anon",
   "llm": [
    "keinllm"
   ],
@@ -51,13 +45,11 @@
   "status": 200,
   "ok": true,
   "stop": false,
-  "aufgaben": 11,
+  "aufgaben": 9,
   "summaryKeys": [
    "rolle|D",
    "betrieb|D",
-   "betroffen|D",
    "haltung|D",
-   "umfang|D",
    "dienste|D",
    "kontakt|AI",
    "bereich|D",
@@ -81,31 +73,10 @@
     ],
     "AI": []
    },
-   "betroffen": {
-    "D": [
-     "12",
-     "13",
-     "14",
-     "15",
-     "16",
-     "17",
-     "18",
-     "19",
-     "20",
-     "21"
-    ],
-    "AI": []
-   },
    "haltung": {
     "D": [
      "5",
      "17"
-    ],
-    "AI": []
-   },
-   "umfang": {
-    "D": [
-     "35"
     ],
     "AI": []
    },
@@ -132,7 +103,7 @@
     ]
    }
   },
-  "karten": 42,
+  "karten": null,
   "kiStatus": "ok",
   "ersetzt": []
  }

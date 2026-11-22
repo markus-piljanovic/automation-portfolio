@@ -16,8 +16,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.2,
       "position": [
-        0,
-        256
+        -32,
+        192
       ]
     },
     {
@@ -30,8 +30,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        448,
-        256
+        336,
+        192
       ]
     },
     {
@@ -49,8 +49,8 @@
       "type": "n8n-nodes-base.n8n",
       "typeVersion": 1,
       "position": [
-        880,
-        256
+        672,
+        192
       ],
       "credentials": {
         "n8nApi": {
@@ -68,8 +68,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1328,
-        256
+        1024,
+        272
       ]
     },
     {
@@ -82,8 +82,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1760,
-        256
+        1344,
+        272
       ],
       "credentials": {
         "supabaseApi": {
@@ -94,25 +94,25 @@
     },
     {
       "parameters": {
-        "content": "# Cost per request (usage logger)\n## Started by the main workflow after every answer, without waiting. It reads the finished run, calculates what the AI call cost and books one row in `usage_log`. The main workflow adds up today's rows before every request and stops at 0.20 EUR per day.\n\n### **Privacy:** no answers or free text are stored, only tokens, model and cost.\n### **Tokens:** the AI gateway returns no exact numbers, n8n estimates them. Costs are approximate.\n### **Prices:** constants in the code (`PRICES_USD`, `PRICE_STAND`). Adjust on a price change.\n### **Tests:** runs started from the editor are stored with `is_test = true` and do not count toward the limit.",
-        "height": 344,
-        "width": 2244,
-        "color": 7
+        "content": "# Cost per request (usage logger)\n## Started by the main workflow after every answer, without waiting. \n## Reads finished run, calculates what the AI call cost and books one row in `usage_log`. \n## The main workflow adds up today's rows before every request and stops at 0.20 EUR per day.\n\n",
+        "height": 280,
+        "width": 1748,
+        "color": "#FFFFFF"
       },
       "id": "7a68390a-461d-42b3-86c5-0cf868cff11a",
       "name": "Note Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -192,
-        -480
+        -176,
+        -416
       ]
     },
     {
       "parameters": {
         "content": "# Book the cost of one request",
         "height": 150,
-        "width": 2180,
+        "width": 1716,
         "color": 6
       },
       "id": "7ad73c23-3897-4a2f-8222-a49b9f4a2a10",
@@ -126,9 +126,9 @@
     },
     {
       "parameters": {
-        "content": "## Execute Workflow Trigger\n### What happens:\n- Starts when the main workflow calls this workflow and receives the `executionId`.\n### Why:\n- Runs separately, so the answer to the user does not wait for the cost booking.\n### Settings:\n- Input field: `executionId`.\n- The workflow must be published, otherwise the main workflow cannot call it.",
-        "height": 470,
-        "width": 420,
+        "content": "## Execute Workflow Trigger\n### Starts when the main workflow calls this workflow and receives the `executionId`.\n### Why:\n- Runs separately, so the answer to the user does not wait for the cost booking.\n",
+        "height": 406,
+        "width": 340,
         "color": 6
       },
       "id": "14a1a32a-1e04-425d-a722-0d547019753e",
@@ -142,9 +142,9 @@
     },
     {
       "parameters": {
-        "content": "## Wait for Execution to Finish\n### What happens:\n- Waits 10 seconds.\n### Why:\n- The main run must be finished before its data can be read.\n### Settings:\n- Amount: 10 seconds.",
-        "height": 470,
-        "width": 420,
+        "content": "## Wait for Execution to Finish\n### What happens:\n- Waits 10 seconds.\n- The main run must be finished before its data can be read.\n### Settings:\n- Wait: 10 seconds.",
+        "height": 406,
+        "width": 340,
         "color": 6
       },
       "id": "23ba4820-2614-469b-8c20-209840c67ab4",
@@ -152,15 +152,15 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        288,
+        208,
         -48
       ]
     },
     {
       "parameters": {
-        "content": "## Get Execution\n### What happens:\n- Loads the finished main run with all node data through the n8n API.\n### Why:\n- The token numbers of the AI call are in the data of the AI node.\n### Settings:\n- Credential: n8n API with read-only rights.",
-        "height": 470,
-        "width": 420,
+        "content": "## Get Execution\n### Loads the finished main run with all node data through the n8n-API.\n### Settings:\n- Credential: n8n API on read-only.",
+        "height": 406,
+        "width": 324,
         "color": 6
       },
       "id": "c9ce1820-f515-4904-a367-11075c23a5e1",
@@ -168,15 +168,15 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        720,
+        560,
         -48
       ]
     },
     {
       "parameters": {
-        "content": "## Calculate Cost\n### What happens:\n- Adds up the tokens of all calls of `OpenAI Chat Model`, converts them to EUR and builds the row.\n- No AI call (invalid input, limit reached) -> returns nothing.\n### Why:\n- The cost per request feeds the daily limit.\n### Output:\n- `created_at` / `workflow` / `execution_id` / `model` / tokens / `cost_eur` / `is_test`",
+        "content": "## Calculate Cost\n### What happens:\n- Adds up the tokens of all calls of `OpenAI Chat Model`, converts them to EUR and builds the row.\n- No AI call  -> returns nothing.\n### Why:\n- The cost per request feeds the daily limit.\n### Output:\n- `created_at` / `workflow` / `execution_id` / `model` / tokens / `cost_eur` / `is_test`",
         "height": 470,
-        "width": 420,
+        "width": 324,
         "color": 6
       },
       "id": "70f438c0-579b-4ab7-8324-5af13024ff94",
@@ -184,7 +184,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1152,
+        896,
         -48
       ]
     },
@@ -192,7 +192,7 @@
       "parameters": {
         "content": "## Write Row to usage_log\n### What happens:\n- Inserts the row into the table `usage_log`.\n### Why:\n- The main workflow reads these rows to enforce the daily limit.\n### Settings:\n- Data to Send: auto-map input data.",
         "height": 470,
-        "width": 420,
+        "width": 308,
         "color": 6
       },
       "id": "c7a0c61a-f2cb-419b-94b7-98f87ec196d9",
@@ -200,7 +200,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1584,
+        1232,
         -48
       ]
     }

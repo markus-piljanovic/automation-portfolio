@@ -45,6 +45,8 @@ async function runCase(c) {
     if (e.nameBereinigt !== undefined && body.answers?.name !== e.nameBereinigt) diffs.push('Name nicht wie erwartet bereinigt');
     if (e.llmDritt && !same(body.llm?.third, e.llmDritt)) diffs.push('KI-Modelle außerhalb der EU weichen ab');
     if (e.llmUnbekannt && !same(body.llm?.unk, e.llmUnbekannt)) diffs.push('unbekannte KI-Modelle weichen ab');
+    // „Prüfung für ausgeblendete Felder: diese Felder dürfen in den geprüften Antworten nicht vorkommen.“
+    if (e.antwortOhne && e.antwortOhne.some(f => f in (body.answers || {}))) diffs.push('ausgeblendete Felder sind noch in den Antworten');
   } else {
     // „Prüfung 3: bei ungültiger Eingabe die Fehlerliste.“
     if (body.ok !== false) diffs.push('ok ist nicht false');

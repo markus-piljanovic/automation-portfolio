@@ -8,16 +8,17 @@
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
       "position": [
-        0,
+        -48,
         240
       ]
     },
     {
       "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "=🚨 Workflow-Fehler\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.lastNodeExecuted }}\nFehler: {{ $json.execution.error.message }}\nAusführung: {{ $json.execution.url }}",
+        "text": "=🚨 Workflow-Fehler\nWorkflow: {{ (s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))($json.workflow.name) }}\nNode: {{ (s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))($json.execution.lastNodeExecuted) }}\nFehler: {{ (s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))($json.execution.error.message) }}\nAusführung: {{ $json.execution.url }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "7432408f-02d5-40d5-8f1c-875a58ded2c6",
@@ -26,15 +27,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        448,
-        208
+        288,
+        192
       ],
       "credentials": {
         "telegramApi": {
           "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
           "name": "Telegram account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -50,8 +52,8 @@
       "type": "n8n-nodes-healthchecks-ping.healthchecksPing",
       "typeVersion": 1,
       "position": [
-        464,
-        656
+        288,
+        672
       ],
       "credentials": {
         "healthchecksApi": {
@@ -63,25 +65,26 @@
     },
     {
       "parameters": {
-        "content": "# Error workflow: Automation Compliance Guide\n## - Started by n8n when a run of `compliance_guide_main` fails. \n## - It is linked in the main workflow under Settings -> Error workflow. \n## - It sends a Telegram message with the details and sets the Healthchecks check to DOWN.\n\n## **Good to know:**\n### - Only failed runs count (for example a database error). \n### - Invalid input (422) and the daily limit (429) are normal answers, not errors.\n### - If the AI fails the guide still answers (`kiStatus` = fallback), so no alert is sent.\n### - The alert says what failed, the ping says the guide stopped answering. Both together.",
-        "height": 500,
-        "width": 1068,
-        "color": 7
+        "content": "# Error workflow: Automation Compliance Guide\n## - Started by n8n when a run of `compliance_guide_main` fails. \n## - It is linked in the main workflow under Settings -> Error workflow. \n## - It sends a Telegram message with the details and sets the Healthchecks check to DOWN.\n",
+        "height": 356,
+        "width": 716,
+        "color": "#FFFFFF"
       },
       "id": "50f013c9-a51b-40c2-b87c-36a786c0d222",
       "name": "Note Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -256,
-        -576
+        -176,
+        -528
       ]
     },
     {
       "parameters": {
         "content": "# Alert the owner",
         "height": 150,
-        "width": 876
+        "width": 684,
+        "color": "#8A2828"
       },
       "id": "7b54ee79-11b5-4444-9211-f066ee367b75",
       "name": "Band Alert",
@@ -94,9 +97,10 @@
     },
     {
       "parameters": {
-        "content": "## Error Trigger\n### What happens:\n- Starts when `compliance_guide_main` fails and receives workflow name, last node, error message and execution link.\n### Why:\n- So a failure is noticed at once, not days later.\n### Settings:\n- Linked in the main workflow: Settings -> Error workflow.\n- The workflow must be published.",
+        "content": "## Error Trigger\n### What happens:\n- Starts when `compliance_guide_main` fails and receives workflow name, last node, error message and execution link.\n### Why:\n- Failure is noticed at once, not days later.\n### Settings:\n- Linked in the main workflow: Settings -> Error workflow.\n",
         "height": 470,
-        "width": 420
+        "width": 308,
+        "color": "#8A2828"
       },
       "id": "ac91436f-5629-405e-9319-6686446d092b",
       "name": "Note Error Trigger",
@@ -109,31 +113,33 @@
     },
     {
       "parameters": {
-        "content": "## Telegram Alert\n### What happens:\n- Sends workflow name, last node, error text and a link to the run to the owner's chat.\n### Why:\n- The owner sees what failed and can open the run directly.\n### Settings:\n- Append n8n attribution: off.",
+        "content": "## Telegram Alert\n### What happens:\n- Sends workflow name, last node, error text and a link to the run to the owner's chat.\n### Why:\n- The owner sees what failed and can open the run directly.\n",
         "height": 406,
-        "width": 420
+        "width": 308,
+        "color": "#8A2828"
       },
       "id": "95f34281-4678-46a7-9867-d38c7ae3b23f",
       "name": "Note Telegram Alert",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        288,
+        176,
         -48
       ]
     },
     {
       "parameters": {
-        "content": "## Ping Fail\n### What happens:\n- Reports the failure to Healthchecks with a short message (workflow, last node, error cut to 300 characters).\n### Why:\n- Healthchecks shows DOWN and alerts too. A second, independent signal.\n### Settings:\n- Custom node, event: Fail (see the note at the main workflow).\n- On Error: Continue.",
+        "content": "## Ping Fail\n### Reports failure to Healthchecks with a short message (workflow, last node, error cut to 300 characters).\n### Why:\n- Healthchecks shows DOWN and alerts too. A second, independent signal.\n### Settings:\n- Custom node, event: Fail (see the note at the main workflow).\n- On Error: Continue.",
         "height": 454,
-        "width": 420
+        "width": 308,
+        "color": "#440052"
       },
       "id": "1dc4a13b-531d-42bd-8b6e-c450d9ef826c",
       "name": "Note Ping Fail",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        288,
+        176,
         368
       ]
     }

@@ -1,0 +1,145 @@
+{
+ "id": "18_sonstige_ki_eu",
+ "zweck": "Sonstige KI (Gruppe EU) ohne Namen: zählt wie eine KI in der EU, kein Drittland",
+ "input": {
+  "name": "Fall 18",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "vertrag",
+   "komm"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "hoch",
+  "test": "anon",
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "andere_eu"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto"
+  ],
+  "region": "eu",
+  "avv": "alle",
+  "anbieter": "zero",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 11,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "umfang|D",
+   "llm|D",
+   "dienste|D",
+   "kontakt|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "28",
+     "29",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "25",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
+   }
+  },
+  "karten": null,
+  "kiStatus": "ok",
+  "ersetzt": [],
+  "llmDritt": []
+ }
+}

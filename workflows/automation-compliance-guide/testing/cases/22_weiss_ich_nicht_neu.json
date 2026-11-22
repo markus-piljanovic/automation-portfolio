@@ -1,0 +1,189 @@
+{
+ "id": "22_weiss_ich_nicht_neu",
+ "zweck": "Weiß ich nicht bei Betroffene, Anzahl und Einsatzbereich (neu in der Maske)",
+ "input": {
+  "name": "Fall 22",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "vertrag",
+   "komm"
+  ],
+  "betroffen": [
+   "unklar"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "unklar",
+  "test": "echt",
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "openai"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "unklar"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": true,
+  "aufgaben": 16,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "daten|D",
+   "betroffen|D",
+   "haltung|D",
+   "umfang|D",
+   "test|D",
+   "llm|D",
+   "dienste|D",
+   "region|D",
+   "avv|D",
+   "anbieter|D",
+   "kontakt|AI",
+   "bereich|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "28",
+     "29",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "25",
+     "32"
+    ],
+    "AI": []
+   },
+   "daten": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "betroffen": {
+    "D": [
+     "8",
+     "12",
+     "13",
+     "14",
+     "15",
+     "16",
+     "17",
+     "18",
+     "19",
+     "20",
+     "21",
+     "88"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "umfang": {
+    "D": [
+     "35"
+    ],
+    "AI": []
+   },
+   "test": {
+    "D": [
+     "5",
+     "6"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46",
+     "49"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "anbieter": {
+    "D": [
+     "5",
+     "28"
+    ],
+    "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
+   },
+   "bereich": {
+    "D": [],
+    "AI": [
+     "6",
+     "III"
+    ]
+   }
+  },
+  "karten": null,
+  "kiStatus": "ok",
+  "ersetzt": []
+ }
+}

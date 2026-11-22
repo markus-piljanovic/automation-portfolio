@@ -1,0 +1,138 @@
+{
+ "id": "24_keine_angaben_ueber_menschen",
+ "zweck": "Keine Angaben über Menschen: Betroffene, Anzahl und Tests entfallen und fehlen nicht als Fehler",
+ "input": {
+  "name": "Fall 24",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "keine"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "openai"
+  ],
+  "llmx": "",
+  "dienste": [
+   "auto"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 200,
+  "ok": true,
+  "stop": false,
+  "aufgaben": 11,
+  "summaryKeys": [
+   "rolle|D",
+   "betrieb|D",
+   "haltung|D",
+   "llm|D",
+   "dienste|D",
+   "region|D",
+   "avv|D",
+   "anbieter|D",
+   "kontakt|AI",
+   "basis|D",
+   "basis|AI"
+  ],
+  "artikel": {
+   "rolle": {
+    "D": [
+     "28",
+     "29",
+     "30"
+    ],
+    "AI": []
+   },
+   "betrieb": {
+    "D": [
+     "25",
+     "32"
+    ],
+    "AI": []
+   },
+   "haltung": {
+    "D": [
+     "5",
+     "17",
+     "32"
+    ],
+    "AI": []
+   },
+   "llm": {
+    "D": [
+     "28",
+     "44",
+     "45",
+     "46",
+     "49"
+    ],
+    "AI": []
+   },
+   "dienste": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "region": {
+    "D": [
+     "44",
+     "46"
+    ],
+    "AI": []
+   },
+   "avv": {
+    "D": [
+     "28"
+    ],
+    "AI": []
+   },
+   "anbieter": {
+    "D": [
+     "5",
+     "28"
+    ],
+    "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
+   }
+  },
+  "karten": null,
+  "kiStatus": "ok",
+  "ersetzt": [],
+  "antwortOhne": [
+   "betroffen",
+   "umfang",
+   "test"
+  ]
+ }
+}

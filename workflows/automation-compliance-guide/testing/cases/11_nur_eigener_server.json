@@ -31,8 +31,7 @@
   ],
   "llmx": "",
   "dienste": [
-   "shauto",
-   "shdb"
+   "keine"
   ],
   "kontakt": [
    "intern"
@@ -50,7 +49,7 @@
   "status": 200,
   "ok": true,
   "stop": false,
-  "aufgaben": 9,
+  "aufgaben": 10,
   "summaryKeys": [
    "rolle|D",
    "betrieb|D",
@@ -59,6 +58,7 @@
    "haltung|D",
    "umfang|D",
    "test|D",
+   "kontakt|AI",
    "basis|D",
    "basis|AI"
   ],
@@ -120,9 +120,15 @@
      "6"
     ],
     "AI": []
+   },
+   "kontakt": {
+    "D": [],
+    "AI": [
+     "50"
+    ]
    }
   },
-  "karten": 35,
+  "karten": null,
   "kiStatus": "ok",
   "ersetzt": []
  }

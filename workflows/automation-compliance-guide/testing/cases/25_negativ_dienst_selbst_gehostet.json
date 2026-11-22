@@ -1,0 +1,58 @@
+{
+ "id": "25_negativ_dienst_selbst_gehostet",
+ "zweck": "Der Wert shdb (Datenbank auf eigenem Server) ist bei Weitere Dienste nicht mehr erlaubt",
+ "input": {
+  "name": "Fall 25",
+  "rolle": "avv",
+  "betrieb": "selbst",
+  "besonder": [
+   "nichts"
+  ],
+  "daten": [
+   "kontakt",
+   "vertrag",
+   "komm"
+  ],
+  "betroffen": [
+   "endkunden"
+  ],
+  "haltung": [
+   "logs",
+   "vektor",
+   "backup"
+  ],
+  "umfang": "hoch",
+  "test": "echt",
+  "inhalte": [
+   "nichts"
+  ],
+  "llm": [
+   "openai"
+  ],
+  "llmx": "",
+  "dienste": [
+   "shdb"
+  ],
+  "region": "std",
+  "avv": "teil",
+  "anbieter": "std",
+  "kontakt": [
+   "direkt"
+  ],
+  "auto": "assist",
+  "bereich": [
+   "keiner"
+  ],
+  "bewert": [
+   "nichts"
+  ],
+  "text": "Chatbot fuer Mieteranfragen"
+ },
+ "erwartung": {
+  "status": 422,
+  "ok": false,
+  "fehler": [
+   "dienste: ungültiger Wert"
+  ]
+ }
+}

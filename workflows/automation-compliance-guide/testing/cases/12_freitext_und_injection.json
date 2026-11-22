@@ -31,8 +31,7 @@
   ],
   "llmx": "DeepSeek, Mistral, FooBarAI",
   "dienste": [
-   "auto",
-   "cloud"
+   "auto"
   ],
   "region": "std",
   "avv": "teil",
