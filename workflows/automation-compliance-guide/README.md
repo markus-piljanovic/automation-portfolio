@@ -18,14 +18,14 @@ Ein Berater klickt sich durch etwa 20 Fragen zu einem geplanten KI-Projekt und b
 
 | Workflow | Datei | Aufgabe |
 |---|---|---|
-| Main | `compliance-guide-main.json` | Der Weg einer Anfrage, hinter einem öffentlichen Webhook |
-| Ingest | `compliance-guide-ingest.json` | Lädt die Gesetzeskarten mit Embeddings in Supabase (einmal von Hand) |
-| Usage Logger | `compliance-guide-usage-logger.json` | Rechnet die KI-Kosten eines Laufs aus und schreibt sie ins Kostenlog |
-| Error | `Error Workflow (compliance-guide).json` | Telegram-Nachricht und Fail-Ping an Healthchecks, wenn Main fehlschlägt |
+| Main | [`compliance-guide-main.json`](compliance-guide-main.json) | Der Weg einer Anfrage, hinter einem öffentlichen Webhook |
+| Ingest | [`compliance-guide-ingest.json`](compliance-guide-ingest.json) | Lädt die Gesetzeskarten mit Embeddings in Supabase (einmal von Hand) |
+| Usage Logger | [`compliance-guide-usage-logger.json`](compliance-guide-usage-logger.json) | Rechnet die KI-Kosten eines Laufs aus und schreibt sie ins Kostenlog |
+| Error | [`Error Workflow (compliance-guide).json`](Error%20Workflow%20%28compliance-guide%29.json) | Telegram-Nachricht und Fail-Ping an Healthchecks, wenn Main fehlschlägt |
 
 ![Main-Workflow](images/workflows/compliance_guide_main_workflow.png)
 
-Jede Node hat eine Sticky Note (Was passiert, Warum, Einstellungen). Die anderen drei Workflows: [Ingest](images/workflows/compliance_guide_ingest.png), [Usage Logger](images/workflows/compliance_guide_usage_logger.png), [Error](images/workflows/compliance_guide_error_workflow.png).
+Jede Node hat eine Sticky Note (Was passiert, Warum, Einstellungen). Die anderen drei Workflows als Bild: [Ingest](images/workflows/compliance_guide_ingest.png), [Usage Logger](images/workflows/compliance_guide_usage_logger.png), [Error](images/workflows/compliance_guide_error_workflow.png).
 
 ## Entscheidungen
 
