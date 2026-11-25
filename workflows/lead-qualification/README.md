@@ -26,20 +26,6 @@ Links der ganze Workflow, rechts die vier Abschnitte im Detail.
 </tr>
 </table>
 
-## Der Weg einer Anfrage
-
-Jede Seite zeigt einen Schritt. Im Browser öffnen ([Quelldateien in `page/`](page/)).
-
-| Schritt | Was man sieht | Seite |
-|---|---|---|
-| 1 | Vier kostenlose Regeln entscheiden, ob eine Mail überhaupt eine KI braucht | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/01-intake.html) |
-| 2 | Ein kleines Modell fängt Spam, den die Regeln nicht erkennen. Ein bekannter Absender wird nie zweimal bewertet | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/02-spam-and-duplicates.html) |
-| 3 | Der Agent bewertet Bedarf, Dringlichkeit, Firma und Größe und prüft das Unternehmen | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/03-ai-scoring.html) |
-| 4 | Jeder Lead wird in Airtable gespeichert und als heiß, warm, Rückfrage oder kalt verteilt | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/04-storage-and-routing.html) |
-| 5 | Telegram zeigt Score, Größenband und Begründung. Namen und Mail-Adressen bleiben in Airtable | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/05-telegram-and-dossier.html) |
-| 6 | An einen heißen Lead geht nichts, bevor du auf Senden drückst | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/06-hot-lead-approval.html) |
-| 7 | Pings und ein Alarm-Workflow melden, wenn etwas ausfällt | [öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/page/07-monitoring.html) |
-
 ## Die Workflows
 
 | Workflow | Datei | Aufgabe |
@@ -103,6 +89,5 @@ Ergebnis: **22 von 23 bestanden**. Offen ist der zweite Klick auf einen schon be
 |---|---|
 | `lead-qualification-*.json` | Die vier Workflows, bereinigt |
 | `demo/` | Interaktive Demo, eine Seite mit Skripten, kein Setup nötig |
-| `page/` | Die sieben Schritt-Seiten als einzelne HTML-Dateien |
 | `testing/` | `test-plan.html` und `cases.json` |
 | `images/` | Übersichtsbild, Schritt-Seiten und Workflow-Screenshots |
