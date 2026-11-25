@@ -1,10 +1,14 @@
 # Lead Qualification
 
-Ein Automatisierungsunternehmen bekommt Anfragen per Mail. Dieser Workflow liest jede Mail, stoppt Spam, bevor ein teurer KI-Schritt läuft, bewertet den Lead mit einem KI-Agenten von 0 bis 100, speichert ihn in Airtable und meldet ihn per Telegram, ohne Personendaten. Eine Antwort an einen heißen Lead geht erst nach einem Klick auf Senden raus.
+Eine Automation-Agentur bekommt Anfragen per Mail. 
 
-Umfang: Mail-Eingang, Spam-Filter, Duplikat-Check, KI-Bewertung mit Impressum-Check und Firmengrößen, Speichern, anonyme Meldungen, Freigabe und Überwachung. Geplant: Ein Lead wird neu bewertet, wenn eine Folgemail neue Fakten bringt.
+Dieser Workflow:
+- liest jede Mail und stoppt Spam bevor die KI losläuft
+- bewertet den Lead per KI-Agent auf einer Skala von 0 bis 100
+- speichert ihn in einer Datenbank (Airtable) und meldet ihn per Messenger (Telegram), ohne personenbezogene Daten
+- Die Antwort an einen "Hot-Lead" geht erst nach einem Klick auf "Senden" raus.
 
-Mails, Prompts und Antworten sind deutsch, die Workflows und Notizen im Workflow sind englisch.
+Mails, Prompts und Antworten sind auf Deutsch, die Workflows und Notizen darin sind auf Englisch.
 
 **[Interaktive Demo öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: sechs Fälle durchklicken, Node für Node.
 
