@@ -471,7 +471,7 @@ function showIntro() {
 
 // ---------- ABSCHNITT 8: Fall-Leiste und Pfeile ----------
 // „Namen auf den Reitern (D steht untereinander).“
-const TAB = {A: "Hot-Lead", B: "Spam Nachricht", C: "Spam: KI-Filter", D: "Absender<br>unbekannt", E: "Anfrage unklar", F: "KI-Ausfall"};
+const TAB = {A: "Hot-Lead", B: "Spam Nachricht", C: "Spam: KI-Filter", D: "Absender<br>bekannt", E: "Anfrage unklar", F: "KI-Ausfall"};
 function buildChips() {
   $(".cases .cl").innerHTML = `<span class="stp">1</span>Fall auswählen <em>Erst dann läuft die Demo</em>`;
   $("#cb").innerHTML = CASE_ORDER.map(id => { const c = CASES[id]; return `<button class="chip${c.err ? " err" : ""}" data-c="${id}"><b>${id}</b><span>${TAB[id]}</span></button>`; }).join("");
