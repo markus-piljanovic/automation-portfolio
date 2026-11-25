@@ -9,11 +9,11 @@ Die Workflows und ihre Sticky Notes sind auf Englisch, alles andere auf Deutsch.
 
 ## Workflows
 
-| Workflow | Welches Problem er löst | Ordner |
+| Workflow | Welches Problem er löst | Link |
 |---|---|---|
-| **Lead Qualification**<br>[Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) | Der Workflow routet Anfragen und lässt sie durch einen KI-Agenten bewerten (mit Spamschutz). Informiert wird man über Telegram, ohne personenbezogene Daten. Eine Antwort an einen heißen Lead geht erst per Klick raus. | [lead-qualification](workflows/lead-qualification/) |
-| **Compliance Guide**<br>[Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) | Vor einem geplanten KI-Projekt muss ein Berater wissen, welche Artikel aus DSGVO und EU AI Act gelten. Ein Formular mit festen Regeln liefert eine Checkliste mit Belegen aus dem Gesetz. | [compliance-guide](workflows/automation-compliance-guide/) |
-| **Mini-IDP** | Ein fiktives Logistikunternehmen tippt täglich etwa 180 Lieferscheine von Hand ein. Kostenlose OCR liest zuerst, eine KI und ein lokales Modell lesen und prüfen nur die unklaren, feste Regeln entscheiden, und ein Mensch in Slack klärt jeden Zweifel. Jeder Lauf protokolliert seine Kosten. | [mini-idp-schmidt](workflows/mini-idp-schmidt/) |
+| **Lead&nbsp;Qualification** | Verkaufsanfragen per Mail werden von einer KI bewertet, Spam wird vorher gestoppt, eine Antwort geht erst nach deinem Klick raus.<br>[Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) | [lead-qualification](workflows/lead-qualification/) |
+| **Compliance&nbsp;Guide** | Ein Formular liefert Beratern die passenden Artikel aus DSGVO und EU AI Act als Checkliste mit Belegen.<br>[Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) | [compliance-guide](workflows/automation-compliance-guide/) |
+| **Mini-IDP** | Lieferscheine werden per OCR, KI und feste Regeln gelesen, ein Mensch in Slack klärt jeden Zweifel. | [mini-idp-schmidt](workflows/mini-idp-schmidt/) |
 
 ## Hinweise
 
