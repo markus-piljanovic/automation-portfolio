@@ -11,8 +11,8 @@ Die Workflows und ihre Sticky Notes sind auf Englisch, alles andere auf Deutsch.
 
 | Workflow | Welches Problem er löst | Ordner |
 |---|---|---|
-| **Compliance Guide** | Vor einem geplanten KI-Projekt muss ein Berater wissen, welche Artikel aus DSGVO und EU AI Act gelten. Ein Formular mit festen Regeln liefert eine Checkliste mit Belegen aus dem Gesetz. | [compliance-guide](workflows/automation-compliance-guide/) |
-| **Lead Qualification** | Der Workflow routet Anfragen und lässt sie durch einen KI-Agenten bewerten (mit Spamschutz). Informiert wird man über Telegram, ohne personenbezogene Daten. Eine Antwort an einen heißen Lead geht erst per Klick raus. | [lead-qualification](workflows/lead-qualification/) |
+| **Compliance Guide** | Vor einem geplanten KI-Projekt muss ein Berater wissen, welche Artikel aus DSGVO und EU AI Act gelten. Ein Formular mit festen Regeln liefert eine Checkliste mit Belegen aus dem Gesetz. [Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) | [compliance-guide](workflows/automation-compliance-guide/) |
+| **Lead Qualification** | Der Workflow routet Anfragen und lässt sie durch einen KI-Agenten bewerten (mit Spamschutz). Informiert wird man über Telegram, ohne personenbezogene Daten. Eine Antwort an einen heißen Lead geht erst per Klick raus. [Demo ansehen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) | [lead-qualification](workflows/lead-qualification/) |
 | **Mini-IDP** | Ein fiktives Logistikunternehmen tippt täglich etwa 180 Lieferscheine von Hand ein. Kostenlose OCR liest zuerst, eine KI und ein lokales Modell lesen und prüfen nur die unklaren, feste Regeln entscheiden, und ein Mensch in Slack klärt jeden Zweifel. Jeder Lauf protokolliert seine Kosten. | [mini-idp-schmidt](workflows/mini-idp-schmidt/) |
 
 ## Hinweise
