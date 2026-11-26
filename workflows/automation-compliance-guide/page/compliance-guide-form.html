@@ -385,16 +385,11 @@ function llmInfo(){
   });
   return {third, eu, unklar: v.includes("unklar")};
 }
-// „Sind Dienste außerhalb des eigenen Servers im Spiel? Wenn nicht, entfallen Standort, Training und Vertrag.“
-function extPresent(){
-  const L = llmInfo();
-  return !!(L.third.length || L.eu.length || L.unklar || sel("dienste").some(k => ["auto","crm","voice","unklar"].includes(k)) || A.betrieb == "cloud");
-}
+// „Standort, Training und Vertrag werden immer angezeigt (seit 26.11.2026), auch wenn noch kein Anbieter gewählt ist.“
 // „Keine Angaben über Menschen: dann entfallen Betroffene, Anzahl und Tests.“
 const noPersons = () => sel("daten").length == 1 && sel("daten")[0] == "keine";
 // „Ist die Frage gerade ausgeblendet?“
 function hid(f){
-  if(["region","avv","anbieter"].includes(f.id)) return !extPresent();
   if(["betroffen","umfang","test"].includes(f.id)) return noPersons();
   return false;
 }
