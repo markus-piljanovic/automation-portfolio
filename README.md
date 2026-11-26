@@ -1,6 +1,7 @@
-# Markus Piljanovic: n8n & AI Automation
+# n8n & AI Automation
 
-Production-ready n8n and AI automation workflows for lead ops, document processing (IDP) and compliance. Self-hosted, tested against written expectations, with known limits stated openly.
+Production-ready n8n and AI automation workflows for lead ops, document processing (IDP) and compliance. 
+Self-hosted, tested against written expectations, with known limits stated openly.
 
 ## Workflows
 
