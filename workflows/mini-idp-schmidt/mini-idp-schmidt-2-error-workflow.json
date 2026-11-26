@@ -8,8 +8,56 @@
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -16,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Mini-IDP Schmidt: Error Workflow\n## When the main workflow crashes, the team is told in Slack.\n## n8n starts this workflow by itself and posts workflow, node, a short error text and a link to the run.\n\n### **Flow:** error → Slack alert.\n\n- **Key decision:** One shared place for crashes, set as the error workflow of the main workflow (Settings → Error Workflow).\n- **Scope:** Covers crashes of the whole run. A single unreadable file is handled inside the main workflow (block 9) and does not reach this workflow.\n- **Data protection:** The alert shows no delivery-note data, only the error text (200 characters) and a link.\n- **Next step:** A fail ping to Healthchecks, as in the other two workflows.",
+        "height": 356,
+        "width": 780,
+        "color": 7
+      },
+      "id": "et4",
+      "name": "Note Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -528
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Error Trigger\n### What happens:\n- Starts when the main workflow fails.\n### Output:\n- `workflow` and `execution` (node, error message, link)",
+        "height": 364,
+        "width": 380,
+        "color": 3
+      },
+      "id": "et5",
+      "name": "Note Error Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Report Error\n### What happens:\n- Posts workflow name, failed node, a short error text and a link to the run in the Slack channel.\n### Why:\n- The fastest way to see it. The text is German like the other Slack messages of this workflow.",
+        "height": 364,
+        "width": 380,
+        "color": 3
+      },
+      "id": "et6",
+      "name": "Note Report Error",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -160
       ]
     },
     {
@@ -26,13 +74,13 @@
         }
       },
       "id": "et2",
-      "name": "Absturz melden",
+      "name": "Report Error in Slack",
       "webhookId": "d9a2b6e4-1f38-4c7d-a5e9-3b8c0f6d2e71",
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.7,
       "position": [
-        260,
-        0
+        416,
+        48
       ],
       "credentials": {
         "slackApi": {
@@ -40,54 +88,6 @@
           "name": "Slack account"
         }
       }
-    },
-    {
-      "parameters": {
-        "content": "# Mini-IDP Schmidt: Error Workflow\n## When the main workflow crashes, the team is told in Slack.\n## n8n starts this workflow by itself and posts workflow, node, a short error text and a link to the run.\n\n### **Flow:** error → Slack alert.\n\n- **Key decision:** One shared place for crashes, set as the error workflow of the main workflow (Settings → Error Workflow).\n- **Scope:** Covers crashes of the whole run. A single unreadable file is handled inside the main workflow (block 9) and does not reach this workflow.\n- **Data protection:** The alert shows no delivery-note data, only the error text (200 characters) and a link.\n- **Next step:** A fail ping to Healthchecks, as in the other two workflows.",
-        "height": 420,
-        "width": 780,
-        "color": 7
-      },
-      "id": "et4",
-      "name": "Note Overview",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -144,
-        -520
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## Error Trigger\n### What happens:\n- Starts when the main workflow fails.\n### Output:\n- `workflow` and `execution` (node, error message, link)",
-        "height": 300,
-        "width": 380,
-        "color": 3
-      },
-      "id": "et5",
-      "name": "Note Error Trigger",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -144,
-        -80
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## Absturz melden\n### What happens:\n- Posts workflow name, failed node, a short error text and a link to the run in the Slack channel.\n### Why:\n- The fastest way to see it. The text is German like the other Slack messages of this workflow.",
-        "height": 300,
-        "width": 380,
-        "color": 3
-      },
-      "id": "et6",
-      "name": "Note Absturz melden",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        256,
-        -80
-      ]
     }
   ],
   "connections": {
@@ -95,7 +95,7 @@
       "main": [
         [
           {
-            "node": "Absturz melden",
+            "node": "Report Error in Slack",
             "type": "main",
             "index": 0
           }
