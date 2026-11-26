@@ -5,9 +5,10 @@ This workflow reads each message, filters spam before any AI runs, and scores th
 It stores the lead in a database (Airtable) and announces it by messenger (Telegram) without personal data.\
 A reply to a hot lead leaves only after a human clicks **Send**.
 
-Mails, prompts and replies are in German, while the workflows and the notes inside them are in English.
+Mails, prompts and replies are in German, while the workflows and the notes inside them are in English.\
+The English demo and test plan show the mails, replies and Telegram texts translated.
 
-▶️ **[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node.
+▶️ **[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node ([in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.de.html)).
 
 ![How a request flows](images/how-it-works.png)
 
@@ -78,7 +79,7 @@ The sticky notes in every workflow explain each node: what happens, why, the out
 
 ## ✅ Tests
 
-[Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) ([source file](testing/test-plan.html)).\
+[Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) ([source file](testing/test-plan.html)), also [in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.de.html).\
 Inputs and expectations are in [`testing/cases.json`](testing/cases.json).
 
 | Group | Cases | Purpose |

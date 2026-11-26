@@ -82,5 +82,5 @@ Assumptions are deliberately left out.
 - The workflows import cleanly but need your own connections.
 - The sticky notes in each workflow explain every step.
 - Workflows and sticky notes are in English.\
-  Demo and test plan: Compliance Guide in English and German, Lead Qualification in German, Mini-IDP in English.
+  Demo and test plan: Compliance Guide and Lead Qualification in English and German, Mini-IDP in English.
 - The descriptions offer orientation and are not legal advice.

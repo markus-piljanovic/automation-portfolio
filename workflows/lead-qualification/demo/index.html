@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -359,7 +359,7 @@ html.fast *{transition:none!important}
 .eg.fly path.base{stroke-dasharray:3 8;stroke-width:2.4}
 .eg.fly.on path.base{stroke-dasharray:none;stroke-width:3.6}
 .wd.ov .eg.on path.stub1{stroke:rgba(53,208,127,.5);stroke-width:3}
-/* ABSCHNITT 8: Abschnittsname unten, Hinweis "Lauf endet hier", größere Ausgangsnamen */
+/* ABSCHNITT 8: Abschnittsname unten, Hinweis "Run ends here", größere Ausgangsnamen */
 #stepinfo{display:flex;flex-direction:column;gap:3px;line-height:1.15}
 #stepinfo b{font-size:21px;font-weight:700}#stepinfo small{font-size:14px;color:var(--mute)}
 .olab{font-size:14px;padding:2px 4px}
@@ -402,15 +402,15 @@ html.fast *{transition:none!important}
 .node.wide .tile{padding-right:calc(26px*var(--k,1))}
 
 /* ---------- ABSCHNITT 16: Bedienelemente links neben dem Canvas, Canvas weiter rechts, Infobox schmaler ---------- */
-/* „Alles, was zum Canvas gehört (Karte, Reiter, Leisten, Titel, Hinweise), rutscht von x=12 auf x=196. Links bleibt eine Spalte für die Bedienung.“ */
+/* “Alles, was zum Canvas gehört (Karte, Reiter, Leisten, Titel, Hinweise), rutscht von x=12 auf x=196. Links bleibt eine Spalte für die Bedienung.” */
 #cardbg,#cardfr,#tbar,#bbar,#gate,#endh,#secname,#sp .cases{left:196px}
 #cv.secm{clip-path:inset(212px 694px 172px 196px)}
-/* „Die Infobox beginnt rechts vom Canvas und ist schmaler.“ */
+/* “Die Infobox beginnt rechts vom Canvas und ist schmaler.” */
 #ip{left:1250px;width:658px;top:238px;bottom:182px;padding:22px 26px 20px}
-/* „Bedienung: eine Spalte links, senkrecht in der Mitte der Canvas-Karte.“ */
+/* “Bedienung: eine Spalte links, senkrecht in der Mitte der Canvas-Karte.” */
 .navbar{left:12px;right:auto;width:170px;top:150px;bottom:auto;height:820px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:14;pointer-events:none}
 .navbar>*{pointer-events:auto}
-/* „Gesamtübersicht-Button zweimal: über der Infobox und unten mittig unter dem Canvas.“ */
+/* “Gesamtübersicht-Button zweimal: über der Infobox und unten mittig unter dem Canvas.” */
 .ovb{position:absolute;height:44px;padding:0 20px;font-size:15px;font-weight:600;color:#d98a2b;border:1px solid #55555c;background:var(--card);border-radius:0;pointer-events:auto;z-index:16}
 .ovb:hover{border-color:#d98a2b}
 #bOv{left:1490px;top:167px;width:178px;height:44px;right:auto}
@@ -418,11 +418,11 @@ html.fast *{transition:none!important}
 #bOv,#bOv2{white-space:nowrap;border-radius:0;padding:0 10px;font-size:14.5px;display:flex;align-items:center;justify-content:center}
 #sp{z-index:15}
 #stepinfo{font-size:15px;font-weight:600;color:var(--soft);text-align:center;line-height:1.3}
-/* „Pfeile als Kreuz: ↑ oben, ↓ unten, ← und → in der Mitte dazwischen. Gesamtübersicht steht oben links neben den Fall-Reitern.“ */
+/* “Pfeile als Kreuz: ↑ oben, ↓ unten, ← und → in der Mitte dazwischen. Gesamtübersicht steht oben links neben den Fall-Reitern.” */
 .navbar .bt{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,46px);grid-template-areas:". u ." "l . r" ". d .";gap:6px}
 .navbar .bt button{width:50px;height:46px;font-size:22px;border-radius:0}
 #bU{grid-area:u}#bL{grid-area:l}#bD{grid-area:d}#bR{grid-area:r}
-/* „Erster und letzter Abschnitt: die Leiste ist nur noch eine Anzeige, kein Knopf.“ */
+/* “Erster und letzter Abschnitt: die Leiste ist nur noch eine Anzeige, kein Knopf.” */
 #tbar.on.end,#bbar.on.end{pointer-events:none;cursor:default;opacity:.45}
 .blk ul{font-size:18px;line-height:1.5}
 .row{font-size:15.5px}
@@ -464,7 +464,7 @@ html.fast *{transition:none!important}
 #navhelp{left:-2px;width:176px;padding:6px 8px 10px;font-size:12.5px}
 #navhelp div{font-size:12.5px;margin-top:6px}
 #navhelp .leg{font-size:12.5px}
-/* Pac-Man läuft über den kleineren Button-Text */
+/* Pac-Man running über den kleineren Button-Text */
 @keyframes pacgo{0%{left:78px;transform:scale(0)}20%{left:99px;transform:scale(1)}94%{left:212px;transform:scale(1)}100%{left:224px;transform:scale(0)}}
 /* Button Titelfolie wie Button Gesamtübersicht */
 #toTitle{width:178px;height:44px;padding:0 10px;font-size:14.5px;font-weight:600;display:none;align-items:center;justify-content:center;white-space:nowrap}
@@ -497,7 +497,7 @@ html.fast *{transition:none!important}
 .wd:not(.ov) .frame{left:-4000px!important;width:9000px!important;border-left:0;border-right:0;border-radius:0}
 /* Canvas-Farbe Entwurf: neutrales, gedecktes Blaugrau statt Grün */
 .wd:not(.ov) .frame{background:color-mix(in srgb,#7c88a3 20%,rgba(14,14,18,.8));border-color:rgba(160,172,198,.2)}
-/* Infobox wie die Canvas-Rahmen: Blaugrau, nur obere und untere Linie, läuft bis an den rechten Rand, gleiche Höhe wie die Canvas-Karte */
+/* Infobox wie die Canvas-Rahmen: Blaugrau, nur obere und untere Linie, running bis an den rechten Rand, gleiche Höhe wie die Canvas-Karte */
 #ip{left:1250px;right:0;width:auto;top:87px;bottom:110px;padding:26px 40px 24px 34px;border:0;border-top:2px solid rgba(160,172,198,.2);border-bottom:2px solid rgba(160,172,198,.2);border-radius:0;background:color-mix(in srgb,#7c88a3 20%,rgba(14,14,18,.8))}
 /* Infobox: Texte kleiner, Mailfenster kleiner */
 .blocks .blk ul,.blocks.tall .blk ul{font-size:15px;line-height:1.45}
@@ -524,7 +524,7 @@ html.fast *{transition:none!important}
 .hc .hcrow{padding:12px 20px}
 .hc .hclog{min-height:80px;padding:10px 20px;line-height:1.6}
 .hc .hcnote{padding:0 20px 12px}
-/* Fenster der Animationen nur so hoch wie der Inhalt (Ausnahmen: Mail, KI-Spam-Filter, Airtable „Lead speichern“) */
+/* Fenster der Animationen nur so hoch wie der Inhalt (Ausnahmen: Mail, KI-Spam-Filter, Airtable “Store lead”) */
 .ev:has(.win.at:not(.cr)),.ev:has(.win.ag),.ev:has(.win.br),.ev:has(.win.sw),.ev:has(.win.js),.ev:has(.win.tg){height:auto}
 .win.at:not(.cr),.win.ag,.win.br,.win.sw,.win.js,.win.tg{height:auto}
 .win.at:not(.cr) .atmsg{margin:10px 16px 14px}
@@ -561,6 +561,7 @@ html.fast *{transition:none!important}
 </style>
 </head>
 <body>
+<a style="position:fixed;top:10px;right:20px;color:#aab3bd;font:600 15px system-ui;text-decoration:none;z-index:60;opacity:.85" href="index.de.html">Deutsch</a>
 <div id="stage">
   <!-- Abschnittsansicht: Karte um das Canvas, Hinweis "erst Fall wählen" -->
   <div id="cardbg"></div>
@@ -568,24 +569,24 @@ html.fast *{transition:none!important}
   <div id="cv"><div id="world" class="wd"><svg id="edges"></svg></div></div>
   <div id="tbar"></div><div id="bbar"></div>
   <div id="cardfr"></div>
-  <div id="secname"></div><div id="endh"></div><div id="gate"><div class="gbox"><div class="garr">↑</div><b>Erst einen Fall wählen</b><span>Ohne Fall bleibt die Demo stehen. Klicke oben auf einen der sechs Fälle, dann läuft der Abschnitt Node für Node.</span></div></div>
-  <button id="toTitle">Titelfolie</button>
+  <div id="secname"></div><div id="endh"></div><div id="gate"><div class="gbox"><div class="garr">↑</div><b>Choose a case first</b><span>Without a case the demo stands still. Click one of the six cases at the top, and the section runs node by node.</span></div></div>
+  <button id="toTitle">Title slide</button>
 
   <!-- Gesamtbild: Karten rechts -->
   <aside id="ovp" class="panel">
-    <div class="eb">Über Abschnitt hovern oder anklicken</div>
-    <h1>Vom Posteingang zur Freigabe</h1>
-    <div class="sub">Klicke einen Abschnitt an, links im Bild oder hier.</div>
+    <div class="eb">Hover over or click a section</div>
+    <h1>From the inbox to approval</h1>
+    <div class="sub">Click a section, on the left in the picture or here.</div>
     <div class="hcbox"><svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="10" fill="#123f36"/><path d="M8 26h8l4-9 5 16 4-11 2 4h9" fill="none" stroke="#2dd4bf" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div id="hctext"></div></div>
     <div id="ovcards"></div>
-    <div id="xw"><div class="xl">Weitere Workflows im Projekt</div><div class="xs"><div class="xi"><div class="xf front" id="xfront"></div><div class="xf back"><b id="xtt"></b><p id="xdd"></p><button id="xbk">← zurück</button></div></div></div></div>
+    <div id="xw"><div class="xl">More workflows in the project</div><div class="xs"><div class="xi"><div class="xf front" id="xfront"></div><div class="xf back"><b id="xtt"></b><p id="xdd"></p><button id="xbk">← back</button></div></div></div></div>
   </aside>
 
   <!-- Abschnittsansicht: rechts Fall-Leiste, Fenster, Blöcke, Pfeile -->
   <aside id="sp" class="panel">
-    <div class="cases"><div class="cl">Fall wählen</div><div id="cb"></div></div>
-    <button id="bOv2" class="ovb">⌂ Gesamtübersicht</button>
-    <div class="navbar"><div id="stepline"><span id="qm" tabindex="0" aria-label="Bedienhilfe">?</span><span id="stepinfo"></span></div><div class="bt"><button id="bU" aria-label="Abschnitt davor">↑</button><button id="bL" aria-label="zurück">←</button><button id="bR" aria-label="weiter">→</button><button id="bD" aria-label="Abschnitt danach">↓</button></div><div id="navhelp"><div><b>← →</b> Node für Node</div><div><b>↑ ↓</b> Abschnitt wechseln, erst bei der ersten oder letzten Node</div><div><b>Mausrad</b> auf dem Canvas wechselt den Abschnitt jederzeit</div><div><b>Fall wählen</b> oben im Canvas, der Lauf startet mit der ersten Node</div><div class="leg"><span class="g">grün: läuft durch</span><span class="r">rot: Stopp oder Fehler</span></div></div></div>
+    <div class="cases"><div class="cl">Choose a case</div><div id="cb"></div></div>
+    <button id="bOv2" class="ovb">⌂ Overview</button>
+    <div class="navbar"><div id="stepline"><span id="qm" tabindex="0" aria-label="Help">?</span><span id="stepinfo"></span></div><div class="bt"><button id="bU" aria-label="Previous section">↑</button><button id="bL" aria-label="back">←</button><button id="bR" aria-label="next">→</button><button id="bD" aria-label="Next section">↓</button></div><div id="navhelp"><div><b>← →</b> node by node</div><div><b>↑ ↓</b> change section, only at the first or last node</div><div><b>Mouse wheel</b> on the canvas changes the section at any time</div><div><b>Choose a case</b> at the top of the canvas, the run starts with the first node</div><div class="leg"><span class="g">green: runs through</span><span class="r">red: stop or error</span></div></div></div>
   </aside>
 
   <!-- Abschnittsansicht: rechts Beschreibung ab Höhe unter der Fall-Leiste -->
@@ -593,7 +594,7 @@ html.fast *{transition:none!important}
     <div id="intro"></div>
     <div id="hdr" class="hdr"></div>
     <div id="ev" class="ev"></div>
-    <div id="blocks" class="blocks"><div class="blk"><h4>Was passiert hier</h4><div id="what"></div></div><div class="blk"><h4>Daten-Output</h4><div id="data"></div></div><div class="kinote" id="kinote" style="display:none"><b>Geplant:</b> ein Kosten-Log zeigt den Tokenverbrauch jedes Laufs.</div><div class="blk" id="codeblk" style="display:none"><h4>Code (Auszug aus n8n)</h4><pre id="code"></pre></div></div>
+    <div id="blocks" class="blocks"><div class="blk"><h4>What happens here</h4><div id="what"></div></div><div class="blk"><h4>Data output</h4><div id="data"></div></div><div class="kinote" id="kinote" style="display:none"><b>Planned:</b> a cost log shows the token use of every run.</div><div class="blk" id="codeblk" style="display:none"><h4>Code (excerpt from n8n)</h4><pre id="code"></pre></div></div>
     
     <div id="endnote"></div>
   </aside>
@@ -609,7 +610,7 @@ html.fast *{transition:none!important}
           <path class="tray" d="M22 62h24l6 12h26l6-12h24v34a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6z"/>
           <g class="badge"><circle cx="104" cy="34" r="17"/><text x="104" y="40" text-anchor="middle">99+</text></g>
         </svg>
-        <div class="tx"><small class="c-bad">Das Problem</small><p>Aufträge, Anfragen und Spam landen <b>bunt gemischt</b> im Postfach. <b>Was davon ist wichtig?</b></p></div>
+        <div class="tx"><small class="c-bad">The problem</small><p>Orders, inquiries and spam land <b>all mixed up</b> in the inbox. <b>Which of it matters?</b></p></div>
       </div>
       <div class="dn"><i></i></div>
       <div class="row3 r2">
@@ -618,7 +619,7 @@ html.fast *{transition:none!important}
           <circle class="dot d1" r="6"/><circle class="dot d2" r="6"/><circle class="dot d3" r="6"/>
           <rect class="bin" x="14" y="94" width="26" height="12" rx="3"/><rect class="bin" x="52" y="94" width="26" height="12" rx="3"/><rect class="bin" x="90" y="94" width="26" height="12" rx="3"/>
         </svg>
-        <div class="tx"><small class="c-go">Die Lösung</small><p>Der Workflow <b>sortiert von allein</b>: Spam raus, Interesse erkennen, Anfrage bewerten.</p></div>
+        <div class="tx"><small class="c-go">The solution</small><p>The workflow <b>sorts by itself</b>: spam out, recognise interest, score the inquiry.</p></div>
       </div>
       <div class="dn"><i></i></div>
       <div class="row3 r3">
@@ -626,19 +627,19 @@ html.fast *{transition:none!important}
           <circle class="ring" cx="65" cy="55" r="38"/><path class="chk" d="M46 56l14 14 26-30"/>
           <path class="spk s1" d="M108 18v14M101 25h14"/><path class="spk s2" d="M20 82v10M15 87h10"/>
         </svg>
-        <div class="tx"><small class="c-hot">Der Gewinn</small><p>Der Vertrieb meldet sich zuerst dort, wo es sich lohnt. <b>Keine Anfrage geht verloren.</b></p></div>
+        <div class="tx"><small class="c-hot">The gain</small><p>Sales gets in touch first where it pays off. <b>No inquiry is lost.</b></p></div>
       </div>
     </div>
     <button id="go"><span>PRESS</span><span>START</span><i class="pac"></i></button>
     <div class="tools">
-      <div class="tt">Im Einsatz</div>
+      <div class="tt">In use</div>
       <div class="vp"><div class="row" id="reel">
-        <div class="tool"><div class="lg"><svg viewBox="0 0 120 48"><text x="60" y="36" text-anchor="middle" font-family="Sora,sans-serif" font-weight="700" font-size="34" fill="#ea4b71">n8n</text></svg></div><div class="tn">n8n</div><div class="tf"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.500 12h4l4-6h1M11.500 12l4 6h1"/></svg>Ablaufsteuerung</div></div>
-        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><rect x="5" y="10" width="38" height="28" rx="6" fill="none" stroke="#e8eaed" stroke-width="3"/><path d="M7 14l17 13 17-13" fill="none" stroke="#ea4335" stroke-width="3.400" stroke-linecap="round"/></svg></div><div class="tn">E-Mail (Gmail)</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M4 13h5l1.500 2.500h3L15 13h5M4 13l2-7h12l2 7v6H4z"/></svg>Postfach</div></div>
-        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><path d="M24 7L6 14.500l18 7.500 18-7.500z" fill="#ffbf00"/><path d="M6 19v15l15 6.500V25.500z" fill="#f82b60"/><path d="M42 19v15l-15 6.500V25.500z" fill="#18bfff"/></svg></div><div class="tn">Airtable</div><div class="tf"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.700 3 3 7 3s7-1.300 7-3V6M5 12c0 1.700 3 3 7 3s7-1.300 7-3"/></svg>Datenbank</div></div>
-        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#2aa7e8"/><path d="M11 23.500l22-8.500c1-.4 2 .2 1.600 1.800l-3.800 17.600c-.3 1.200-1 1.500-2 .9l-5.600-4.200-2.700 2.600c-.3.3-.6.6-1.200.6l.4-5.700 10.400-9.400c.5-.4-.1-.6-.7-.2L16 28.900l-5.500-1.700c-1.200-.4-1.200-1.200.5-1.700z" fill="#fff"/></svg></div><div class="tn">Telegram</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H11l-4 4v-4H4z"/><path d="M8 9.500h8M8 12.500h5"/></svg>Chat und Freigabe</div></div>
-        <div class="tool"><div class="lg"><svg viewBox="0 0 24 24" fill="#d97757"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg></div><div class="tn">Claude Haiku</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800zM18 16l.8 2.200L21 19l-2.200.8L18 22l-.8-2.200L15 19l2.200-.8z"/></svg>KI-Modell</div></div>
-        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="10" fill="#123f36"/><path d="M8 26h8l4-9 5 16 4-11 2 4h9" fill="none" stroke="#2dd4bf" stroke-width="3.200" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tn">Healthchecks.io</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>Überwachung</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 120 48"><text x="60" y="36" text-anchor="middle" font-family="Sora,sans-serif" font-weight="700" font-size="34" fill="#ea4b71">n8n</text></svg></div><div class="tn">n8n</div><div class="tf"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.500 12h4l4-6h1M11.500 12l4 6h1"/></svg>Workflow control</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><rect x="5" y="10" width="38" height="28" rx="6" fill="none" stroke="#e8eaed" stroke-width="3"/><path d="M7 14l17 13 17-13" fill="none" stroke="#ea4335" stroke-width="3.400" stroke-linecap="round"/></svg></div><div class="tn">Email (Gmail)</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M4 13h5l1.500 2.500h3L15 13h5M4 13l2-7h12l2 7v6H4z"/></svg>Mailbox</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><path d="M24 7L6 14.500l18 7.500 18-7.500z" fill="#ffbf00"/><path d="M6 19v15l15 6.500V25.500z" fill="#f82b60"/><path d="M42 19v15l-15 6.500V25.500z" fill="#18bfff"/></svg></div><div class="tn">Airtable</div><div class="tf"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.700 3 3 7 3s7-1.300 7-3V6M5 12c0 1.700 3 3 7 3s7-1.300 7-3"/></svg>Database</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#2aa7e8"/><path d="M11 23.500l22-8.500c1-.4 2 .2 1.600 1.800l-3.800 17.600c-.3 1.200-1 1.500-2 .9l-5.600-4.200-2.700 2.600c-.3.3-.6.6-1.200.6l.4-5.700 10.400-9.400c.5-.4-.1-.6-.7-.2L16 28.900l-5.500-1.700c-1.200-.4-1.200-1.200.5-1.700z" fill="#fff"/></svg></div><div class="tn">Telegram</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H11l-4 4v-4H4z"/><path d="M8 9.500h8M8 12.500h5"/></svg>Chat and approval</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 24 24" fill="#d97757"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg></div><div class="tn">Claude Haiku</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800zM18 16l.8 2.200L21 19l-2.200.8L18 22l-.8-2.200L15 19l2.200-.8z"/></svg>AI model</div></div>
+        <div class="tool"><div class="lg"><svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="10" fill="#123f36"/><path d="M8 26h8l4-9 5 16 4-11 2 4h9" fill="none" stroke="#2dd4bf" stroke-width="3.200" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tn">Healthchecks.io</div><div class="tf"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>Monitoring</div></div>
       </div></div>
     </div>
   </section>
