@@ -48,6 +48,8 @@ Quellcode in [`custom-node/`](custom-node/). Sendet Start-, Erfolgs- oder Fail-P
 
 Die Matrix zeigt, welcher Fall welchen Artikel abruft. Ein Klick auf das Bild öffnet den interaktiven [Testplan](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) mit allen 27 Fällen.
 
+Die Aufgabenliste der Maske (23 mögliche Aufgaben, in den Testfällen 7 bis 17 sichtbar) prüft [`testing/check_todos.js`](testing/check_todos.js) ohne Webhook und ohne KI: Der Regel-Code aus dem Main-Workflow läuft für jeden gültigen Fall, danach muss die Liste zu den Antworten passen (zum Beispiel nur mit Angaben über Menschen die Aufgabe zur Rechtsgrundlage je Zweck). Eine ältere Maske ohne die neuen Aufgaben fällt dabei durch (3 von 18 Fällen). Start mit `node testing/check_todos.js`.
+
 Selbst ausführen (nur mit eigenem Workflow, siehe [Einrichten](#einrichten)): Die Adresse deines Webhooks in `GUIDE_URL` setzen und `node testing/run_tests.js` starten. Mit Präfix läuft nur ein Fall, zum Beispiel `node testing/run_tests.js 09`.
 
 ## Grenzen
@@ -74,5 +76,5 @@ Zum Ausprobieren der echten Maske: [`page/compliance-guide-form.html`](page/comp
 | `custom-node/` | Quellcode der Healthchecks-Ping-Node |
 | `page/` | Demo (festes Beispiel) und echte Maske für den eigenen Webhook |
 | `data/` | `schema.sql`, `chunking.py` |
-| `testing/` | Testplan, 24 automatische Fälle, Testskript |
+| `testing/` | Testplan, 24 automatische Fälle, Testskript, Prüfung der Aufgabenliste |
 | `images/` | Screenshots der Workflows und der Datenbank |
