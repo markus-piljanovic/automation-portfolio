@@ -3,6 +3,22 @@
 Production-ready n8n and AI automation workflows for lead operations, intelligent document processing (IDP) and compliance.\
 Self-hosted, verified against expectations written down in advance, and candid about where each one stops.
 
+## About me
+
+I build n8n and AI automations that run reliably and state plainly where they stop.
+
+Over the years I have worked in consulting and banking, in these roles:
+
+- Project and process manager and PMO, in two separate projects at Accenture
+- Product manager for B2C mortgages
+- Technical delivery of those products, where I came to know the full software development lifecycle from the inside
+
+That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows: fit for the people who use them.Technology has fascinated me since childhood, and AI let me combine that lifelong interest with my business experience.
+
+I am currently training as a digitalisation manager and run my own self-hosted n8n server.
+
+Contact: [LinkedIn](https://www.linkedin.com/in/markus-piljanovic-42141310b/)
+
 ## Workflows
 
 | Workflow | Problem | Result | Explore |
@@ -43,15 +59,8 @@ Assumptions are deliberately left out.
 | Workflow | Tests passed | Cost per run |
 |---|---|---|
 | Lead Qualification | 22 of 23 | n/a |
-| Compliance Guide | 27 of 27 (all 41 articles retrieved at least once) | about 0.002 € |
+| Compliance Guide | 27 of 27 (all 41 articles retrieved at least once) | about 0.0023 $ |
 | Mini-IDP | 16 of 18 | 0.003 to 0.005 $ per AI-read note, 0 $ for OCR |
-
-## About me
-
-I build automations that run reliably and state plainly where they stop.\
-I am training as a digitalisation manager and operate my own self-hosted n8n server.
-
-Contact: [LinkedIn](https://www.linkedin.com/in/markus-piljanovic-42141310b/)
 
 ## Notes
 

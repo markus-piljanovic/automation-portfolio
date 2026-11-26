@@ -69,7 +69,7 @@ A failed ping does not stop the guide.
 
 27 cases, with expectations set in advance from the rule set and the legal text rather than from memory: 8 coverage, 1 regression, 9 variants, 6 error cases and 3 special cases (daily limit, AI outage, a workflow error with alert).\
 All 41 articles are retrieved at least once.\
-An AI run costs about 0.002 € on average.
+An AI run costs about 0.0023 $ on average (0.002 € at the fixed rate of the usage logger).
 
 [![Coverage matrix: each row is a case, each column a law article](images/test-coverage.png)](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html?ansicht=matrix)
 
