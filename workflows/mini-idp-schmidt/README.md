@@ -35,6 +35,7 @@ flowchart LR
     N --> K
     K --> O[(Data Tables)]
     O --> P[Cost log]
+    Q[Run crashes] -.-> R[Error workflow:<br/>Slack alert]
 ```
 
 ## ▶️ Walk-through
@@ -53,14 +54,15 @@ Open them in the browser ([source files in `page/`](page/)) or look at the image
 
 ![Step 4: human in Slack](images/pages/04-human-in-slack.png)
 
-## ⚙️ The workflow
+## ⚙️ The workflows
 
 | Workflow | File | Job |
 |---|---|---|
-| Mini-IDP (Schmidt Logistik) | `mini-idp-schmidt.json` | Webhook in, OCR, AI reading, rules, Slack approval, duplicate check, storage and cost log |
+| 1 Mini-IDP (Schmidt Logistik) | `mini-idp-schmidt.json` | Webhook in, OCR, AI reading, rules, Slack approval, duplicate check, storage and cost log |
+| 2 Error Workflow | `mini-idp-schmidt-2-error-workflow.json` | Posts a Slack alert with workflow, node, error text and a link when a run crashes |
 
 The sticky notes on the canvas explain every node: what happens, why, and what is in the data afterwards.\
-They are written in German.
+They are written in German, except those of the error workflow.
 
 ![Whole canvas](images/workflows/mini-idp-schmidt-1-overview.png)
 
@@ -109,7 +111,8 @@ The share of notes handled without a human remains an assumption until real note
 - Not tested yet: a delivery note as a PDF with a text layer, the rule for handwritten remarks, and the clean-note path after the last changes.
 - The Data Tables stand in for a transport system, so there is no real integration.
 - The business case rests on course assumptions (see above).
-- There is no error workflow in this package, and no retention or deletion rule for the stored notes.
+- There is no retention or deletion rule for the stored notes.
+- The error workflow sends a Slack alert only, with no fail ping to Healthchecks.
 
 ## ✅ Testing
 
@@ -129,6 +132,8 @@ The fictional test notes are in [`testing/test-notes/`](testing/test-notes/).
 16 of 18 cases ran and passed, and 2 are open.\
 Every case ran against the real workflow with a real file.
 
+The error workflow was tested separately: a throwaway workflow with a deliberately failing step was linked to it, and the crash produced the Slack alert.
+
 ## 🚀 Run it yourself
 
 1. Import `mini-idp-schmidt.json` into n8n and install the community node `n8n-nodes-tesseractjs`.
@@ -144,5 +149,5 @@ Every case ran against the real workflow with a real file.
 3. Create credentials for the AI gateway (an OpenAI-compatible endpoint with a `claude-haiku` model) and for Slack.\
    Then replace `YOUR_AI_GATEWAY_CREDENTIAL_ID`, `YOUR_SLACK_CREDENTIAL_ID` and `YOUR_SLACK_CHANNEL_ID`.
 4. Replace `YOUR_OLLAMA_HOST` with the address of a machine running Ollama with the `gemma4` model.
-5. Optional: set an error workflow in the workflow settings (it is not part of this package).
+5. Import `mini-idp-schmidt-2-error-workflow.json`, replace `YOUR_SLACK_CREDENTIAL_ID` and `YOUR_SLACK_CHANNEL_ID`, and select it as the error workflow in the settings of workflow 1.
 6. Send a note: `curl -X POST -F "beleg1=@L5_Lieferschein_Mengen_Widerspruch.png" https://your-n8n-host.example/webhook/m07t07-lieferschein`

@@ -35,7 +35,7 @@ I am currently training as a digitalisation manager and run my own self-hosted n
 |---|---|---|
 | Architecture of an AI workflow | Fixed rules decide, and the AI only phrases three sentences | [Compliance Guide](workflows/automation-compliance-guide/README.md), section "The idea" |
 | A human in the loop | A reply leaves only after a click, and Slack resolves every doubt | [Lead Qualification](workflows/lead-qualification/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md) |
-| Error handling and monitoring | Error workflow, Telegram alert and a custom Healthchecks node | [Lead Qualification](workflows/lead-qualification/README.md), [Compliance Guide](workflows/automation-compliance-guide/README.md) |
+| Error handling and monitoring | Error workflow with an alert in Telegram or Slack, and a custom Healthchecks node | [Lead Qualification](workflows/lead-qualification/README.md), [Compliance Guide](workflows/automation-compliance-guide/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md) |
 | Testing | 22 of 23, 27 of 27 and 16 of 18 cases, with expectations written in advance | Test plan in each README |
 | Cost per run | Measured, plus a daily cap | [Compliance Guide](workflows/automation-compliance-guide/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md), section "Cost and value" |
 | Known limits | A "Known limits" list in every README | all three |
@@ -56,13 +56,13 @@ All three pieces are course and portfolio projects, not live systems.
 
 | Topic | Lead Qualification | Compliance Guide | Mini-IDP |
 |---|---|---|---|
-| Error workflow | ✅ Built (Telegram alert and ping) | ✅ Built (Telegram alert and ping) | 🔧 Extension |
+| Error workflow | ✅ Built (Telegram alert and ping) | ✅ Built (Telegram alert and ping) | ✅ Built (Slack alert) |
 | Human approval | ✅ Built (click to send) | ➖ Not needed (nothing is sent) | ✅ Built (Slack) |
 | Duplicate handling | ✅ Built (known senders) | ➖ Not needed | ✅ Built (supplier and note number) |
 | Retries, timeouts, limits | ✅ Built | ✅ Built (daily cap of 0.20 €) | ⚠️ Partly (two nodes retry) |
 | Privacy | ✅ Built (no personal data in Telegram) | ✅ Built (click answers only) | 🔧 Extension |
 | Retention and deletion | 🔧 Extension | 🔧 Extension | 🔧 Extension |
-| Webhook login | ➖ Not applicable (mail trigger) | ⚠️ Open by design, guarded by a value allow-list and the daily cap | 🔧 Extension |
+| Webhook login | ➖ Not applicable (mail trigger) | ➖ Not applicable (the browser form cannot hold a key; guarded by a value allow-list and the daily cap) | 🔧 Extension |
 
 ## 📊 Measured numbers
 
