@@ -138,6 +138,7 @@ body{background:radial-gradient(circle,rgba(255,255,255,.10) 1.2px,transparent 1
 .ta .foot{padding-top:8px;margin-top:2px}
 .ta .btn{padding:5px 14px;font-size:13.5px;border-radius:9px}
 .ta .hint{font-size:12px}
+.tz .row{padding-top:4px;padding-bottom:4px;margin-top:4px}
 .tb .c{font-size:13px;padding:4px 10px;border-radius:9px}
 .tb .chips{gap:5px}
 .tb .ql{margin-bottom:5px}
@@ -148,6 +149,16 @@ body{background:radial-gradient(circle,rgba(255,255,255,.10) 1.2px,transparent 1
 .tc .neu .row{padding-top:3px;padding-bottom:3px;margin-top:3px}
 .tc .pair .qq{display:none}
 .tc .main h2{font-size:20px}
+/* Mehr Platz als nötig: Chips und Abstände werden größer (tl1, tl2), damit zwischen den Fragen keine großen Lücken bleiben. */
+.tl1 .c{font-size:15px;padding:9px 16px;border-radius:12px}
+.tl1 .chips{gap:10px}
+.tl1 .qq{font-size:14.5px}
+.tl1 .inp{padding:12px 16px}
+.tl2 .c{font-size:16px;padding:12px 18px;border-radius:13px}
+.tl2 .chips{gap:12px}
+.tl2 .ql{font-size:19px}
+.tl2 .qq{font-size:15px}
+.tl2 .inp{padding:14px 18px}
 
 /* ---------- ABSCHNITT 9: Ergebnisseite und Ladeanzeige ---------- */
 .rh{display:flex;align-items:center;gap:18px;margin-top:6px}
@@ -249,6 +260,7 @@ body{background:radial-gradient(circle,rgba(255,255,255,.10) 1.2px,transparent 1
 const SEITEN = [
   {t:"Projekt und Rolle", s:"Wer du im Projekt bist und wo der Workflow läuft.", law:"betrifft DSGVO und AI Act", rows:[
     [{id:"name", l:"Projektname", t:"text", info:"Erscheint als Titel im Ergebnis und im PDF."}],
+    [{id:"text", l:"Projektbeschreibung", t:"text", info:"Max. 300 Zeichen. Schaltet nichts, hilft der KI nur beim Formulieren der Zusammenfassungen."}],
     [{id:"rolle", l:"Deine Rolle", q:"Wer entscheidet, wofür die Daten genutzt werden?", kind:"Eine Antwort",
       info:"Entscheidet der Kunde, bist du Auftragsverarbeiter. Entscheidest du selbst, bist du Verantwortlicher. Verkaufst du die KI-Lösung unter deinem Namen, bist du zusätzlich Anbieter im Sinne des AI Act.",
       o:[["avv","Mein Kunde, ich baue nur in seinem Auftrag"],["eigen","Ich selbst, mein eigenes Projekt"],["anbieter","Ich verkaufe die KI-Lösung an mehrere Kunden"],["unklar","Weiß ich nicht"]]}],
@@ -309,8 +321,7 @@ const SEITEN = [
       o:[["hr","Personal (Bewerber auswählen, Mitarbeiter bewerten)"],["kredit","Kredit oder Versicherung (Kreditwürdigkeit, Tarif)"],["bildung","Bildung (Zulassung, Noten, Prüfungen)"],["gesund","Notfall (Notrufe, Triage)"],["behoerde","Sozialleistungen (Anspruch prüfen)"],["justiz","Polizei, Migration, Justiz oder Wahlen"],["infra","Strom, Wasser, Gas oder Verkehr steuern"],["keiner","Keine davon (z. B. Kundenservice, Buchhaltung)"],["unklar","Weiß ich nicht"]]}],
     [{id:"bewert", l:"Bewertung von Menschen", q:"Macht die KI eines davon?", kind:"Mehrfachauswahl",
       info:"Einiges davon ist verboten (AI Act Art. 5), z. B. Gefühle erkennen am Arbeitsplatz oder in der Bildung (Ausnahme: medizinische oder Sicherheitsgründe) und Bewertung nach Sozialverhalten mit Nachteilen.",
-      o:[["emotion","Gefühle erkennen (z. B. bei Mitarbeitern oder Schülern)"],["verhalten","Verhalten bewerten (Scoring, Profiling)"],["bio","Menschen an Gesicht, Stimme oder Fingerabdruck erkennen"],["kateg","Menschen nach Herkunft, Religion o. Ä. einordnen"],["nichts","Nichts davon"],["unklar","Weiß ich nicht"]]}],
-    [{id:"text", l:"Projektbeschreibung", t:"text", info:"Max. 300 Zeichen. Schaltet nichts, hilft der KI nur beim Formulieren der Zusammenfassungen."}]
+      o:[["emotion","Gefühle erkennen (z. B. bei Mitarbeitern oder Schülern)"],["verhalten","Verhalten bewerten (Scoring, Profiling)"],["bio","Menschen an Gesicht, Stimme oder Fingerabdruck erkennen"],["kateg","Menschen nach Herkunft, Religion o. Ä. einordnen"],["nichts","Nichts davon"],["unklar","Weiß ich nicht"]]}]
   ]}
 ];
 // „Die festen Antworten der Demo (Testfall 09).“
@@ -339,7 +350,7 @@ const DONE = new Set();
 let tab = -1;
 // „Der Weg rechts: Titel und die Fragen, die dort kommen. Der letzte Eintrag ist das Ergebnis.“
 const WEG = [
-  {t:"Projekt und Rolle", f:["Projektname","Deine Rolle","Server","Sonderfälle"]},
+  {t:"Projekt und Rolle", f:["Projektname","Projektbeschreibung","Deine Rolle","Server","Sonderfälle"]},
   {t:"Daten", f:["Angaben über Menschen","Betroffene","Speicherorte","Anzahl und Tests"]},
   {t:"Anbieter und Verträge", f:["KI-Modelle","Weitere Dienste","Standort und Training","Datenschutzvertrag"]},
   {t:"KI-Einsatz", f:["Wer sieht die KI","Wer entscheidet","Einsatzbereich","Bewertung von Menschen"]},
@@ -376,13 +387,13 @@ function fit(){
   const m = document.querySelector(".main"), c = document.getElementById("cont");
   // „Läuft der Inhalt über den Rand der Karte hinaus? Gemessen wird bei der Zoomstufe z.“
   // „Ergebnisseite und Ladeanzeige: keine Stufen nötig, nur die Liste scrollt innen.“
-  if(cur == 4 || loading){ m.style.zoom = 1; m.classList.remove("scroll"); ["ta","tb","tc"].forEach(k => document.body.classList.remove(k)); return; }
+  if(cur == 4 || loading){ m.style.zoom = 1; m.classList.remove("scroll"); ["ta","tb","tc","tl1","tl2","tz"].forEach(k => document.body.classList.remove(k)); return; }
   const zuHoch = z => { m.style.zoom = z; return c.scrollHeight > c.clientHeight + 1; };
-  // „Stufe n: 0 = luftig, 1 = Frage neben den Titel, 2 = kleinere Chips, 3 = Untertitel weg.“
-  const stufe = n => { document.body.classList.toggle("ta", n >= 1); document.body.classList.toggle("tb", n >= 2); document.body.classList.toggle("tc", n >= 3); };
+  // „Stufe n: -2 = Chips und Abstände ganz groß, -1 = größer, 0 = luftig, 1 = Frage neben den Titel, 1,5 = wie 1 mit engeren Zeilenabständen, 2 = kleinere Chips, 3 = Untertitel weg.“
+  const stufe = n => { document.body.classList.toggle("tl2", n <= -2); document.body.classList.toggle("tl1", n <= -1); document.body.classList.toggle("ta", n >= 1); document.body.classList.toggle("tz", n == 1.5); document.body.classList.toggle("tb", n >= 2); document.body.classList.toggle("tc", n >= 3); };
   m.classList.remove("scroll");
-  // „Erst die luftigste Stufe suchen, die ohne Verkleinern passt.“
-  for(let n = 0; n <= 3; n++){ stufe(n); if(!zuHoch(1)) return; }
+  // „Erst die größte Stufe suchen, die ohne Verkleinern passt. Seiten mit wenig Inhalt bekommen so größere Felder statt großer Lücken.“
+  for(const n of [-2, -1, 0, 1, 1.5, 2, 3]){ stufe(n); if(!zuHoch(1)) return; }
   // „Passt auch die engste Stufe nicht, wird verkleinert: größte Zoomstufe zwischen 70 % und 100 % (Halbieren). Darunter scrollt die Karte innen.“
   if(zuHoch(0.7)){ m.classList.add("scroll"); return; }
   let lo = 0.7, hi = 1;
