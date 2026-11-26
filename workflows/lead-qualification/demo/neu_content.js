@@ -141,7 +141,7 @@ function pingWin(el, kind) {
   const start = kind === "start";
   el.innerHTML = `<div class="win hc"><div class="wbar dark"><span>Healthchecks.io</span><span>Checks</span></div><div class="hcrow"><span class="hcdot"></span><b>Lead Qualification · Intake and Scoring</b><span class="hcst">${start ? "waiting" : "running"}</span></div><div class="hclog"></div><div class="hcnote">${start ? "If no ping arrives at the end of the run, the run counts as failed." : "Stops the clock: the run counts as successful."}</div></div>`;
   const tl = gsap.timeline(), dot = el.querySelector(".hcdot"), s = el.querySelector(".hcst"), log = el.querySelector(".hclog");
-  tl.add(() => log.innerHTML = `<div>→ GET …/ping/‹id›${start ? "/start" : ""}  <small>(aus n8n)</small></div>`, .3);
+  tl.add(() => log.innerHTML = `<div>→ GET …/ping/‹id›${start ? "/start" : ""}  <small>(from n8n)</small></div>`, .3);
   tl.add(() => log.innerHTML += '<div class="ok">← 200 OK</div>', 1.1);
   tl.add(() => { dot.className = "hcdot " + (start ? "run" : "up"); s.textContent = start ? "running" : "successful"; }, 1.4);
   return tl;

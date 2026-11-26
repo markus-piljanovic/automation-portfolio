@@ -211,7 +211,7 @@ return $input.all().map((item, index) => {
   // Here we collect the reasons for spam
   const gruende = [];
   if (AUTOMATISCHE_ABSENDER.test(email)) gruende.push('automatischer Absender');
-  if (nachricht.length < MIN_NACHRICHT_LAENGE) gruende.push('Message too short');
+  if (nachricht.length < MIN_NACHRICHT_LAENGE) gruende.push('Nachricht zu kurz');
   if (anzahlLinks > MAX_LINKS) gruende.push('zu viele Links');
 
   // The mail moves on, with the result attached

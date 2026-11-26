@@ -8,7 +8,8 @@ A reply to a hot lead leaves only after a human clicks **Send**.
 Mails, prompts and replies are in German, while the workflows and the notes inside them are in English.\
 The English demo and test plan show the mails, replies and Telegram texts translated.
 
-▶️ **[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node ([in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.de.html)).
+- ▶️ **Interactive demo:** [open in the browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) (six cases, node by node), also [in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.de.html)
+- ✅ **Test plan:** [22 of 23 cases passed](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html), also [in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.de.html)
 
 ![How a request flows](images/how-it-works.png)
 
