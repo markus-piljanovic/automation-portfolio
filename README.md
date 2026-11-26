@@ -3,9 +3,9 @@
 Production-ready n8n and AI automation workflows for lead operations, intelligent document processing (IDP) and compliance.\
 Self-hosted, verified against expectations written down in advance, and candid about where each one stops.
 
-![n8n](https://img.shields.io/badge/-n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white) ![Airtable](https://img.shields.io/badge/-Airtable-18BFFF?style=for-the-badge&logo=airtable&logoColor=white) ![Supabase](https://img.shields.io/badge/-Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white) ![Slack](https://img.shields.io/badge/-Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white) ![Telegram](https://img.shields.io/badge/-Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white) ![Claude Haiku](https://img.shields.io/badge/-Claude%20Haiku-D97757?style=for-the-badge&logo=anthropic&logoColor=white) ![Ollama](https://img.shields.io/badge/-Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white)
+![n8n](https://img.shields.io/badge/-n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white) ![Airtable](https://img.shields.io/badge/-Airtable-18BFFF?style=for-the-badge&logo=airtable&logoColor=white) ![Supabase](https://img.shields.io/badge/-Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white) ![Slack](https://img.shields.io/badge/-Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white) ![Telegram](https://img.shields.io/badge/-Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white) ![Claude](https://img.shields.io/badge/-Claude-D97757?style=for-the-badge&logo=anthropic&logoColor=white) ![Gemma 4 (local)](https://img.shields.io/badge/-Gemma%204%20(local)-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
-🧰 **Also used:** Tesseract.js (OCR), Healthchecks.io (monitoring) and Tavily (company search).
+🧰 **Also used:** Ollama (runs the local model), Tesseract.js (OCR), Healthchecks.io (monitoring) and Tavily (company search).
 
 ## 👤 About me
 
