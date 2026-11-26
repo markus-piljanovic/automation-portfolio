@@ -4,7 +4,7 @@
  "input": {
   "name": "Mieter-Chatbot",
   "rolle": "avv",
-  "betrieb": "selbst",
+  "betrieb": "cloud",
   "besonder": [
    "nichts"
   ],
@@ -31,7 +31,7 @@
   ],
   "llmx": "",
   "dienste": [
-   "auto"
+   "keine"
   ],
   "region": "std",
   "avv": "teil",
@@ -52,7 +52,7 @@
   "status": 200,
   "ok": true,
   "stop": true,
-  "aufgaben": 15,
+  "aufgaben": 14,
   "summaryKeys": [
    "rolle|D",
    "betrieb|D",
@@ -62,7 +62,6 @@
    "umfang|D",
    "test|D",
    "llm|D",
-   "dienste|D",
    "region|D",
    "avv|D",
    "anbieter|D",
@@ -81,7 +80,7 @@
    },
    "betrieb": {
     "D": [
-     "25",
+     "28",
      "32"
     ],
     "AI": []
@@ -136,12 +135,6 @@
      "45",
      "46",
      "49"
-    ],
-    "AI": []
-   },
-   "dienste": {
-    "D": [
-     "28"
     ],
     "AI": []
    },
