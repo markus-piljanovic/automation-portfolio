@@ -1,78 +1,112 @@
 # Automation Compliance Guide
 
-Ein Berater klickt sich durch etwa 20 Fragen zu einem geplanten KI-Projekt und bekommt eine **Checkliste mit Belegen aus DSGVO und EU AI Act**. Nur Orientierung, keine Rechtsberatung.
+A consultant clicks through about 20 questions on a planned AI project and receives a **checklist with sources from the GDPR and the EU AI Act**.\
+For orientation only, not legal advice.
 
-- **Demo ohne Einrichtung:** [im Browser öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) (ein festes Beispiel, Mausrad oder Pfeiltasten wechseln den Schritt)
-- **Testplan:** [27 von 27 Fällen bestanden](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html)
+- **Demo without setup:** [open in the browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) (one fixed example, mouse wheel or arrow keys change the step)
+- **Test plan:** [27 of 27 cases passed](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html)
 
-![So funktioniert es](images/how-it-works.png)
+![How it works](images/how-it-works.png)
 
-## Idee
+## Architecture
 
-- Feste Regeln im Code wählen die Themen basierend auf den Klick-Antworten der Eingabemaske. Gleiche Antworten ergeben immer das gleiche Ergebnis.
-- Die passenden Gesetzesartikel kommen aus einer Datenbank (297 Karten: DSGVO 118, AI Act 179), per exaktem Filter und nicht per Ähnlichkeitssuche.
-- Die KI schreibt pro Thema nur drei Sätze aus diesen Karten. Eine Code-Prüfung ersetzt jede Zusammenfassung, die keinen erlaubten Artikel nennt.
-- Ein erster Versuch als Chatbot konnte nicht garantieren, dass alle Gesetze abgedeckt sind. Deshalb dieser Aufbau.
+```mermaid
+flowchart LR
+    A[Form<br/>about 20 clicks] --> B[Webhook]
+    B --> C[Rules in code<br/>pick the topics]
+    C --> D{Input valid?}
+    D -- no --> E[Reply: invalid]
+    D -- yes --> F{Under the<br/>daily limit?}
+    F -- no --> G[Reply: limit reached]
+    F -- yes --> H[(Law cards<br/>exact filter)]
+    H --> I[AI writes<br/>three sentences per topic]
+    I --> J{Sources allowed?}
+    J -- no --> K[Summary replaced]
+    J -- yes --> L[Usage logger<br/>cost of the run]
+    K --> L
+    L --> M[Checklist<br/>with sources]
+    N[Main fails] -.-> O[Error workflow:<br/>Telegram plus fail ping]
+```
 
-## Die Workflows
+## The idea
 
-| Workflow | Datei | Bild | Aufgabe |
+- Fixed rules in code select the topics from the answers in the form, so identical answers always yield an identical result.
+- The matching articles come from a database of 297 cards (GDPR 118, AI Act 179), retrieved by exact filter instead of similarity search.
+- The AI writes only three sentences per topic, drawn from those cards.\
+  A code check replaces every summary that cites no permitted article.
+- A first attempt as a chatbot could not guarantee that every law was covered, which is why the workflow is built this way.
+
+## The workflows
+
+| Workflow | File | Image | Job |
 |---|---|---|---|
-| Main | [`compliance-guide-main.json`](compliance-guide-main.json) | [Screenshot](images/workflows/compliance_guide_main_workflow.png) | Der Weg einer Anfrage, hinter einem öffentlichen Webhook |
-| Ingest | [`compliance-guide-ingest.json`](compliance-guide-ingest.json) | [Screenshot](images/workflows/compliance_guide_ingest.png) | Lädt die Gesetzeskarten mit Embeddings in Supabase (einmal von Hand) |
-| Usage Logger | [`compliance-guide-usage-logger.json`](compliance-guide-usage-logger.json) | [Screenshot](images/workflows/compliance_guide_usage_logger.png) | Rechnet die KI-Kosten eines Laufs aus und schreibt sie ins Kostenlog |
-| Error | [`Error Workflow (compliance-guide).json`](Error%20Workflow%20%28compliance-guide%29.json) | [Screenshot](images/workflows/compliance_guide_error_workflow.png) | Telegram-Nachricht und Fail-Ping an Healthchecks, wenn Main fehlschlägt |
+| Main | [`compliance-guide-main.json`](compliance-guide-main.json) | [Screenshot](images/workflows/compliance_guide_main_workflow.png) | The path of a request, behind a public webhook |
+| Ingest | [`compliance-guide-ingest.json`](compliance-guide-ingest.json) | [Screenshot](images/workflows/compliance_guide_ingest.png) | Loads the law cards with embeddings into Supabase (run once, by hand) |
+| Usage Logger | [`compliance-guide-usage-logger.json`](compliance-guide-usage-logger.json) | [Screenshot](images/workflows/compliance_guide_usage_logger.png) | Calculates the AI cost of a run and writes it to the cost log |
+| Error | [`Error Workflow (compliance-guide).json`](Error%20Workflow%20%28compliance-guide%29.json) | [Screenshot](images/workflows/compliance_guide_error_workflow.png) | Sends a Telegram message and a fail ping to Healthchecks when Main fails |
 
-![Main-Workflow](images/workflows/compliance_guide_main_workflow.png)
+![Main workflow](images/workflows/compliance_guide_main_workflow.png)
 
-Jede Node hat eine Sticky Note (Was passiert, Warum, Einstellungen).
+Every node has a sticky note (what happens, why, settings).
 
-## Entscheidungen
+## Decisions
 
-| Problem | Entscheidung | Verzicht |
+| Problem | Decision | What I gave up |
 |---|---|---|
-| Ein Chat-Agent entscheidet selbst, Ergebnisse schwanken | Feste Regeln mit Liste erlaubter Werte und einer Stopp-Regel | Freie Fragen |
-| Eine KI kann Artikel erfinden | Nur drei Sätze aus den geladenen Karten, Code-Prüfung der Quellen | Längere Erklärungen |
-| Ein Schlüssel in einer Browser-Seite ist öffentlich | Webhook ohne Login, geschützt durch Werteliste, Tageslimit (0,20 €) und reine Klick-Antworten | Anmeldung |
-| Stille Fehler sind schlimmer als laute | Eigene Custom Node für Healthchecks plus Error-Workflow mit Telegram | nichts |
+| A chat agent decides for itself, so results vary | Fixed rules with an allow-list of values and a stop rule | Free-form questions |
+| An AI can invent articles | Only three sentences from the loaded cards, and a code check on the sources | Longer explanations |
+| A key in a browser page is public | A webhook without login, guarded by a value allow-list, a daily cap (0.20 €) and click-only answers | Authentication |
+| Silent failures are worse than loud ones | A custom Healthchecks node plus an error workflow with Telegram | Nothing |
 
-## Custom Node: Healthchecks Ping
+## Custom node: Healthchecks Ping
 
-Quellcode in [`custom-node/`](custom-node/). Sendet Start-, Erfolgs- oder Fail-Pings an Healthchecks.io. Gegenüber einem HTTP-Request-Node liegt der Ping-Schlüssel in einer Credential und taucht nie in Fehlermeldungen auf, und der Slug wird vor dem Senden geprüft. Ein fehlgeschlagener Ping stoppt den Guide nicht.
+The source code is in [`custom-node/`](custom-node/).\
+It sends start, success or fail pings to Healthchecks.io.\
+Compared with an HTTP Request node, the ping key lives in a credential and never appears in error messages, and the slug is validated before sending.\
+A failed ping does not stop the guide.
 
 ## Tests
 
-27 Fälle, Erwartungen vorab aus Regelwerk und Gesetzestext, nicht aus dem Gedächtnis: 8 Abdeckung, 1 Regression, 9 Varianten, 6 Fehlerfälle, 3 Sonderfälle (Tageslimit, KI-Ausfall, Fehler im Workflow mit Alarm). Alle 41 Artikel werden mindestens einmal abgerufen. Ein KI-Lauf kostet im Schnitt etwa 0,002 €.
+27 cases, with expectations set in advance from the rule set and the legal text rather than from memory: 8 coverage, 1 regression, 9 variants, 6 error cases and 3 special cases (daily limit, AI outage, a workflow error with alert).\
+All 41 articles are retrieved at least once.\
+An AI run costs about 0.002 € on average.
 
-[![Abdeckungs-Matrix: jede Zeile ein Fall, jede Spalte ein Gesetzesartikel](images/test-coverage.png)](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html?ansicht=matrix)
+[![Coverage matrix: each row is a case, each column a law article](images/test-coverage.png)](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html?ansicht=matrix)
 
-Die Matrix zeigt, welcher Fall welchen Artikel abruft. Ein Klick auf das Bild öffnet den interaktiven [Testplan](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) mit allen 27 Fällen.
+The matrix shows which case retrieves which article.\
+Clicking the image opens the interactive [test plan](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html) with all 27 cases.
 
-Selbst ausführen (nur mit eigenem Workflow, siehe [Einrichten](#einrichten)): Die Adresse deines Webhooks in `GUIDE_URL` setzen und `node testing/run_tests.js` starten. Mit Präfix läuft nur ein Fall, zum Beispiel `node testing/run_tests.js 09`.
+To run it yourself (only with your own workflow, see [Setup](#setup)), put the address of your webhook into `GUIDE_URL` and start `node testing/run_tests.js`.\
+With a prefix, only one case runs, for example `node testing/run_tests.js 09`.\
+The test inputs are the files in [`testing/cases/`](testing/cases/).
 
-## Grenzen
+## Known limits
 
-- Die Zusammenfassungen können Wörter aus der Karte nutzen, die nicht im Fakten-Satz stehen. Die Prüfung sichert nur die genannten Artikel, nicht den Wortlaut.
-- Der öffentliche Webhook ohne Login ist eine Entscheidung, kein Versehen. Nicht ungeschützt in großem Umfang betreiben.
-- Die To-do-Texte sind Entwürfe ohne juristische Prüfung.
+- The summaries may use words from the card that do not appear in the fact sentence.\
+  The check secures only the cited articles, not the wording.
+- The public webhook without login is a decision, not an oversight.\
+  Do not operate it unprotected at scale.
+- The to-do texts are drafts without legal review.
 
-## Einrichten
+## Setup
 
-1. Supabase-Projekt anlegen, [`data/schema.sql`](data/schema.sql) ausführen, Credentials in n8n anlegen (Supabase, OpenAI-kompatibel, n8n API lesend, Telegram, Healthchecks).
-2. Community Node aus `custom-node/` bauen und installieren (`npm install`, `npm run build`).
-3. Die vier JSON-Dateien importieren, `YOUR_...`-Platzhalter ersetzen, im Main-Workflow den Usage Logger und in den Einstellungen den Error-Workflow eintragen.
-4. Karten mit [`data/chunking.py`](data/chunking.py) erzeugen (EUR-Lex-HTML beider Gesetze nötig), Ingest einmal ausführen.
-5. Usage Logger und Error-Workflow zuerst veröffentlichen, dann Main. Mit `testing/run_tests.js` prüfen.
+1. Create a Supabase project, run [`data/schema.sql`](data/schema.sql) and create the credentials in n8n (Supabase, OpenAI-compatible, n8n API read-only, Telegram, Healthchecks).
+2. Build and install the community node from `custom-node/` (`npm install`, `npm run build`).
+3. Import the four JSON files and replace the `YOUR_...` placeholders.\
+   In the Main workflow, enter the Usage Logger, and in the settings enter the error workflow.
+4. Generate the cards with [`data/chunking.py`](data/chunking.py) (this needs the EUR-Lex HTML of both laws) and run the ingest once.
+5. Publish the Usage Logger and the error workflow first, then Main.\
+   Verify with `testing/run_tests.js`.
 
-Zum Ausprobieren der echten Maske: [`page/compliance-guide-form.html`](page/compliance-guide-form.html), die Webhook-Adresse oben im Skript (`GUIDE_URL`) auf den eigenen Webhook setzen.
+To try the real form, open [`page/compliance-guide-form.html`](page/compliance-guide-form.html) and point the webhook address at the top of the script (`GUIDE_URL`) to your own webhook.
 
-## Dateien
+## Files
 
-| Pfad | Inhalt |
+| Path | Content |
 |---|---|
-| `compliance-guide-*.json`, `Error Workflow ...json` | Die vier Workflows, bereinigt (Platzhalter statt Zugangsdaten und IDs) |
-| `custom-node/` | Quellcode der Healthchecks-Ping-Node |
-| `page/` | Demo (festes Beispiel) und echte Maske für den eigenen Webhook |
+| `compliance-guide-*.json`, `Error Workflow ...json` | The four workflows, sanitised (placeholders instead of credentials and IDs) |
+| `custom-node/` | Source code of the Healthchecks Ping node |
+| `page/` | Demo (fixed example) and the real form for your own webhook |
 | `data/` | `schema.sql`, `chunking.py` |
-| `testing/` | Testplan, 24 automatische Fälle, Testskript, Prüfung der Aufgabenliste |
-| `images/` | Screenshots der Workflows und der Datenbank |
+| `testing/` | Test plan, 24 automatic cases (the test inputs), test script, check of the to-do list |
+| `images/` | Screenshots of the workflows and the database |

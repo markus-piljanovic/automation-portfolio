@@ -1,41 +1,44 @@
 # n8n & AI Automation
 
-Production-ready n8n and AI automation workflows for lead ops, document processing (IDP) and compliance. 
-Self-hosted, tested against written expectations, with known limits stated openly.
+Production-ready n8n and AI automation workflows for lead operations, intelligent document processing (IDP) and compliance.\
+Self-hosted, verified against expectations written down in advance, and candid about where each one stops.
 
 ## Workflows
 
-| Workflow | Problem | Result | Look |
+| Workflow | Problem | Result | Explore |
 |---|---|---|---|
-| **[Lead Qualification](workflows/lead-qualification/)** | Sales inquiries arrive by mail, spam wastes AI runs, and replies must not go out unchecked. | Spam is stopped by rules first, an AI scores each lead from 0 to 100, and the reply to a hot lead goes out only after a human click. | [Live demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) |
-| **[Compliance Guide](workflows/automation-compliance-guide/)** | Consultants need the right GDPR and EU AI Act articles for a planned automation project. | About 20 clicks give a checklist with sources. Fixed rules choose the topics, the AI only writes three sentences from the matching law cards. Orientation, not legal advice. | [Live demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) |
-| **[Mini-IDP](workflows/mini-idp-schmidt/)** | A logistics company types about 180 delivery notes a day into its system by hand. | Free OCR first, AI only for unclear notes, fixed rules decide, and a person in Slack clears every doubt. | [Walk-through](https://markus-piljanovic.github.io/automation-portfolio/workflows/mini-idp-schmidt/page/01-intake.html) |
+| **[Lead Qualification](workflows/lead-qualification/)** | Sales inquiries arrive by mail.<br>Spam burns AI runs, and no reply should reach a prospect unreviewed. | Rules stop spam before any model runs.<br>An AI agent scores each lead from 0 to 100.<br>A reply to a hot lead leaves only after a human click. | [Live demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html) |
+| **[Compliance Guide](workflows/automation-compliance-guide/)** | Consultants must identify which GDPR and EU AI Act articles apply to a planned automation project. | About 20 clicks yield a checklist backed by sources.<br>Fixed rules select the topics, and the AI only phrases three sentences from the matching law cards.<br>Orientation, not legal advice. | [Live demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) |
+| **[Mini-IDP](workflows/mini-idp-schmidt/)** | A logistics company keys in roughly 180 delivery notes a day by hand. | Free OCR reads first, and AI steps in only for unclear notes.<br>Fixed rules decide, and a person in Slack resolves every doubt. | [Walk-through](https://markus-piljanovic.github.io/automation-portfolio/workflows/mini-idp-schmidt/page/01-intake.html) |
 
-## How this repo is built
+## How this repository is organised
 
-Three levels, each one goes deeper:
+Three levels, each one going deeper than the last:
 
-1. **This page**: problem, result, demo link.
-2. **Workflow README**: how it works, decisions, tests, known limits.
-3. **Files**: workflow JSON, test cases, test data.
+1. **This page** gives the problem, the result and a demo link.
+2. **The workflow README** covers architecture, design decisions, tests and known limits.
+3. **The files** hold the workflow JSON, test cases and test data.
 
 ## Production readiness
 
-Built means it is in the workflow and tested. Extension means it is not built and named openly (all three are course or portfolio projects, not live systems).
+*Built* means the safeguard is part of the workflow and has been tested.\
+*Extension* means it is not built, and it is named openly.\
+All three pieces are course and portfolio projects, not live systems.
 
 | Topic | Lead Qualification | Compliance Guide | Mini-IDP |
 |---|---|---|---|
 | Error workflow | Built (Telegram alert and ping) | Built (Telegram alert and ping) | Extension |
 | Human approval | Built (click to send) | Not needed (nothing is sent) | Built (Slack) |
-| Duplicates | Built (known senders) | Not needed | Built (supplier and note number) |
-| Retries, timeouts, limits | Built | Built (daily cap of 0.20 €) | Partly (2 nodes with retry) |
+| Duplicate handling | Built (known senders) | Not needed | Built (supplier and note number) |
+| Retries, timeouts, limits | Built | Built (daily cap of 0.20 €) | Partly (two nodes retry) |
 | Privacy | Built (no personal data in Telegram) | Built (click answers only) | Extension |
 | Retention and deletion | Extension | Extension | Extension |
-| Webhook login | Not applicable (mail trigger) | Open on purpose, protected by a value list and the daily cap | Extension |
+| Webhook login | Not applicable (mail trigger) | Open by design, guarded by a value allow-list and the daily cap | Extension |
 
 ## Measured numbers
 
-Only numbers from test runs. Assumptions are not shown here.
+Only figures from actual test runs appear here.\
+Assumptions are deliberately left out.
 
 | Workflow | Tests passed | Cost per run |
 |---|---|---|
@@ -45,13 +48,15 @@ Only numbers from test runs. Assumptions are not shown here.
 
 ## About me
 
-I build automations that run reliably and say where they stop. I am training as a digitalisation manager and run my own self-hosted n8n server.
+I build automations that run reliably and state plainly where they stop.\
+I am training as a digitalisation manager and operate my own self-hosted n8n server.
 
 Contact: [LinkedIn](https://www.linkedin.com/in/markus-piljanovic-42141310b/)
 
 ## Notes
 
-- Credentials, IDs, table and folder references are replaced by placeholders (`YOUR_..._ID`). The workflows import fine but need your own connections.
+- Credentials, IDs, table and folder references are replaced by placeholders (`YOUR_..._ID`).
+- The workflows import cleanly but need your own connections.
 - The sticky notes in each workflow explain every step.
-- Workflows and sticky notes are in English. German demos and test plans are added per workflow.
-- The descriptions are orientation, not legal advice.
+- Workflows and sticky notes are in English, and a German demo and test plan are added per workflow.
+- The descriptions offer orientation and are not legal advice.

@@ -1,97 +1,124 @@
 # Lead Qualification
 
-Eine Automation-Agentur bekommt Anfragen per Mail. 
+An automation agency receives its inquiries by mail.\
+This workflow reads each message, filters spam before any AI runs, and scores the lead.\
+It stores the lead in a database (Airtable) and announces it by messenger (Telegram) without personal data.\
+A reply to a hot lead leaves only after a human clicks **Send**.
 
-Dieser Workflow:
-- liest jede Mail und stoppt Spam bevor die KI losläuft
-- bewertet den Lead per KI-Agent auf einer Skala von 0 bis 100
-- speichert ihn in einer Datenbank (Airtable) und meldet ihn per Messenger (Telegram), ohne personenbezogene Daten
-- Die Antwort an einen "Hot-Lead" geht erst nach einem Klick auf "Senden" raus.
+Mails, prompts and replies are in German, while the workflows and the notes inside them are in English.
 
-Mails, Prompts und Antworten sind auf Deutsch, die Workflows und Notizen darin sind auf Englisch.
+**[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node.
 
-**[Interaktive Demo öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: sechs Fälle durchklicken, Node für Node.
+![How a request flows](images/how-it-works.png)
 
-![So läuft eine Anfrage](images/how-it-works.png)
+## Architecture
 
-## Aufbau des Workflows
+```mermaid
+flowchart LR
+    A[Mail arrives<br/>IMAP label] --> B[Rule checks]
+    B --> C{Obvious spam?}
+    C -- yes --> X[Drop]
+    C -- no --> D[Small model<br/>spam gate]
+    D -- spam --> X
+    D -- legit --> E{Known sender?}
+    E -- yes --> F[Append follow-up<br/>no second AI run]
+    E -- no --> G[AI agent<br/>score 0 to 100]
+    R[Company research<br/>size band only] -.-> G
+    G -- AI down --> H[Fallback:<br/>saved as warm]
+    G --> I[(Airtable record)]
+    H --> I
+    I --> J{Category}
+    J -- hot --> K[Telegram approval<br/>plus dossier]
+    J -- warm --> L[Telegram notice]
+    J -- clarification --> M[Ask the sender]
+    J -- cold --> N[Confirmation only]
+    K --> W[Workflow 2:<br/>Send or Discard]
+```
 
-Links der ganze Workflow, rechts die vier Abschnitte im Detail.
+## Workflow layout
+
+The whole workflow is on the left, and the four sections are shown in detail on the right.
 
 <table>
 <tr>
-<td rowspan="2" width="22%" valign="top"><img src="images/workflows/lead-qualification-1-intake-and-scoring.png" alt="Gesamter Workflow Intake and Scoring"><br><sub>Gesamter Workflow</sub></td>
-<td width="39%" valign="top"><img src="images/workflows/intake-1-mail-und-regeln.png" alt="Abschnitt 1"><br><sub><b>1</b> Mail kommt rein, Regeln prüfen</sub></td>
-<td width="39%" valign="top"><img src="images/workflows/intake-2-spam-und-duplikate.png" alt="Abschnitt 2"><br><sub><b>2</b> Spam-Filter und Duplikate</sub></td>
+<td rowspan="2" width="22%" valign="top"><img src="images/workflows/lead-qualification-1-intake-and-scoring.png" alt="Full Intake and Scoring workflow"><br><sub>Full workflow</sub></td>
+<td width="39%" valign="top"><img src="images/workflows/intake-1-mail-und-regeln.png" alt="Section 1"><br><sub><b>1</b> Mail arrives, rules are checked</sub></td>
+<td width="39%" valign="top"><img src="images/workflows/intake-2-spam-und-duplikate.png" alt="Section 2"><br><sub><b>2</b> Spam filter and duplicates</sub></td>
 </tr>
 <tr>
-<td valign="top"><img src="images/workflows/intake-3-ki-bewertung.png" alt="Abschnitt 3"><br><sub><b>3</b> KI bewertet den Lead</sub></td>
-<td valign="top"><img src="images/workflows/intake-4-speichern-und-verteilen.png" alt="Abschnitt 4"><br><sub><b>4</b> Speichern und verteilen</sub></td>
+<td valign="top"><img src="images/workflows/intake-3-ki-bewertung.png" alt="Section 3"><br><sub><b>3</b> The AI scores the lead</sub></td>
+<td valign="top"><img src="images/workflows/intake-4-speichern-und-verteilen.png" alt="Section 4"><br><sub><b>4</b> Store and distribute</sub></td>
 </tr>
 </table>
 
-## Die Workflows
+## The workflows
 
-| Workflow | Datei | Aufgabe |
+| Workflow | File | Job |
 |---|---|---|
-| 1 Intake and Scoring | `lead-qualification-1-intake-and-scoring.json` | Liest die Mail, prüft, bewertet, speichert, verteilt, meldet |
-| 2 Hot Lead Approval | `lead-qualification-2-hot-lead-approval.json` | Startet mit deinem Klick auf Senden oder Verwerfen |
-| 3 Error Workflow | `lead-qualification-3-error-workflow.json` | Telegram-Alarm und Fehler-Ping, wenn ein Lauf abbricht |
-| 4 Company Research | `lead-qualification-4-company-research.json` | Werkzeug für den Agenten: Websuche, nur Größenbänder |
+| 1 Intake and Scoring | `lead-qualification-1-intake-and-scoring.json` | Reads the mail, checks, scores, stores, distributes and reports |
+| 2 Hot Lead Approval | `lead-qualification-2-hot-lead-approval.json` | Starts with your click on Send or Discard |
+| 3 Error Workflow | `lead-qualification-3-error-workflow.json` | Sends a Telegram alert and a fail ping when a run aborts |
+| 4 Company Research | `lead-qualification-4-company-research.json` | Tool for the agent: web search, size bands only |
 
-Die Sticky Notes in jedem Workflow erklären jede Node (was passiert, warum, Ausgabe, wichtige Einstellungen).
+The sticky notes in every workflow explain each node: what happens, why, the output and the key settings.
 
 | Hot Lead Approval | Company Research | Error Workflow |
 |---|---|---|
-| ![Freigabe](images/workflows/lead-qualification-2-hot-lead-approval.png) | ![Firmenrecherche](images/workflows/lead-qualification-4-company-research.png) | ![Fehler-Workflow](images/workflows/lead-qualification-3-error-workflow.png) |
+| ![Approval](images/workflows/lead-qualification-2-hot-lead-approval.png) | ![Company research](images/workflows/lead-qualification-4-company-research.png) | ![Error workflow](images/workflows/lead-qualification-3-error-workflow.png) |
 
-## Entscheidungen und Abstriche
+## Decisions and trade-offs
 
-| Problem | Entscheidung | Worauf ich verzichtet habe |
+| Problem | Decision | What I gave up |
 |---|---|---|
-| Spam würde einen KI-Lauf kosten | Erst Regeln, dann ein kleines Modell (etwa 600 Tokens), der Agent nur für echte neue Leads | Eine Grenzfall-Mail beurteilt allein das kleine Modell |
-| Personendaten in einer Chat-App | Telegram bekommt Score, Größenband, Begründung und einen Link. Ein Code-Schritt entfernt Namen, Mail-Adressen und Nummern | Für Details öffnest du Airtable |
-| Eine KI darf nicht allein Kunden anschreiben | Die Antwort an einen heißen Lead wartet auf deinen Klick. Bei KI-Ausfall wird der Lead als warm gespeichert | Langsamer als vollautomatisch |
-| Die Firmengröße ist oft unbekannt | Das Firmen-Werkzeug läuft nur für eine echte Firma, antwortet nur in Bändern und prüft sein Ergebnis selbst im Code | Bei vielen Leads zählt die Größe neutral |
-| Ein fehlgeschlagener Ping könnte einen Lead verschlucken | Der eigene Healthchecks-Node hängt an einem Seitenzweig | Bei Schüben fehlen im Dashboard einzelne Pings |
+| Spam would cost an AI run | Rules first, then a small model (about 600 tokens), and the agent only for genuine new leads | A borderline mail is judged by the small model alone |
+| Personal data in a chat app | Telegram receives the score, size band, reasoning and a link, and a code step strips names, mail addresses and numbers | For details, you open Airtable |
+| An AI must not write to customers on its own | The reply to a hot lead waits for your click, and if the AI is down the lead is saved as warm | Slower than fully automatic |
+| Company size is often unknown | The research tool runs only for a real company, answers in bands only and verifies its own result in code | With many leads, size counts as neutral |
+| A failed ping could swallow a lead | The custom Healthchecks node sits on a side branch | In bursts, single pings are missing from the dashboard |
 
 ## Tests
 
-[Testplan im Browser öffnen](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) ([Quelldatei](testing/test-plan.html)). Eingaben und Erwartungen stehen in [`testing/cases.json`](testing/cases.json).
+[Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) ([source file](testing/test-plan.html)).\
+Inputs and expectations are in [`testing/cases.json`](testing/cases.json).
 
-| Gruppe | Fälle | Zweck |
+| Group | Cases | Purpose |
 |---|---|---|
-| Bewertung | 6 | Heiß, warm, kalt, Rückfrage, englische Anfrage |
-| Spam und Regeln | 4 | Kurzer Text, no-reply-Absender, zu viele Links, SEO-Werbung |
-| Bekannte Absender | 1 | Folgemail wird angehängt, kein zweiter KI-Lauf |
-| Tricks und Sonderfälle | 4 | Prompt-Injection, erfundene Firma, sehr langer Text, Ping-Ausfall |
-| Datenschutz | 1 | Kein Name, keine Mail, keine Nummer in Telegram |
-| Freigabe per Klick | 3 | Senden, Verwerfen, zweiter Klick |
-| Echtlauf und Überwachung | 4 | Echte IMAP-Mails, Fehler-Workflow |
+| Scoring | 6 | Hot, warm, cold, clarification, an English inquiry |
+| Spam and rules | 4 | Short text, no-reply sender, too many links, SEO advertising |
+| Known senders | 1 | A follow-up is appended, with no second AI run |
+| Tricks and edge cases | 4 | Prompt injection, invented company, very long text, ping outage |
+| Privacy | 1 | No name, mail address or number in Telegram |
+| Approval by click | 3 | Send, discard, second click |
+| Live run and monitoring | 4 | Real IMAP mails, error workflow |
 
-Ergebnis: **22 von 23 bestanden**. Offen ist der zweite Klick auf einen schon benutzten Knopf: Telegram entfernt die Knöpfe nach dem ersten Klick, deshalb lässt er sich von Hand nicht auslösen. Mehrere Funde wurden beim Testen behoben, zum Beispiel ein Ping, der Leads verlor, und ein Alarm, den Telegram ablehnte.
+Result: **22 of 23 passed**.\
+The open case is the second click on a used button: Telegram removes the buttons after the first click, so it cannot be triggered by hand.\
+Several findings were fixed along the way, for example a ping that lost leads and an alert that Telegram rejected.
 
-## Bekannte Grenzen
+## Known limits
 
-- Der Score wird nicht neu berechnet, wenn eine Folgemail neue Fakten bringt.
-- Kleine Firmen und Freemail-Absender bekommen meist keine Größenangaben. Die Größe zählt dann neutral (7 von 15 Punkten).
-- Der Spam-Filter von Gmail greift vor n8n, sehr offensichtlicher Spam erreicht das Label nie.
-- Bei Schüben (mehrere Mails in derselben Sekunde) lehnt Healthchecks einzelne Pings ab. Es geht kein Lead verloren.
-- Der IMAP-Trigger liest alle ungelesenen Mails des Labels. Alte Mails vor dem Aktivieren als gelesen markieren.
+- The score is not recalculated when a follow-up mail brings new facts.
+- Small companies and free-mail senders rarely yield size data, so size counts as neutral (7 of 15 points).
+- Gmail's spam filter acts before n8n, so blatant spam never reaches the label.
+- In bursts (several mails within the same second), Healthchecks rejects single pings, but no lead is lost.
+- The IMAP trigger reads every unread mail under the label, so mark old mails as read before activating.
 
-## Einrichtung
+## Setup
 
-1. Eine Airtable-Tabelle `Leads` anlegen mit den Feldern `name`, `status`, `email`, `telefon`, `unternehmen (optional)`, `nachricht`, `ki-recherche`, `ki-reasoning`, `score`, `priorität`, `datum`, `quelle`, `antwort-entwurf`, `antwort-status`.
-2. Die Zugänge anlegen: IMAP, SMTP, Airtable, Telegram, einen OpenAI-kompatiblen KI-Zugang, eine Header-Auth für die Tavily-Suche und Healthchecks. Den eigenen Node aus [`../automation-compliance-guide/custom-node`](../automation-compliance-guide/custom-node) installieren.
-3. Einen Gmail-Filter anlegen, der Verkaufsanfragen unter das Label `Leads` legt.
-4. Die vier JSON-Dateien importieren und die Platzhalter `YOUR_...` ersetzen. In `check_lead` das Muster für die eigene Absender-Adresse ersetzen.
-5. Workflow 4 aktivieren, dann 3 und 2, dann 1. Workflow 3 als Fehler-Workflow von Workflow 1 und 2 setzen, mit einem Ausführungs-Timeout von 300 Sekunden.
+1. Create an Airtable table `Leads` with the fields `name`, `status`, `email`, `telefon`, `unternehmen (optional)`, `nachricht`, `ki-recherche`, `ki-reasoning`, `score`, `priorität`, `datum`, `quelle`, `antwort-entwurf` and `antwort-status`.
+2. Create the credentials: IMAP, SMTP, Airtable, Telegram, an OpenAI-compatible AI connection, a header auth for the Tavily search and Healthchecks.\
+   Install the custom node from [`../automation-compliance-guide/custom-node`](../automation-compliance-guide/custom-node).
+3. Create a Gmail filter that files sales inquiries under the label `Leads`.
+4. Import the four JSON files and replace the `YOUR_...` placeholders.\
+   In `check_lead`, replace the pattern for your own sender address.
+5. Activate workflow 4, then 3 and 2, then 1.\
+   Set workflow 3 as the error workflow of workflows 1 and 2, with an execution timeout of 300 seconds.
 
-## Dateien
+## Files
 
-| Pfad | Inhalt |
+| Path | Content |
 |---|---|
-| `lead-qualification-*.json` | Die vier Workflows, bereinigt |
-| `demo/` | Interaktive Demo, eine Seite mit Skripten, kein Setup nötig |
-| `testing/` | `test-plan.html` und `cases.json` |
-| `images/` | Übersichtsbild, Schritt-Seiten und Workflow-Screenshots |
+| `lead-qualification-*.json` | The four workflows, sanitised |
+| `demo/` | Interactive demo, one page with scripts, no setup needed |
+| `testing/` | `test-plan.html` and `cases.json` |
+| `images/` | Overview image, step pages and workflow screenshots |
