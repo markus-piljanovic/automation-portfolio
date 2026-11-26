@@ -5,8 +5,6 @@ Self-hosted, verified against expectations written down in advance, and candid a
 
 ## About me
 
-I build n8n and AI automations that run reliably and state plainly where they stop.
-
 Over the years I have worked in consulting and banking, in these roles:
 
 - Project and process manager and PMO, in two separate projects at Accenture
