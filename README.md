@@ -81,5 +81,6 @@ Assumptions are deliberately left out.
 - Credentials, IDs, table and folder references are replaced by placeholders (`YOUR_..._ID`).
 - The workflows import cleanly but need your own connections.
 - The sticky notes in each workflow explain every step.
-- Workflows and sticky notes are in English, and a German demo and test plan are added per workflow.
+- Workflows and sticky notes are in English.\
+  Demo and test plan: Compliance Guide in English and German, Lead Qualification in German, Mini-IDP in English.
 - The descriptions offer orientation and are not legal advice.

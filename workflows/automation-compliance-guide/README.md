@@ -3,8 +3,8 @@
 A consultant clicks through about 20 questions on a planned AI project and receives a **checklist with sources from the GDPR and the EU AI Act**.\
 For orientation only, not legal advice.
 
-- ▶️ **Demo without setup:** [open in the browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) (one fixed example, mouse wheel or arrow keys change the step)
-- ✅ **Test plan:** [27 of 27 cases passed](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html)
+- ▶️ **Demo without setup:** [open in the browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.html) (one fixed example, mouse wheel or arrow keys change the step), also [in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/page/compliance-guide-demo.de.html)
+- ✅ **Test plan:** [27 of 27 cases passed](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.html), also [in German](https://markus-piljanovic.github.io/automation-portfolio/workflows/automation-compliance-guide/testing/test-plan.de.html)
 
 ![How it works](images/how-it-works.png)
 
@@ -87,6 +87,8 @@ The test inputs are the files in [`testing/cases/`](testing/cases/).
 - The public webhook without login is a decision, not an oversight.\
   Do not operate it unprotected at scale.
 - The to-do texts are drafts without legal review.
+- The workflow itself works in German: the form, the AI summaries and the law cards are German.\
+  The English demo and test plan translate the form and the to-dos, while the law texts and the AI summaries in the test plan stay in the original German.
 
 ## 🚀 Setup
 
