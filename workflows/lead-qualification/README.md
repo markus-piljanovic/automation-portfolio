@@ -7,11 +7,11 @@ A reply to a hot lead leaves only after a human clicks **Send**.
 
 Mails, prompts and replies are in German, while the workflows and the notes inside them are in English.
 
-**[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node.
+▶️ **[Open the interactive demo](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/demo/index.html)**: click through six cases, node by node.
 
 ![How a request flows](images/how-it-works.png)
 
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
@@ -35,7 +35,7 @@ flowchart LR
     K --> W[Workflow 2:<br/>Send or Discard]
 ```
 
-## Workflow layout
+## 🖼️ Workflow layout
 
 The whole workflow is on the left, and the four sections are shown in detail on the right.
 
@@ -51,7 +51,7 @@ The whole workflow is on the left, and the four sections are shown in detail on 
 </tr>
 </table>
 
-## The workflows
+## ⚙️ The workflows
 
 | Workflow | File | Job |
 |---|---|---|
@@ -66,7 +66,7 @@ The sticky notes in every workflow explain each node: what happens, why, the out
 |---|---|---|
 | ![Approval](images/workflows/lead-qualification-2-hot-lead-approval.png) | ![Company research](images/workflows/lead-qualification-4-company-research.png) | ![Error workflow](images/workflows/lead-qualification-3-error-workflow.png) |
 
-## Decisions and trade-offs
+## ⚖️ Decisions and trade-offs
 
 | Problem | Decision | What I gave up |
 |---|---|---|
@@ -76,7 +76,7 @@ The sticky notes in every workflow explain each node: what happens, why, the out
 | Company size is often unknown | The research tool runs only for a real company, answers in bands only and verifies its own result in code | With many leads, size counts as neutral |
 | A failed ping could swallow a lead | The custom Healthchecks node sits on a side branch | In bursts, single pings are missing from the dashboard |
 
-## Tests
+## ✅ Tests
 
 [Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/lead-qualification/testing/test-plan.html) ([source file](testing/test-plan.html)).\
 Inputs and expectations are in [`testing/cases.json`](testing/cases.json).
@@ -95,7 +95,7 @@ Result: **22 of 23 passed**.\
 The open case is the second click on a used button: Telegram removes the buttons after the first click, so it cannot be triggered by hand.\
 Several findings were fixed along the way, for example a ping that lost leads and an alert that Telegram rejected.
 
-## Known limits
+## ⚠️ Known limits
 
 - The score is not recalculated when a follow-up mail brings new facts.
 - Small companies and free-mail senders rarely yield size data, so size counts as neutral (7 of 15 points).
@@ -103,7 +103,7 @@ Several findings were fixed along the way, for example a ping that lost leads an
 - In bursts (several mails within the same second), Healthchecks rejects single pings, but no lead is lost.
 - The IMAP trigger reads every unread mail under the label, so mark old mails as read before activating.
 
-## Setup
+## 🚀 Setup
 
 1. Create an Airtable table `Leads` with the fields `name`, `status`, `email`, `telefon`, `unternehmen (optional)`, `nachricht`, `ki-recherche`, `ki-reasoning`, `score`, `priorität`, `datum`, `quelle`, `antwort-entwurf` and `antwort-status`.
 2. Create the credentials: IMAP, SMTP, Airtable, Telegram, an OpenAI-compatible AI connection, a header auth for the Tavily search and Healthchecks.\
@@ -114,7 +114,7 @@ Several findings were fixed along the way, for example a ping that lost leads an
 5. Activate workflow 4, then 3 and 2, then 1.\
    Set workflow 3 as the error workflow of workflows 1 and 2, with an execution timeout of 300 seconds.
 
-## Files
+## 📁 Files
 
 | Path | Content |
 |---|---|

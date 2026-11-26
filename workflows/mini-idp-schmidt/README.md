@@ -13,7 +13,7 @@ The notes inside the workflow and the Slack texts are in German, while this page
 
 ![How it works](images/how-it-works.png)
 
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
@@ -37,7 +37,7 @@ flowchart LR
     O --> P[Cost log]
 ```
 
-## Walk-through
+## ▶️ Walk-through
 
 Each page covers one step of the path.\
 Open them in the browser ([source files in `page/`](page/)) or look at the images here.
@@ -53,7 +53,7 @@ Open them in the browser ([source files in `page/`](page/)) or look at the image
 
 ![Step 4: human in Slack](images/pages/04-human-in-slack.png)
 
-## The workflow
+## ⚙️ The workflow
 
 | Workflow | File | Job |
 |---|---|---|
@@ -72,7 +72,7 @@ They are written in German.
 |---|---|---|
 | ![Blocks 5 and 6](images/workflows/mini-idp-schmidt-4-rules-and-slack.png) | ![Block 7](images/workflows/mini-idp-schmidt-5-duplicates.png) | ![Block 8](images/workflows/mini-idp-schmidt-6-finish.png) |
 
-## Decisions and trade-offs
+## ⚖️ Decisions and trade-offs
 
 | Problem | Decision | What I gave up |
 |---|---|---|
@@ -82,7 +82,7 @@ They are written in German.
 | The same note can arrive twice | Supplier plus note number is checked before Slack and before saving | Only exact matches count as duplicates |
 | The local model can be offline | Every AI-read note then goes to a human | More manual work while the tunnel is down |
 
-## Cost and value
+## 💰 Cost and value
 
 **Scope:** the figures cover workflow running costs, build effort and saved handling time.\
 Training, extra hardware and the cost of errors are not included.\
@@ -101,7 +101,7 @@ Today the process costs about 2,920 € a month in handling time.\
 The measured part is the cost per run: 0 $ for OCR, 0.003 to 0.005 $ for a note read by Haiku and 0 $ for the local model.\
 The share of notes handled without a human remains an assumption until real notes are logged.
 
-## Known limits
+## ⚠️ Known limits
 
 - The webhook has no authentication, so header auth should be added before real use.
 - The local model runs on a PC and is reached through an SSH tunnel.\
@@ -111,7 +111,7 @@ The share of notes handled without a human remains an assumption until real note
 - The business case rests on course assumptions (see above).
 - There is no error workflow in this package, and no retention or deletion rule for the stored notes.
 
-## Testing
+## ✅ Testing
 
 [Open the test plan in your browser](https://markus-piljanovic.github.io/automation-portfolio/workflows/mini-idp-schmidt/testing/test-plan.html) ([source file](testing/test-plan.html)).\
 Inputs and expectations are in [`testing/cases.json`](testing/cases.json).\
@@ -129,7 +129,7 @@ The fictional test notes are in [`testing/test-notes/`](testing/test-notes/).
 16 of 18 cases ran and passed, and 2 are open.\
 Every case ran against the real workflow with a real file.
 
-## Run it yourself
+## 🚀 Run it yourself
 
 1. Import `mini-idp-schmidt.json` into n8n and install the community node `n8n-nodes-tesseractjs`.
 2. Create four Data Tables and replace the `YOUR_TABLE_ID_*` placeholders:
