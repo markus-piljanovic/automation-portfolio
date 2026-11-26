@@ -124,7 +124,7 @@ The fictional test notes are in [`testing/test-notes/`](testing/test-notes/).
 | Rules ask a human | 2 | Missing fields, wrong sum |
 | What the human can answer | 6 | Approve, correct and reject on two notes |
 | Duplicates | 2 | The same note sent twice |
-| Not tested yet | 2 | Listed openly |
+| Not tested yet | 2 | Listed |
 
 16 of 18 cases ran and passed, and 2 are open.\
 Every case ran against the real workflow with a real file.

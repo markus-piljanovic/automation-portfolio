@@ -56,7 +56,7 @@ Every node has a sticky note (what happens, why, settings).
 | A chat agent decides for itself, so results vary | Fixed rules with an allow-list of values and a stop rule | Free-form questions |
 | An AI can invent articles | Only three sentences from the loaded cards, and a code check on the sources | Longer explanations |
 | A key in a browser page is public | A webhook without login, guarded by a value allow-list, a daily cap (0.20 €) and click-only answers | Authentication |
-| Silent failures are worse than loud ones | A custom Healthchecks node plus an error workflow with Telegram | Nothing |
+| A failed run must not go unnoticed | A custom Healthchecks node plus an error workflow with Telegram | A custom node to build and maintain |
 
 ## 🧩 Custom node: Healthchecks Ping
 
@@ -84,8 +84,8 @@ The test inputs are the files in [`testing/cases/`](testing/cases/).
 
 - The summaries may use words from the card that do not appear in the fact sentence.\
   The check secures only the cited articles, not the wording.
-- The public webhook without login is a decision, not an oversight.\
-  Do not operate it unprotected at scale.
+- The webhook has no login, because a key in a browser page would be public.\
+  It is guarded only by the value allow-list and the daily cap, so do not operate it unprotected at scale.
 - The to-do texts are drafts without legal review.
 - The workflow itself works in German: the form, the AI summaries and the law cards are German.\
   The English demo and test plan translate the form and the to-dos, while the law texts and the AI summaries in the test plan stay in the original German.

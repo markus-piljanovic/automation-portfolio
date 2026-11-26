@@ -1,7 +1,6 @@
 # n8n & AI Automation
 
-Production-ready n8n and AI automation workflows for lead operations, intelligent document processing (IDP) and compliance.\
-Self-hosted, verified against expectations written down in advance, and candid about where each one stops.
+n8n and AI automation workflows for lead operations, intelligent document processing (IDP) and compliance.
 
 ![n8n](https://img.shields.io/badge/-n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white) ![Airtable](https://img.shields.io/badge/-Airtable-18BFFF?style=for-the-badge&logo=airtable&logoColor=white) ![Supabase](https://img.shields.io/badge/-Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white) ![Slack](https://img.shields.io/badge/-Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white) ![Telegram](https://img.shields.io/badge/-Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white) ![Claude](https://img.shields.io/badge/-Claude-D97757?style=for-the-badge&logo=anthropic&logoColor=white) ![Gemma 4 (local)](https://img.shields.io/badge/-Gemma%204%20(local)-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
@@ -15,7 +14,7 @@ Over the years I have worked in consulting and banking, in these roles:
 - Product manager for B2C mortgages
 - Technical delivery of those products, where I came to know the full software development lifecycle from the inside
 
-That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows: fit for the people who use them.\
+That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows.\
 Technology has fascinated me since childhood, and AI let me combine that lifelong interest with my business experience.
 
 I am currently training as a digitalisation manager and run my own self-hosted n8n server.
@@ -38,8 +37,8 @@ I am currently training as a digitalisation manager and run my own self-hosted n
 | A human in the loop | A reply leaves only after a click, and Slack resolves every doubt | [Lead Qualification](workflows/lead-qualification/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md) |
 | Error handling and monitoring | Error workflow, Telegram alert and a custom Healthchecks node | [Lead Qualification](workflows/lead-qualification/README.md), [Compliance Guide](workflows/automation-compliance-guide/README.md) |
 | Testing | 22 of 23, 27 of 27 and 16 of 18 cases, with expectations written in advance | Test plan in each README |
-| Cost awareness | Cost per run measured, plus a daily cap | [Compliance Guide](workflows/automation-compliance-guide/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md), section "Cost and value" |
-| Honesty about limits | A "Known limits" list in every README | all three |
+| Cost per run | Measured, plus a daily cap | [Compliance Guide](workflows/automation-compliance-guide/README.md), [Mini-IDP](workflows/mini-idp-schmidt/README.md), section "Cost and value" |
+| Known limits | A "Known limits" list in every README | all three |
 
 ## 🗂️ How this repository is organised
 
@@ -49,10 +48,10 @@ Three levels, each one going deeper than the last:
 2. 🏗️ **The workflow README** covers architecture, design decisions, tests and known limits.
 3. 📁 **The files** hold the workflow JSON, test cases and test data.
 
-## 🛡️ Production readiness
+## 🛡️ Safeguards
 
 ✅ *Built* means the safeguard is part of the workflow and has been tested.\
-🔧 *Extension* means it is not built, and it is named openly.\
+🔧 *Extension* means it is not built.\
 All three pieces are course and portfolio projects, not live systems.
 
 | Topic | Lead Qualification | Compliance Guide | Mini-IDP |
@@ -67,8 +66,7 @@ All three pieces are course and portfolio projects, not live systems.
 
 ## 📊 Measured numbers
 
-Only figures from actual test runs appear here.\
-Assumptions are deliberately left out.
+Figures from actual test runs.
 
 | Workflow | Tests passed | Cost per run |
 |---|---|---|
@@ -79,8 +77,8 @@ Assumptions are deliberately left out.
 ## 📝 Notes
 
 - Credentials, IDs, table and folder references are replaced by placeholders (`YOUR_..._ID`).
-- The workflows import cleanly but need your own connections.
-- The sticky notes in each workflow explain every step.
+- The workflows need your own connections after import.
+- The sticky notes in each workflow describe the steps.
 - Workflows and sticky notes are in English.\
   Demo and test plan: Compliance Guide and Lead Qualification in English and German, Mini-IDP in English.
 - The descriptions offer orientation and are not legal advice.
