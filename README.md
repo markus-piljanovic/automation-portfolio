@@ -11,7 +11,7 @@ Over the years I have worked in consulting and banking, in these roles:
 - Product manager for B2C mortgages
 - Technical delivery of those products, where I came to know the full software development lifecycle from the inside
 
-That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows: fit for the people who use them.
+That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows: fit for the people who use them.\
 Technology has fascinated me since childhood, and AI let me combine that lifelong interest with my business experience.
 
 I am currently training as a digitalisation manager and run my own self-hosted n8n server.
