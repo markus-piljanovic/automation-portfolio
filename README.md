@@ -17,7 +17,7 @@ Over the years I have worked in consulting and banking, in these roles:
 That is where I learned what drives a business and where its processes hurt, and it shapes how I design workflows.\
 Technology has fascinated me since childhood, and AI let me combine that lifelong interest with my business experience.
 
-I am currently training as a digitalisation manager and run my own self-hosted n8n server.
+I am currently training as a digitalization manager and run my own self-hosted n8n server.
 
 💬 Contact: [LinkedIn](https://www.linkedin.com/in/markus-piljanovic-42141310b/)
 
